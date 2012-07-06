@@ -1,6 +1,18 @@
 # Welcome to the fabulous CozyNote Editor
 
-Simple, yet powerfull : one day it will be !
+Simple, yet powerful : one day it will be !
+
+## Installer l'application
+    1. Cloner le dépôt Git, installer les dépendances
+        + `git clone https://github.com/Benibur/cozy-note-editor.git`
+        + `cd cozy-note-editor`
+        + `npm install`
+    2. Pas sûr de ce que font ces commandes...
+        + `git submodule init`
+        + `git submodule update`
+    3. Installer brunch et lancer le build (dans le répertoire du projet)
+        + `sudo npm install brunch -g`
+        + `brunch build`
 
 ## EBNF pour CozyNote :
     * Les non-terminaux : <CozyNote> <TitreSo> <TitrePu> <Note> <ListeParaSo> <ListeParaPu> <ParaSo> <ParaPu> <Ligne> <Txt> <Num> <Puce> <Tab>
