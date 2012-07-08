@@ -4237,7 +4237,8 @@ dd{margin-left:32px}
 .Th-2:before{content:counter(section1) "." counter(section2) " "}
 .Th-3{padding-left:40px;margin-left:0;margin-top:5px;color:#859900;counter-increment:section3;counter-reset:section4}
 .Th-3:before{content:counter(section1) "." counter(section2) "." counter(section3) " "}
-.Th-4{padding-left:60px;margin-left:0;margin-top:5px;color:#859900}
+.Th-4{padding-left:60px;margin-left:0;margin-top:5px;color:#586408;counter-increment:section4}
+.Th-4:before{content:counter(section1) "." counter(section2) "." counter(section3) "." counter(section4) " "}
 .vline_02{margin-left:30px;border:1px solid #ddd;width:10px;height:100%;position:relative;top:0}
 h1{font-size:2em}
 h2{font-size:1.5em}
