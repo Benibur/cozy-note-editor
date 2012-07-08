@@ -57,6 +57,7 @@ class exports.CNEditor extends Backbone.View
             return this
 
 
+
     ### ------------------------------------------------------------------------
     # TODO : initialise the editor content from a markdown string
     ###
@@ -69,6 +70,7 @@ class exports.CNEditor extends Backbone.View
     ###
     replaceCSS : (path) ->
         $(this.editorIframe).contents().find("link[rel=stylesheet]").attr({href : path})
+
 
 
     ### ------------------------------------------------------------------------
@@ -137,29 +139,46 @@ class exports.CNEditor extends Backbone.View
         # console.log "ctrl #{e.ctrlKey}; Alt #{e.altKey}; Shift #{e.shiftKey}; which #{e.which}; keyCode #{e.keyCode}"
         # console.log "metaKeyStrokesCode:'#{metaKeyStrokesCode} keyStrokesCode:'#{keyStrokesCode}'"
 
-        # 2- Test whether position of carret changed
-        #    If yes, carret must be in a span
-        if @newPosition
-            @newPosition = false
-            $("#editorPropertiesDisplay").text("newPosition = false")
-            sel = rangy.getIframeSelection(@editorIframe)
-            div = sel.getRangeAt(0).startContainer
-            if div.nodeName != "DIV"
-                div = $(div).parents("div")[0]
-            if div.innerHTML == "<span></span><br>"
-                # Position caret
-                range4sel = rangy.createRange()
-                range4sel.collapseToPoint(div.firstChild,0)
-                sel.setSingleRange(range4sel)
+        # 2- manage the newPosition flag
+        #    newPosition == true if the position of carret or selection has been
+        #    modified with keyboard or mouse.
+        #    If newPosition == true, then the selection must be "normalized" :
+        #       - carret must be in a span
+        #       - selection must start and end in a span
 
-        # 3- Set a flag if the user moved the carret with keyboard
+        # 2.1- Set a flag if the user moved the carret with keyboard
         if keyStrokesCode in ["left","up","right","down","pgUp","pgDwn","end",
                               "home"] and 
                               shortcut not in ['CtrlShift-down','CtrlShift-up']
             @newPosition = true
+            # TODO : following line is just for test, must be somewhere else.
             $("#editorPropertiesDisplay").text("newPosition = true")
+        
+        # if there was no keyboard move action but the previous action was a move
+        # then "normalize" the selection
+        # TODO : make the normalization more robust : at the moment there is only
+        # the case of an empty line : the carret is put in the empty span. But
+        # there must be other case where the start or end of selection is not in
+        # a correct element.
+        else
+            if @newPosition
+                @newPosition = false
+                # TODO : following line is just for test, must be somewhere else.
+                $("#editorPropertiesDisplay").text("newPosition = false")
+                sel = rangy.getIframeSelection(@editorIframe)
+                div = sel.getRangeAt(0).startContainer
+                if div.nodeName != "DIV"
+                    div = $(div).parents("div")[0]
+                if div.innerHTML == "<span></span><br>"
+                    # Position caret
+                    range4sel = rangy.createRange()
+                    range4sel.collapseToPoint(div.firstChild,0)
+                    sel.setSingleRange(range4sel)
+
+        # 4- the current selection is initialized on each keypress
+        this.currentSel = null
        
-       # 4- launch the action corresponding to the pressed shortcut
+        # 4- launch the action corresponding to the pressed shortcut
         switch shortcut
 
             # RETURN                            
@@ -174,15 +193,12 @@ class exports.CNEditor extends Backbone.View
             
             # BACKSPACE                               
             when "-backspace"
-                # TODO : deal case of a selection in a single line and in an empty line.
-                @_deleteMultiLinesSelections()
-                e.preventDefault()
+                @_backspace(e)
             
             # SUPPR                    
             when "-suppr"
                 # TODO : deal case of a selection in a single line and in an empty line.
-                @_deleteMultiLinesSelections()
-                e.preventDefault()
+                @_suppr(e)
             
             # TOGGLE LINE TYPE (Alt + a)                  
             when "Shift-tab"
@@ -205,6 +221,81 @@ class exports.CNEditor extends Backbone.View
                 # TODO
                 # console.log "TODO : SAVE"
                 e.preventDefault()
+
+
+
+    ### ------------------------------------------------------------------------
+    #  Manage deletions when ŝuppr key is pressed
+    ###
+    _suppr : (e) ->
+        @_findLinesAndIsStartIsEnd()
+        sel = this.currentSel
+        startLine = sel.startLine
+
+        # 1- Case of a caret "alone" (no selection)
+        if sel.range.collapsed
+            # 1.1 caret is at the end of the line
+            if sel.rangeIsEndLine
+                # if there is a next line : modify the selection to make
+                # a multiline deletion
+                if startLine.lineNext != null
+                    sel.range.setEndBefore(startLine.lineNext.line$[0].firstChild)
+                    sel.endLine = startLine.lineNext
+                    @_deleteMultiLinesSelections()
+                    e.preventDefault()
+                # if there is no next line : no modification, just prevent default action
+                else
+                    e.preventDefault()
+            # 1.2 caret is in the middle of the line : nothing to do
+            # else
+
+        # 2- Case of a selection contained in a line
+        else if sel.endLine == startLine
+            sel.range.deleteContents()
+            e.preventDefault()
+
+        # 3- Case of a multi lines selection
+        else
+            @_deleteMultiLinesSelections()
+            e.preventDefault()
+
+
+
+    ### ------------------------------------------------------------------------
+    #  Manage deletions when backspace key is pressed
+    ###
+    _backspace : (e) ->
+        @_findLinesAndIsStartIsEnd()
+        sel = this.currentSel
+        startLine = sel.startLine
+
+        # 1- Case of a caret "alone" (no selection)
+        if sel.range.collapsed
+            # 1.1 caret is at the beginning of the line
+            if sel.rangeIsStartLine
+                # if there is a previous line : modify the selection to make
+                # a multiline deletion
+                if startLine.linePrev != null
+                    sel.range.setStartBefore(startLine.linePrev.line$[0].lastChild)
+                    sel.startLine = startLine.linePrev
+                    @_deleteMultiLinesSelections()
+                    e.preventDefault()
+                # if there is no previous line : no modification, just prevent default action
+                else
+                    e.preventDefault()
+            # 1.2 caret is in the middle of the line : nothing to do
+            # else
+
+        # 2- Case of a selection contained in a line
+        else if sel.endLine == startLine
+            sel.range.deleteContents()
+            e.preventDefault()
+
+        # 3- Case of a multi lines selection
+        else
+            @_deleteMultiLinesSelections()
+            e.preventDefault()
+
 
 
     ### ------------------------------------------------------------------------
@@ -485,7 +576,6 @@ class exports.CNEditor extends Backbone.View
                             if line.lineType == 'Th'
                                 # in case of a Th => Lx then all the following 
                                 # siblings must be turned to Tx and Lh into Lx
-                                # TODO : test this case...
                                 # first we must find the previous sibling line                                
                                 # linePrevSibling = @_findPrevSibling(line)
                                 # linePrev = line.linePrev
@@ -552,6 +642,7 @@ class exports.CNEditor extends Backbone.View
     #   e = event
     ###
     shiftTab : () ->
+
         # 1- Variables
         sel                = rangy.getIframeSelection(@editorIframe)
         range              = sel.getRangeAt(0)
@@ -559,6 +650,7 @@ class exports.CNEditor extends Backbone.View
         endDiv             = range.endContainer
         initialStartOffset = range.startOffset
         initialEndOffset   = range.endOffset
+        
         # 2- find first and last div corresponding to the 1rst and
         #    last selected lines
         if startDiv.nodeName != "DIV"
@@ -566,6 +658,7 @@ class exports.CNEditor extends Backbone.View
         if endDiv.nodeName != "DIV"
             endDiv = $(endDiv).parents("div")[0]
         endLineID = endDiv.id
+        
         # 3- loop on each line between the firts and last line selected
         # TODO : deal the case of a multi range (multi selections). 
         #        Currently only the first range is taken into account.
@@ -573,33 +666,32 @@ class exports.CNEditor extends Backbone.View
         loop
             switch line.lineType
                 when 'Tu','Th'
-                    # find previous sibling for the lineType.
-                    previousSibling = line.linePrev
-                    while previousSibling != null and previousSibling.lineDepthAbs >= line.lineDepthAbs
-                        previousSibling = previousSibling.linePrev
-                    if previousSibling != null
+                    # find parent to choose the lineType.
+                    parent = line.linePrev
+                    while parent != null and parent.lineDepthAbs >= line.lineDepthAbs
+                        parent = parent.linePrev
+                    if parent != null
                         isTabAllowed   = true
-                        lineTypeTarget = previousSibling.lineType
+                        lineTypeTarget = parent.lineType
                         lineTypeTarget = "L" + lineTypeTarget.charAt(1)
                         line.lineDepthAbs -= 1
-                        line.lineDepthRel -= previousSibling.lineDepthRel
+                        line.lineDepthRel -= parent.lineDepthRel
+                        # if lineNext is a Lx, then it must be turned in a Tx
+                        if line.lineNext.lineType[0]=='L'
+                            nextL = line.lineNext
+                            nextL.lineType='T'+nextL.lineType[1] 
+                            nextL.line$.prop('class',"#{nextL.lineType}-#{nextL.lineDepthAbs}")
                     else 
                         isTabAllowed=false
                 when 'Lh'
                     isTabAllowed=true
                     lineTypeTarget     = 'Th'
-                    #line.lineDepthAbs -= 1
-                    #line.lineDepthRel  = 0
                 when 'Lu'
                     isTabAllowed=true
                     lineTypeTarget     = 'Tu'
-                    #line.lineDepthAbs-= 1
-                    #line.lineDepthRel-= 1
                 when 'Lo'
                     isTabAllowed=true
                     lineTypeTarget     = 'To'
-                    #line.lineDepthAbs-= 1
-                    #line.lineDepthRel-= 1
             if isTabAllowed
                 line.line$.prop("class","#{lineTypeTarget}-#{line.lineDepthAbs}")
                 line.lineType = lineTypeTarget
@@ -614,16 +706,24 @@ class exports.CNEditor extends Backbone.View
     #   e = event
     ###
     _return : ()->
-
-        # 0- Range and selection properties
-        [ sel, range, endLine, rangeIsEndLine, 
-          startLine, rangeIsStartLine ] = @_findLines()
+        @_findLinesAndIsStartIsEnd()
+        currSel   = this.currentSel
+        startLine = currSel.startLine
+        endLine   = currSel.endLine
         
         # 1- Delete the selections so that the selection is collapsed
-        # @_deleteMultiLinesSelections()
+        if currSel.range.collapsed
+            
+        else if endLine == startLine
+            currSel.range.deleteContents()
+        else
+            @_deleteMultiLinesSelections()
+            @_findLinesAndIsStartIsEnd()
+            currSel   = this.currentSel
+            startLine = currSel.startLine
         
         # 2- Caret is at the end of the line
-        if rangeIsEndLine
+        if currSel.rangeIsEndLine
             newLine = @_insertLineAfter (
                 sourceLineID       : startLine.lineID
                 targetLineType     : startLine.lineType
@@ -633,10 +733,10 @@ class exports.CNEditor extends Backbone.View
             # Position caret
             range4sel = rangy.createRange()
             range4sel.collapseToPoint(newLine.line$[0].firstChild,0)
-            sel.setSingleRange(range4sel)
+            currSel.sel.setSingleRange(range4sel)
 
         # 3- Caret is at the beginning of the line
-        else if rangeIsStartLine
+        else if currSel.rangeIsStartLine
             newLine = @_insertLineBefore (
                 sourceLineID       : startLine.lineID
                 targetLineType     : startLine.lineType
@@ -646,13 +746,13 @@ class exports.CNEditor extends Backbone.View
             # Position caret
             range4sel = rangy.createRange()
             range4sel.collapseToPoint(startLine.line$[0].firstChild,0)
-            sel.setSingleRange(range4sel)
+            currSel.sel.setSingleRange(range4sel)
         # 4- Caret is in the middle of the line
         else                     
             # Deletion of the end of the original line
-            range.setEndBefore( startLine.line$[0].lastChild )
-            endOfLineFragment = range.extractContents()
-            range.deleteContents()
+            currSel.range.setEndBefore( startLine.line$[0].lastChild )
+            endOfLineFragment = currSel.range.extractContents()
+            currSel.range.deleteContents()
             # insertion
             newLine = @_insertLineAfter (
                 sourceLineID       : startLine.lineID
@@ -664,7 +764,9 @@ class exports.CNEditor extends Backbone.View
             # Position caret
             range4sel = rangy.createRange()
             range4sel.collapseToPoint(newLine.line$[0].firstChild.childNodes[0],0)
-            sel.setSingleRange(range4sel)
+            currSel.sel.setSingleRange(range4sel)
+            this.currentSel = null
+
 
     ### ------------------------------------------------------------------------
     # turn in Th or Lh of the siblings of line (and line itself of course)
@@ -710,7 +812,7 @@ class exports.CNEditor extends Backbone.View
     #   . Sibling2
     #   . Parent
     #      . child1
-    #      . line     : the line 
+    #      . line     : the line in argument
     # returns null if no previous sibling, the line otherwise
     # the sibling is a title (Th, Tu or To), not a line (Lh nor Lu nor Lo)
     ### 
@@ -754,14 +856,27 @@ class exports.CNEditor extends Backbone.View
 
 
     ### ------------------------------------------------------------------------
-    #   delete the user selection(s) 
+    #   delete the user multi line selection
+    #
+    #   prerequisite : at least 2 lines must be selected
+    # 
+    #   parameters :
+    #        :
+    # 
     ###
-
-    _deleteMultiLinesSelections : () ->
-
-        # 0- prepare variables
-        [ sel, range, endLine, rangeIsEndLine, 
-          startLine, rangeIsStartLine ] = @_findLines()
+    _deleteMultiLinesSelections : (startLine,endLine) ->
+        # 0- variables
+        if startLine != undefined
+            range = rangy.createRange()
+            range.setStartBefore(startLine.line$)
+            range.setStartAfter(endLine.line$)
+        else
+            @_findLines()
+            range = this.currentSel.range
+            startContainer = range.startContainer
+            startOffset = range.startOffset
+            startLine = this.currentSel.startLine
+            endLine = this.currentSel.endLine
         endLineDepthAbs = endLine.lineDepthAbs
         startLineDepthAbs = startLine.lineDepthAbs
         deltaDepth = endLineDepthAbs - startLineDepthAbs
@@ -772,7 +887,7 @@ class exports.CNEditor extends Backbone.View
         range4fragment.setEndAfter(endLine.line$[0].lastChild)
         endOfLineFragment = range4fragment.cloneContents()
         
-        # 2- adapt the type of endLine and of its children to startLine
+        # 2- adapt the type of endLine and of its children to startLine 
         # the only usefull case is when endLine must be changed from Th to Tu or To
         if endLine.lineType[1] == 'h' and startLine.lineType[1] != 'h'
             if endLine.lineType[0] == 'L'
@@ -790,36 +905,52 @@ class exports.CNEditor extends Backbone.View
             # TODO : after append there is two span one after the other : if 
             # they have the same class then we should concatenate them.
         startLine.lineNext = endLine.lineNext
-        endLine.lineNext.linePrev=startLine
+        if endLine.lineNext != null
+            endLine.lineNext.linePrev=startLine
         endLine.line$.remove()
         delete this._lines[endLine.lineID]
 
-        # 5- adapt the class and depth of the children of end line
-        if startLine.lineNext == null
-            return 
-         else
-            line = startLine.lineNext
-            # if the 1st line after deleted bloc is a Lx and its title was in
-            # the block, then we turn the line in a Tx
-            if line.lineType[0] == 'L' and line.lineDepthAbs>startLineDepthAbs
-                line.lineType = 'T' + line.lineType[1]
-                line.line$.prop("class","#{line.lineType}-#{line.lineDepthAbs}")
-            # in case the depth delta between start and end deleted line is
-            # greater than one, then the structure is not correct : we reduce
-            # the depth of all the children of endLine. The new depth is limited
-            # to endLine depth.
+        # 5- adapt the depth of the children and siblings of end line
+            # in case the depth delta between start and end line is
+            # greater than 0, then the structure is not correct : we reduce
+            # the depth of all the children and siblings of endLine.
+        line = startLine.lineNext
+        if line != null
             deltaDepth1stLine = line.lineDepthAbs - startLineDepthAbs
-            if deltaDepth1stLine > 1 # TODO or endLineType != line.lineType
-                while line.lineDepthAbs > startLineDepthAbs
-                    newDepth = Math.max( line.lineDepthAbs - deltaDepth , startLineDepthAbs)
+            if deltaDepth1stLine >= 1 
+                while line!= null and line.lineDepthAbs >= endLineDepthAbs
+                    newDepth = line.lineDepthAbs - deltaDepth
                     line.lineDepthAbs = newDepth
                     line.line$.prop("class","#{line.lineType}-#{newDepth}")
-                    # l.lineType = 'Lh'
-                    # l.lineDepthRel = 0
                     line = line.lineNext
         
-        # 6- position caret
-        # TODO
+        # 6- adapt the type of the first line after the children and siblings of
+        #    end line. Its previous sibling or parent might have been deleted, 
+        #    we then must find its new one in order to adapt its type.
+        if line != null
+            # if the line is a line (Lx), then make it "independant" by turning it in a Tx
+            if line.lineType[0] == 'L'
+                line.lineType = 'T' + line.lineType[1]
+                line.line$.prop("class","#{line.lineType}-#{line.lineDepthAbs}")
+            # find the previous sibling, adjust type to its type.
+            firstLineAfterSiblingsOfDeleted = line
+            depthSibling = line.lineDepthAbs
+            line = line.linePrev
+            while line != null and line.lineDepthAbs > depthSibling
+                line = line.linePrev
+            prevSiblingType = line.lineType
+            if firstLineAfterSiblingsOfDeleted.lineType!=prevSiblingType
+                if prevSiblingType[1]=='h'
+                    @_line2titleList(firstLineAfterSiblingsOfDeleted)
+                else
+                    @markerList(firstLineAfterSiblingsOfDeleted)
+
+        # 7- position caret
+        range4caret = rangy.createRange()
+        range4caret.collapseToPoint(startContainer,startOffset)
+        this.currentSel.sel.setSingleRange(range4caret)
+        this.currentSel = null
+
 
     ### ------------------------------------------------------------------------
     # Insert a line after a source line
@@ -893,9 +1024,61 @@ class exports.CNEditor extends Backbone.View
 
 
     ### ------------------------------------------------------------------------
-    # Find first and last line of selection. 
-    # Only the first range of the selections is taken into account.
-    # returns : 
+    # Finds :
+    #   First and last line of selection. 
+    # Remark :
+    #   Only the first range of the selections is taken into account.
+    # Returns : 
+    #   sel : the selection
+    #   range : the 1st range of the selections
+    #   startLine : the 1st line of the range
+    #   endLine : the last line of the range
+    ###
+    _findLines : () ->
+        if this.currentSel == null
+            # 1- Variables
+            sel                = rangy.getIframeSelection(@editorIframe)
+            range              = sel.getRangeAt(0)
+            startContainer     = range.startContainer
+            endContainer       = range.endContainer
+            initialStartOffset = range.startOffset
+            initialEndOffset   = range.endOffset
+            
+            # 2- find endLine 
+            # endContainer refers to a div of a line
+            if endContainer.id? and endContainer.id.substr(0,5) == 'CNID_'  
+                endLine = @_lines[ endContainer.id ]
+            # means the range ends inside a div (span, textNode...)
+            else   
+                endLine = @_lines[ $(endContainer).parents("div")[0].id ]
+            
+            # 3- find startLine 
+            if startContainer.nodeName == 'DIV' # startContainer refers to a div of a line
+                startLine = @_lines[ startContainer.id ]
+            else   # means the range starts inside a div (span, textNode...)
+                startLine = @_lines[ $(startContainer).parents("div")[0].id ]
+            
+            # 4- return
+            this.currentSel = 
+                sel              : sel
+                range            : range
+                startLine        : startLine
+                endLine          : endLine
+                rangeIsStartLine : null
+                rangeIsEndLine   : null
+        # return [sel, range, endLine, startLine]
+
+
+    ### ------------------------------------------------------------------------
+    # Finds :
+    #   first and last line of selection 
+    #   wheter the selection starts at the beginning of startLine or not
+    #   wheter the selection ends at the end of endLine or not
+    # 
+    # Remark :
+    #   Only the first range of the selections is taken into account.
+    #
+    # Returns : 
     #   sel : the selection
     #   range : the 1st range of the selections
     #   startLine : the 1st line of the range
@@ -903,53 +1086,67 @@ class exports.CNEditor extends Backbone.View
     #   rangeIsEndLine : true if the range ends at the end of the last line
     #   rangeIsStartLine : turu if the range starts at the start of 1st line
     ###
-    _findLines : () ->
-        # 1- Variables
-        sel                = rangy.getIframeSelection(@editorIframe)
-        range              = sel.getRangeAt(0)
-        startContainer     = range.startContainer
-        endContainer       = range.endContainer
-        initialStartOffset = range.startOffset
-        initialEndOffset   = range.endOffset
-        # 2- find endLine and the rangeIsEndLine
-        # endContainer refers to a div of a line
-        if endContainer.id? and endContainer.id.substr(0,5) == 'CNID_'  
-            endLine = @_lines[ endContainer.id ]
-            # rangeIsEndLine if endOffset points on the last node of the div or on 
-            # the one before the last wich is a <br>
-            rangeIsEndLine = ( endContainer.children.length-1==initialEndOffset ) or
-                             (endContainer.children[initialEndOffset].nodeName=="BR")
-        # means the range ends inside a div (span, textNode...)
-        else   
-            endLine = @_lines[ $(endContainer).parents("div")[0].id ]
-            parentEndContainer = endContainer
-            # rangeIsEndLine if the selection is at the end of the endContainer
-            # and of each of its parents (this approach is more robust than just 
-            # considering that the line is a flat succession of span : maybe one day 
-            # there will be a table for instance...)
-            rangeIsEndLine = false
-            if parentEndContainer.nodeType == Node.TEXT_NODE
-                rangeIsEndLine = ( initialEndOffset == parentEndContainer.textContent.length )
-            else
-                nextSibling = parentEndContainer.nextSibling
-                rangeIsEndLine = (nextSibling == null or nextSibling.nodeName=='BR')
-            parentEndContainer = endContainer.parentNode
-            while rangeIsEndLine and parentEndContainer.nodeName != "DIV"
-                nextSibling = parentEndContainer.nextSibling
-                rangeIsEndLine = (nextSibling == null or nextSibling.nodeName=='BR')
-                parentEndContainer = parentEndContainer.parentNode
-        # 3- find startLine and rangeIsStartLine
-        if startContainer.nodeName == 'DIV' # startContainer refers to a div of a line
-            startLine = @_lines[ startContainer.id ]
-            rangeIsStartLine = (initialStartOffset==0)
-        else   # means the range starts inside a div (span, textNode...)
-            startLine = @_lines[ $(startContainer).parents("div")[0].id ]
-            rangeIsStartLine = (initialStartOffset==0)
-            while rangeIsStartLine && parentEndContainer.nodeName != "DIV"
-                rangeIsStartLine = (parentEndContainer.previousSibling==null)
-                parentEndContainer = parentEndContainer.parentNode
-        # 4- return
-        return [sel, range, endLine, rangeIsEndLine, startLine, rangeIsStartLine]
+    _findLinesAndIsStartIsEnd : () ->
+        if this.currentSel == null
+            
+            # 1- Variables
+            sel                = rangy.getIframeSelection(@editorIframe)
+            range              = sel.getRangeAt(0)
+            startContainer     = range.startContainer
+            endContainer       = range.endContainer
+            initialStartOffset = range.startOffset
+            initialEndOffset   = range.endOffset
+            
+            # 2- find endLine and the rangeIsEndLine
+            # endContainer refers to a div of a line
+            if endContainer.id? and endContainer.id.substr(0,5) == 'CNID_'  
+                endLine = @_lines[ endContainer.id ]
+                # rangeIsEndLine if endOffset points on the last node of the div or on 
+                # the one before the last wich is a <br>
+                rangeIsEndLine = ( endContainer.children.length-1==initialEndOffset ) or
+                                 (endContainer.children[initialEndOffset].nodeName=="BR")
+            # means the range ends inside a div (span, textNode...)
+            else   
+                endLine = @_lines[ $(endContainer).parents("div")[0].id ]
+                parentEndContainer = endContainer
+                # rangeIsEndLine if the selection is at the end of the endContainer
+                # and of each of its parents (this approach is more robust than just 
+                # considering that the line is a flat succession of span : maybe one day 
+                # there will be a table for instance...)
+                rangeIsEndLine = false
+                if parentEndContainer.nodeType == Node.TEXT_NODE
+                    rangeIsEndLine = ( initialEndOffset == parentEndContainer.textContent.length )
+                else
+                    nextSibling = parentEndContainer.nextSibling
+                    rangeIsEndLine = (nextSibling == null or nextSibling.nodeName=='BR')
+                parentEndContainer = endContainer.parentNode
+                while rangeIsEndLine and parentEndContainer.nodeName != "DIV"
+                    nextSibling = parentEndContainer.nextSibling
+                    rangeIsEndLine = (nextSibling == null or nextSibling.nodeName=='BR')
+                    parentEndContainer = parentEndContainer.parentNode
+            
+            # 3- find startLine and rangeIsStartLine
+            if startContainer.nodeName == 'DIV' # startContainer refers to a div of a line
+                startLine = @_lines[ startContainer.id ]
+                rangeIsStartLine = (initialStartOffset==0)
+                if initialStartOffset==1 and startContainer.innerHTML=="<span></span><br>" # startContainer is the br after an empty span
+                    rangeIsStartLine = true
+            else   # means the range starts inside a div (span, textNode...)
+                startLine = @_lines[ $(startContainer).parents("div")[0].id ]
+                rangeIsStartLine = (initialStartOffset==0)
+                while rangeIsStartLine && parentEndContainer.nodeName != "DIV"
+                    rangeIsStartLine = (parentEndContainer.previousSibling==null)
+                    parentEndContainer = parentEndContainer.parentNode
+            
+            # 4- return
+            this.currentSel = 
+                sel              : sel
+                range            : range
+                startLine        : startLine
+                endLine          : endLine
+                rangeIsStartLine : rangeIsStartLine
+                rangeIsEndLine   : rangeIsEndLine
+        # return [sel, range, endLine, rangeIsEndLine, startLine, rangeIsStartLine]
 
 
     ###  -----------------------------------------------------------------------
