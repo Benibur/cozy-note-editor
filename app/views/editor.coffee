@@ -952,7 +952,7 @@ class exports.CNEditor extends Backbone.View
         return [sel, range, endLine, rangeIsEndLine, startLine, rangeIsStartLine]
 
 
-    ###  ------------------------------------------------------------------------
+    ###  -----------------------------------------------------------------------
     # Parse a raw html inserted in the iframe in order to update the controler
     ###
     _readHtml : () ->
@@ -961,7 +961,7 @@ class exports.CNEditor extends Backbone.View
         lineDepthAbs = 0
         lineDepthRel = 0
         lineID       = 0
-        @_lines       = {}
+        @_lines      = {}
         linePrev     = null
         lineNext     = null
         for htmlLine in linesDiv$
@@ -991,8 +991,110 @@ class exports.CNEditor extends Backbone.View
                     lineDepthRel : lineDepthRel
                     lineNext     : null
                     linePrev     : linePrev
-                if linePrev != null then linePrev.lineNext=lineNew
+                if linePrev != null then linePrev.lineNext = lineNew
                 linePrev = lineNew
                 @_lines[lineID_st] = lineNew
-        @_highestId=lineID
+        @_highestId = lineID
 
+
+    ### ------------------------------------------------------------------------
+    # Verifies if the lines are well structured or not
+    ###
+    checkLines : () ->
+        console.log 'Lines are being checked'
+        #
+        # We represent the lines architecture with a tree to be depth first
+        # verified. The virtual root is at depth 0 and its sons are the titles
+        # located at depth 1. Internal nodes = titles (Th, Tu, To)
+        #                     Leaves         = lines  (Lh, Lu, Lo)
+        # An internal node T-n can only have T-(n+1) or L-n children
+        #
+        # Todo: manage to treat the Th > Tu;To hierarchy
+        #       a To(resp Tu, Th) can only have Lo(resp Lu, Lh) lines
+        # 
+
+        
+        # We need to represent the DIVs with a tree
+        # A virtual root for our tree (right before the first line)
+        root =
+            lineType: "root"
+            lineNext: @_lines["CNID_1"]
+            lineDepthAbs: 0
+
+        # Array of nodes: the n-th element is the last depth-n ancestor met
+        myAncestor = [root]
+
+        # First element of the lines list
+        currentLine = root
+
+        # Defines what type of children a node can have
+        # only useful for the structure's verification
+        possibleSon = {
+            "Th": (name) ->
+                return name=="Lh" || name=="Th" || name=="To" || name=="Tu"
+            "Tu": (name) ->
+                return name=="Lu" || name=="To" || name=="Tu"
+            "To": (name) ->
+                return name=="Lu" || name=="To" || name=="Tu"
+            "Lh": (name) ->
+                return false
+            "Lu": (name) ->
+                return false
+            "Lo": (name) ->
+                return false
+            "root": (name) ->
+                return true
+            }
+
+        # Returns whether the DIV is a line or a title
+        nodeType = (name) ->
+            if name=="Lh" || name=="Lu" || name=="Lo"
+                return "L"
+            else if name=="Th" || name=="Tu" || name=="To"
+                return "T"
+            else
+                return "ERR"
+
+        # Builds a tree from the DIVs list by appending the property .sons
+        # to every line that is a title (only if it's not empty)
+        while currentLine.lineNext != null
+
+            next  = currentLine.lineNext
+            type  = nodeType(next.lineType)
+            depth = next.lineDepthAbs
+            if type == "T"
+                # updates the ancestors
+                if depth > myAncestor.length
+                    myAncestor.push(next)
+                else
+                    myAncestor[depth] = next
+                # adds title to the tree
+                if ! myAncestor[depth-1].sons?
+                    myAncestor[depth-1].sons = []
+                myAncestor[depth-1].sons.push(next)
+            else if type == "L"
+                # adds line to the tree
+                if ! myAncestor[depth].sons?
+                    myAncestor[depth].sons = []
+                myAncestor[depth].sons.push(next)
+            # goes to the next node
+            currentLine = next
+
+        # Recursively checks the tree
+        recVerif = (line) ->
+            if line.sons?
+                for i in [0..line.sons.length-1]
+                    child = line.sons[i]
+                    # Hierarchy verification
+                    if ! possibleSon[line.lineType](child.lineType)
+                        alert "struct #{child.lineType}-#{child.lineDepthAbs}"
+                    # Depth verification
+                    if nodeType(child.lineType) == "T"
+                        if line.lineDepthAbs+1 != child.lineDepthAbs
+                            alert "indent title #{child.lineType}-#{child.lineDepthAbs}"
+                        recVerif(child)
+                    else if nodeType(child.lineType) == "L"
+                        if line.lineDepthAbs != child.lineDepthAbs
+                            alert "indent line #{child.lineType}-#{child.lineDepthAbs}"
+
+        recVerif(root)

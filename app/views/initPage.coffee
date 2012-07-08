@@ -1,5 +1,10 @@
 {beautify} = require 'views/beautify'
 CNEditor = require('views/editor').CNEditor
+CNcozyToMarkdown = require('views/cozyToMarkdown').CNcozyToMarkdown
+CNmarkdownToCozy = require('views/markdownToCozy').CNmarkdownToCozy
+
+cozy2md = new CNcozyToMarkdown()
+md2cozy = new CNmarkdownToCozy()
 
 # attributes of the class
 editorBody$  = undefined # body of iframe
@@ -46,7 +51,7 @@ exports.initPage =  ()->
         $("#resultBtnBar_coller").on  'click' , ->
             beautify(editorBody$)
         $("#EmptyTextBtn").on "click", () ->
-            editorCtrler.replaceContent( require('./templates/content-empty') )    
+            editorCtrler.replaceContent( require('./templates/content-empty') )
             beautify(editorBody$)        
         $("#SimpleTextBtn").on "click", () ->
             editorCtrler.replaceContent( require('./templates/content-simple') )
@@ -80,7 +85,32 @@ exports.initPage =  ()->
         $("#titleBtn").on "click", () ->
             editorCtrler.titleList()
 
-            
+
+        # Danger buttons ;-)
+        checking = false
+        
+        $("#checkBtn").toggle(
+            () ->
+                checking = true
+                $("#checkBtn").html "Checking ON"
+            () ->
+                checking = false
+                $("#checkBtn").html "Checking OFF"
+            )
+        editorBody$.on 'keyup' , () ->
+            if checking
+                editorCtrler.checkLines()
+
+    
+        # More danger buttons
+        $("#CozyMarkdown").toggle(
+            () ->
+                $("#CozyMarkdown").html "HTML"
+                $("#resultText").val(cozy2md.translate $("#resultText").val())
+            () ->
+                $("#CozyMarkdown").html "Markdown"
+                $("#resultText").val(md2cozy.translate $("#resultText").val())
+            )
 
         
         # Add at the beginning of each line the Class of the line.

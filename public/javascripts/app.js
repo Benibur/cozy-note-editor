@@ -264,6 +264,121 @@ window.require.define({"views/beautify": function(exports, require, module) {
   
 }});
 
+window.require.define({"views/cozyToMarkdown": function(exports, require, module) {
+  (function() {
+    var __hasProp = Object.prototype.hasOwnProperty,
+      __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
+
+    exports.CNcozyToMarkdown = (function(_super) {
+
+      __extends(CNcozyToMarkdown, _super);
+
+      function CNcozyToMarkdown() {
+        CNcozyToMarkdown.__super__.constructor.apply(this, arguments);
+      }
+
+      CNcozyToMarkdown.prototype.translate = function(text) {
+        var children, classType, converter, htmlCode, i, index, j, l, lineCode, lineElt, markCode, markup, space, _ref;
+        htmlCode = $(document.createElement('div')).html(text);
+        markCode = '';
+        converter = {
+          '#text': function(obj) {
+            return obj.text();
+          },
+          'A': function(obj) {
+            var href, title;
+            title = obj.attr('title') != null ? obj.attr('title') : "";
+            href = obj.attr('href') != null ? obj.attr('href') : "";
+            return '[' + obj.html() + '](' + href + ' "' + title + '")';
+          },
+          'IMG': function(obj) {
+            var alt, src, title;
+            title = obj.attr('title') != null ? obj.attr('title') : "";
+            alt = obj.attr('alt') != null ? obj.attr('alt') : "";
+            src = obj.attr('src') != null ? obj.attr('src') : "";
+            return '![' + alt + '](' + src + ' "' + title + '")';
+          },
+          'SPAN': function(obj) {
+            return obj.text();
+          }
+        };
+        index = [];
+        markup = {
+          'Th': function(blanks, depth) {
+            if (depth < index.length) index[depth] = 0;
+            return "\n" + blanks + "* # ";
+          },
+          'Lh': function(blanks, depth) {
+            return "\n" + blanks + "    ";
+          },
+          'Tu': function(blanks, depth) {
+            if (depth < index.length) index[depth] = 0;
+            return "\n" + blanks + "+   ";
+          },
+          'Lu': function(blanks, depth) {
+            return "\n" + blanks + "    ";
+          },
+          'To': function(blanks, depth) {
+            var i, _ref;
+            alert(index);
+            alert(depth);
+            if (depth >= index.length) {
+              for (i = 0, _ref = depth - index.length; 0 <= _ref ? i <= _ref : i >= _ref; 0 <= _ref ? i++ : i--) {
+                index.push(0);
+              }
+            }
+            index[depth]++;
+            return "\n" + blanks + ("" + index[depth] + ".   ");
+          },
+          'Lo': function(blanks, depth) {
+            return "\n" + blanks + "    ";
+          }
+        };
+        classType = function(className) {
+          var blanks, depth, i, tab, type;
+          tab = className.split("-");
+          type = tab[0];
+          depth = parseInt(tab[1], 10);
+          blanks = '';
+          i = 1;
+          while (i < depth) {
+            blanks += '    ';
+            i++;
+          }
+          return markup[type](blanks, depth);
+        };
+        children = htmlCode.children();
+        for (i = 0, _ref = children.length - 1; 0 <= _ref ? i <= _ref : i >= _ref; 0 <= _ref ? i++ : i--) {
+          lineCode = $(children.get(i));
+          if (lineCode.attr('class') != null) {
+            markCode += classType(lineCode.attr('class'));
+          }
+          l = lineCode.children().length;
+          j = 0;
+          space = ' ';
+          while (j < l) {
+            lineElt = lineCode.children().get(j);
+            if (j + 2 === l) space = '';
+            if (lineElt.nodeType === 1 && (converter[lineElt.nodeName] != null)) {
+              markCode += converter[lineElt.nodeName]($(lineElt)) + space;
+            } else {
+              markCode += $(lineElt).text() + space;
+            }
+            j++;
+          }
+          markCode += "\n";
+        }
+        return markCode;
+      };
+
+      return CNcozyToMarkdown;
+
+    })(Backbone.View);
+
+  }).call(this);
+  
+}});
+
 window.require.define({"views/editor": function(exports, require, module) {
   
   /* ------------------------------------------------------------------------
@@ -1232,7 +1347,7 @@ window.require.define({"views/editor": function(exports, require, module) {
         return [sel, range, endLine, rangeIsEndLine, startLine, rangeIsStartLine];
       };
 
-      /*  ------------------------------------------------------------------------
+      /*  -----------------------------------------------------------------------
       # Parse a raw html inserted in the iframe in order to update the controler
       */
 
@@ -1281,6 +1396,102 @@ window.require.define({"views/editor": function(exports, require, module) {
         return this._highestId = lineID;
       };
 
+      /* ------------------------------------------------------------------------
+      # Verifies if the lines are well structured or not
+      */
+
+      CNEditor.prototype.checkLines = function() {
+        var currentLine, depth, myAncestor, next, nodeType, possibleSon, recVerif, root, type;
+        console.log('Lines are being checked');
+        root = {
+          lineType: "root",
+          lineNext: this._lines["CNID_1"],
+          lineDepthAbs: 0
+        };
+        myAncestor = [root];
+        currentLine = root;
+        possibleSon = {
+          "Th": function(name) {
+            return name === "Lh" || name === "Th" || name === "To" || name === "Tu";
+          },
+          "Tu": function(name) {
+            return name === "Lu" || name === "To" || name === "Tu";
+          },
+          "To": function(name) {
+            return name === "Lu" || name === "To" || name === "Tu";
+          },
+          "Lh": function(name) {
+            return false;
+          },
+          "Lu": function(name) {
+            return false;
+          },
+          "Lo": function(name) {
+            return false;
+          },
+          "root": function(name) {
+            return true;
+          }
+        };
+        nodeType = function(name) {
+          if (name === "Lh" || name === "Lu" || name === "Lo") {
+            return "L";
+          } else if (name === "Th" || name === "Tu" || name === "To") {
+            return "T";
+          } else {
+            return "ERR";
+          }
+        };
+        while (currentLine.lineNext !== null) {
+          next = currentLine.lineNext;
+          type = nodeType(next.lineType);
+          depth = next.lineDepthAbs;
+          if (type === "T") {
+            if (depth > myAncestor.length) {
+              myAncestor.push(next);
+            } else {
+              myAncestor[depth] = next;
+            }
+            if (!(myAncestor[depth - 1].sons != null)) {
+              myAncestor[depth - 1].sons = [];
+            }
+            myAncestor[depth - 1].sons.push(next);
+          } else if (type === "L") {
+            if (!(myAncestor[depth].sons != null)) myAncestor[depth].sons = [];
+            myAncestor[depth].sons.push(next);
+          }
+          currentLine = next;
+        }
+        recVerif = function(line) {
+          var child, i, _ref, _results;
+          if (line.sons != null) {
+            _results = [];
+            for (i = 0, _ref = line.sons.length - 1; 0 <= _ref ? i <= _ref : i >= _ref; 0 <= _ref ? i++ : i--) {
+              child = line.sons[i];
+              if (!possibleSon[line.lineType](child.lineType)) {
+                alert("struct " + child.lineType + "-" + child.lineDepthAbs);
+              }
+              if (nodeType(child.lineType) === "T") {
+                if (line.lineDepthAbs + 1 !== child.lineDepthAbs) {
+                  alert("indent title " + child.lineType + "-" + child.lineDepthAbs);
+                }
+                _results.push(recVerif(child));
+              } else if (nodeType(child.lineType) === "L") {
+                if (line.lineDepthAbs !== child.lineDepthAbs) {
+                  _results.push(alert("indent line " + child.lineType + "-" + child.lineDepthAbs));
+                } else {
+                  _results.push(void 0);
+                }
+              } else {
+                _results.push(void 0);
+              }
+            }
+            return _results;
+          }
+        };
+        return recVerif(root);
+      };
+
       return CNEditor;
 
     })(Backbone.View);
@@ -1319,8 +1530,260 @@ window.require.define({"views/home_view": function(exports, require, module) {
 
 window.require.define({"views/initPage": function(exports, require, module) {
   (function() {
+    var CNEditor, CNcozyToMarkdown, CNmarkdownToCozy, beautify, cozy2md, editorBody$, editor_css$, editor_doAddClasseToLines, editor_head$, md2cozy;
 
+    beautify = require('views/beautify').beautify;
 
+    CNEditor = require('views/editor').CNEditor;
+
+    CNcozyToMarkdown = require('views/cozyToMarkdown').CNcozyToMarkdown;
+
+    CNmarkdownToCozy = require('views/markdownToCozy').CNmarkdownToCozy;
+
+    cozy2md = new CNcozyToMarkdown();
+
+    md2cozy = new CNmarkdownToCozy();
+
+    editorBody$ = void 0;
+
+    editor_head$ = void 0;
+
+    editor_css$ = void 0;
+
+    editor_doAddClasseToLines = void 0;
+
+    exports.initPage = function() {
+      var cb, editor, editorIframe$;
+      $("body").html(require('./templates/editor'));
+      editorIframe$ = $("iframe");
+      cb = function() {
+        /* initialisation of the page
+        this.replaceContent( require('./templates/content-full') )
+        this.replaceContent( require('./templates/content-empty') )
+        this.replaceContent( require('./templates/content-full-marker') )
+        */
+        var addClass2Line, checking, editorCtrler, removeClassFromLines,
+          _this = this;
+        this.replaceContent(require('./templates/content-shortlines-marker'));
+        editorCtrler = this;
+        editorBody$ = this.editorBody$;
+        beautify(editorBody$);
+        editorBody$.on('keyup', function() {
+          return beautify(editorBody$);
+        });
+        $("#resultBtnBar_coller").on('click', function() {
+          return beautify(editorBody$);
+        });
+        $("#EmptyTextBtn").on("click", function() {
+          editorCtrler.replaceContent(require('./templates/content-empty'));
+          return beautify(editorBody$);
+        });
+        $("#SimpleTextBtn").on("click", function() {
+          editorCtrler.replaceContent(require('./templates/content-simple'));
+          return beautify(editorBody$);
+        });
+        $("#FullTextBtn").on("click", function() {
+          editorCtrler.replaceContent(require('./templates/content-full'));
+          return beautify(editorBody$);
+        });
+        $('#contentSelect').on("change", function(e) {
+          console.log("./templates/" + e.currentTarget.value);
+          editorCtrler.replaceContent(require("./templates/" + e.currentTarget.value));
+          return beautify(editorBody$);
+        });
+        $('#cssSelect').on("change", function(e) {
+          return editorCtrler.replaceCSS(e.currentTarget.value);
+        });
+        $("#indentBtn").on("click", function() {
+          return editorCtrler.tab();
+        });
+        $("#unIndentBtn").on("click", function() {
+          return editorCtrler.shiftTab();
+        });
+        $("#markerListBtn").on("click", function() {
+          return editorCtrler.markerList();
+        });
+        $("#titleBtn").on("click", function() {
+          return editorCtrler.titleList();
+        });
+        checking = false;
+        $("#checkBtn").toggle(function() {
+          checking = true;
+          return $("#checkBtn").html("Checking ON");
+        }, function() {
+          checking = false;
+          return $("#checkBtn").html("Checking OFF");
+        });
+        editorBody$.on('keyup', function() {
+          if (checking) return editorCtrler.checkLines();
+        });
+        $("#CozyMarkdown").toggle(function() {
+          $("#CozyMarkdown").html("HTML");
+          return $("#resultText").val(cozy2md.translate($("#resultText").val()));
+        }, function() {
+          $("#CozyMarkdown").html("Markdown");
+          return $("#resultText").val(md2cozy.translate($("#resultText").val()));
+        });
+        addClass2Line = function() {
+          var OPERATOR, line, lineID, lines, range, sel, selectedEndContainer, selectedEndContainerOffset, selectedStartContainer, selectedStartContainerOffset, spanTextNode, textOriginal;
+          sel = rangy.getIframeSelection(_this.editorIframe);
+          range = sel.getRangeAt(0);
+          selectedStartContainer = range.startContainer;
+          selectedStartContainerOffset = range.startOffset;
+          selectedEndContainer = range.endContainer;
+          selectedEndContainerOffset = range.endOffset;
+          lines = _this._lines;
+          OPERATOR = /(Th|Tu|To|Lh|Lu|Lo)-\d+\]/;
+          for (lineID in lines) {
+            line = lines[lineID];
+            spanTextNode = line.line$[0].firstChild.firstChild;
+            if (spanTextNode !== null) {
+              textOriginal = spanTextNode.textContent;
+              spanTextNode.textContent = ("" + line.lineType + "-" + line.lineDepthAbs + "] ") + textOriginal.replace(OPERATOR, "");
+            }
+          }
+          range = rangy.createRange();
+          range.setStart(selectedStartContainer, selectedStartContainerOffset + 1);
+          range.setEnd(selectedEndContainer, selectedEndContainerOffset + 1);
+          sel.setSingleRange(range);
+          return beautify(editorBody$);
+        };
+        removeClassFromLines = function() {
+          var OPERATOR, line, lineID, lines, range, sel, selectedEndContainer, selectedEndContainerOffset, selectedStartContainer, selectedStartContainerOffset, spanTextNode, textOriginal;
+          sel = rangy.getIframeSelection(_this.editorIframe);
+          range = sel.getRangeAt(0);
+          selectedStartContainer = range.startContainer;
+          selectedStartContainerOffset = range.startOffset;
+          selectedEndContainer = range.endContainer;
+          selectedEndContainerOffset = range.endOffset;
+          lines = _this._lines;
+          OPERATOR = /(Th|Tu|To|Lh|Lu|Lo)-\d+\]/;
+          for (lineID in lines) {
+            line = lines[lineID];
+            spanTextNode = line.line$[0].firstChild.firstChild;
+            if (spanTextNode !== null) {
+              textOriginal = spanTextNode.textContent;
+              spanTextNode.textContent = textOriginal.replace(OPERATOR, "");
+            }
+          }
+          range = rangy.createRange();
+          range.setStart(selectedStartContainer, selectedStartContainerOffset + 1 - 6);
+          range.setEnd(selectedEndContainer, selectedEndContainerOffset + 1 - 6);
+          sel.setSingleRange(range);
+          return beautify(editorBody$);
+        };
+        $("#addClass2LineBtn").on("click", function() {
+          addClass2Line();
+          if (editor_doAddClasseToLines) {
+            editor_doAddClasseToLines = false;
+            editorBody$.off('keyup', addClass2Line);
+            return removeClassFromLines();
+          } else {
+            editor_doAddClasseToLines = true;
+            return editorBody$.on('keyup', addClass2Line);
+          }
+        });
+        return this.editorBody$.on('mouseup', function() {
+          this.newPosition = true;
+          return $("#editorPropertiesDisplay").text("newPosition = true");
+        });
+      };
+      editor = new CNEditor($('#editorIframe')[0], cb);
+      return editor;
+    };
+
+  }).call(this);
+  
+}});
+
+window.require.define({"views/markdownToCozy": function(exports, require, module) {
+  (function() {
+    var __hasProp = Object.prototype.hasOwnProperty,
+      __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
+
+    exports.CNmarkdownToCozy = (function(_super) {
+
+      __extends(CNmarkdownToCozy, _super);
+
+      function CNmarkdownToCozy() {
+        CNmarkdownToCozy.__super__.constructor.apply(this, arguments);
+      }
+
+      CNmarkdownToCozy.prototype.translate = function(text) {
+        var conv, cozyCode, cozyTurn, depth, htmlCode, id, recRead;
+        conv = new Showdown.converter();
+        text = conv.makeHtml(text);
+        htmlCode = $(document.createElement('ul')).html(text);
+        cozyCode = '';
+        id = 0;
+        cozyTurn = function(type, depth, p) {
+          var code;
+          id++;
+          code = '';
+          p.contents().each(function() {
+            var name;
+            name = this.nodeName;
+            if (name === "#text") {
+              return code += "<span>" + ($(this).text()) + "</span>";
+            } else if (this.tagName != null) {
+              $(this).wrap('<div></div>');
+              code += "" + ($(this).parent().html());
+              return $(this).unwrap();
+            }
+          });
+          return ("<div id=CNID_" + id + " class=" + type + "-" + depth + ">") + code + "<br></div>";
+        };
+        depth = 0;
+        recRead = function(obj, status) {
+          var child, i, tag, _ref, _results;
+          tag = obj[0].tagName;
+          if (tag === "UL") {
+            depth++;
+            obj.children().each(function() {
+              return recRead($(this), "u");
+            });
+            return depth--;
+          } else if (tag === "OL") {
+            depth++;
+            obj.children().each(function() {
+              return recRead($(this), "o");
+            });
+            return depth--;
+          } else if (tag === "LI" && (obj.contents().get(0) != null)) {
+            if (obj.contents().get(0).nodeName === "#text") {
+              obj = obj.clone().wrap('<p></p>').parent();
+            }
+            _results = [];
+            for (i = 0, _ref = obj.children().length - 1; 0 <= _ref ? i <= _ref : i >= _ref; 0 <= _ref ? i++ : i--) {
+              child = $(obj.children().get(i));
+              if (i === 0) {
+                if (child.attr("class") === "TH") {
+                  _results.push(cozyCode += cozyTurn("Th", depth, child));
+                } else {
+                  _results.push(cozyCode += cozyTurn("T" + status, depth, child));
+                }
+              } else {
+                if (child.attr("class") === "TH") {
+                  _results.push(recRead(child, "h"));
+                } else {
+                  _results.push(recRead(child, status));
+                }
+              }
+            }
+            return _results;
+          } else if (tag === "P") {
+            return cozyCode += cozyTurn("L" + status, depth, obj);
+          }
+        };
+        htmlCode.children().each(function() {
+          return recRead($(this), "u");
+        });
+        return cozyCode;
+      };
+
+      return CNmarkdownToCozy;
+
+    })(Backbone.View);
 
   }).call(this);
   
@@ -2672,7 +3135,11 @@ window.require.define({"views/templates/editor": function(exports, require, modu
   buf.push(attrs({ 'id':('markerListBtn'), "class": ('btn') + ' ' + ('btn-small') + ' ' + ('btn-primary') }));
   buf.push('>- Marker list</button><button');
   buf.push(attrs({ 'id':('titleBtn'), "class": ('btn') + ' ' + ('btn-small') + ' ' + ('btn-primary') }));
-  buf.push('>1.1.2 Title</button></div></div><!-- text for the editor--><div');
+  buf.push('>1.1.2 Title</button><button');
+  buf.push(attrs({ 'id':('checkBtn'), "class": ('btn') + ' ' + ('btn-small') + ' ' + ('btn-primary') }));
+  buf.push('>Checking OFF</button><button');
+  buf.push(attrs({ 'id':('CozyMarkdown'), "class": ('btn') + ' ' + ('btn-small') + ' ' + ('btn-primary') }));
+  buf.push('>Markdown</button></div></div><!-- text for the editor--><div');
   buf.push(attrs({ 'id':('editorContent'), "class": ('table-ly-ctnt') }));
   buf.push('><iframe');
   buf.push(attrs({ 'id':('editorIframe') }));
