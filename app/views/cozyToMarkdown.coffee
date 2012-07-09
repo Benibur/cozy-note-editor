@@ -49,8 +49,8 @@ class exports.CNcozyToMarkdown extends Backbone.View
             'Lu' : (blanks, depth) ->
                 return "\n" + blanks + "    "
             'To' : (blanks, depth) ->
-                alert index
-                alert depth
+                #alert index
+                #alert depth
                 if depth >= index.length
                     for i in [0..depth-index.length]
                         index.push 0

@@ -164,6 +164,204 @@ window.require.define({"routers/main_router": function(exports, require, module)
   
 }});
 
+window.require.define({"views/autoTest": function(exports, require, module) {
+  (function() {
+    var __hasProp = Object.prototype.hasOwnProperty,
+      __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
+
+    exports.AutoTest = (function(_super) {
+
+      __extends(AutoTest, _super);
+
+      function AutoTest() {
+        AutoTest.__super__.constructor.apply(this, arguments);
+      }
+
+      /* ------------------------------------------------------------------------
+      # Checks whether the lines are well structured or not
+      # Some suggestions of what could be checked out:
+      #    <> each elt of lines corresponds to a DIV ------------------ (OK)
+      #    <> each DIV has a matching elt in lines -------------------- (OK)
+      #    <> type and depth are coherent ----------------------------- (OK)
+      #    <> linePrev and LineNext are linked to the correct DIV ----- (OK)
+      #    <> hierarchy of lines and indentation are okay ------------- (OK)
+      #    <> a DIV contains a sequence of SPAN ended by a BR --------- (OK)
+      #    <> two successive SPAN can't have the same class ----------- (OK)
+      #    <> empty SPAN are really empty (<span></span>) ------------- (huh?)
+      #    <> a note must  have at least one line
+      */
+
+      AutoTest.prototype.checkLines = function(CNEditor) {
+        var child, children, currentLine, depth, element, i, id, lastClass, myAncestor, newNode, nextLine, node, nodeType, objDiv, possibleSon, prevLine, recVerif, root, rootLine, type, _ref;
+        console.log('Detecting incoherences...');
+        possibleSon = {
+          "Th": function(name) {
+            return name === "Lh" || name === "Th" || name === "To" || name === "Tu";
+          },
+          "Tu": function(name) {
+            return name === "Lu" || name === "To" || name === "Tu";
+          },
+          "To": function(name) {
+            return name === "Lo" || name === "To" || name === "Tu";
+          },
+          "Lh": function(name) {
+            return false;
+          },
+          "Lu": function(name) {
+            return false;
+          },
+          "Lo": function(name) {
+            return false;
+          },
+          "root": function(name) {
+            return true;
+          }
+        };
+        nodeType = function(name) {
+          if (name === "Lh" || name === "Lu" || name === "Lo") {
+            return "L";
+          } else if (name === "Th" || name === "Tu" || name === "To") {
+            return "T";
+          } else {
+            return "ERR";
+          }
+        };
+        id = function(line) {
+          if (line === null) {
+            return -1;
+          } else {
+            return parseInt(line.lineID.split("_")[1], 10);
+          }
+        };
+        rootLine = {
+          lineType: "root",
+          lineID: "CNID_0",
+          lineNext: CNEditor._lines["CNID_1"],
+          linePrev: null,
+          lineDepthAbs: 0
+        };
+        node = function(line, sons) {
+          return {
+            line: line,
+            sons: sons
+          };
+        };
+        root = new node(rootLine, []);
+        myAncestor = [root];
+        prevLine = null;
+        currentLine = rootLine;
+        nextLine = rootLine.lineNext;
+        while (nextLine !== null) {
+          type = nodeType(nextLine.lineType);
+          depth = nextLine.lineDepthAbs;
+          if (!((id(prevLine) + 2 === (_ref = id(currentLine) + 1) && _ref === id(nextLine)))) {
+            return alert("ERROR: invalid line " + nextLine.lineID + "\n (" + nextLine.lineType + "-" + nextLine.lineDepthAbs + " has wrong identifier)");
+          }
+          element = CNEditor.editorBody$.children("#" + nextLine.lineID);
+          if (element === null) {
+            return alert("ERROR: invalid line " + nextLine.lineID + "\n (" + nextLine.lineType + "-" + nextLine.lineDepthAbs + " has no matching DIV)");
+          }
+          children = element.children();
+          if (children === null || children.length < 2) {
+            return alert("ERROR: invalid line " + nextLine.lineID + "\n (" + nextLine.lineType + "-" + nextLine.lineDepthAbs + " content is too short)");
+          }
+          lastClass = void 0;
+          i = 0;
+          while (i < children.length - 1) {
+            child = children.get(i);
+            if (child.nodeName === 'SPAN') {
+              if ($(child).attr('class') != null) {
+                if (lastClass === $(child).attr('class')) {
+                  return alert("ERROR: invalid line " + nextLine.lineID + "\n (" + nextLine.lineType + "-" + nextLine.lineDepthAbs + " two consecutive SPAN with same class " + lastClass + ")");
+                } else {
+                  lastClass = $(child).attr('class');
+                }
+              }
+            } else if (child.nodeName === 'A' || child.nodeName === 'IMG') {
+              lastClass = void 0;
+            } else {
+              return alert("ERROR: invalid line " + nextLine.lineID + "\n (" + nextLine.lineType + "-" + nextLine.lineDepthAbs + " invalid label " + child.nodeName + ")");
+            }
+            i++;
+          }
+          child = children.get(children.length - 1);
+          if (child.nodeName !== 'BR') {
+            return alert("ERROR: invalid line " + nextLine.lineID + "\n (" + nextLine.lineType + "-" + nextLine.lineDepthAbs + " must end with BR)");
+          }
+          newNode = new node(nextLine, []);
+          if (type === "T") {
+            if (depth > myAncestor.length) {
+              return alert("ERROR: invalid line " + nextLine.lineID + "\n (" + nextLine.lineType + "-" + nextLine.lineDepthAbs + " indentation issue)");
+            } else if (depth === myAncestor.length) {
+              myAncestor.push(newNode);
+            } else {
+              myAncestor[depth] = newNode;
+            }
+            if (myAncestor[depth - 1] === null) {
+              return alert("ERROR: invalid line " + nextLine.lineID);
+            } else {
+              myAncestor[depth - 1].sons.push(newNode);
+            }
+          } else if (type === "L") {
+            if (depth >= myAncestor.length) {
+              return alert("ERROR: invalid line " + nextLine.lineID + "\n (" + nextLine.lineType + "-" + nextLine.lineDepthAbs + " indentation issue)");
+            } else {
+              myAncestor[depth + 1] = null;
+            }
+            if (myAncestor[depth] === null) {
+              return alert("ERROR: invalid line " + nextLine.lineID);
+            } else {
+              myAncestor[depth].sons.push(newNode);
+            }
+          }
+          prevLine = currentLine;
+          currentLine = nextLine;
+          nextLine = currentLine.lineNext;
+        }
+        objDiv = CNEditor.editorBody$.children("div");
+        objDiv.each(function() {
+          var myId;
+          if ($(this).attr('id') != null) {
+            myId = $(this).attr('id');
+            if (/CNID_[0-9]+/.test(myId)) {
+              if (!(CNEditor._lines[myId] != null)) {
+                return alert("uh oh... missing line " + myId);
+              }
+            }
+          }
+        });
+        recVerif = function(node) {
+          var i, _ref2;
+          if (node.sons.length > 0) {
+            for (i = 0, _ref2 = node.sons.length - 1; 0 <= _ref2 ? i <= _ref2 : i >= _ref2; 0 <= _ref2 ? i++ : i--) {
+              child = node.sons[i];
+              if (!possibleSon[node.line.lineType](child.line.lineType)) {
+                return alert("ERROR: invalid line " + child.line.lineID + "\n (hierarchic issue of a " + child.line.lineType + "-" + child.line.lineDepthAbs + ")");
+              }
+              if (nodeType(child.line.lineType) === "T") {
+                if (node.line.lineDepthAbs + 1 !== child.line.lineDepthAbs) {
+                  return alert("ERROR: invalid line " + child.line.lineID + "\n (indentation issue of a " + child.line.lineType + "-" + child.line.lineDepthAbs + ")");
+                }
+                recVerif(child);
+              } else if (nodeType(child.line.lineType) === "L") {
+                if (node.line.lineDepthAbs !== child.line.lineDepthAbs) {
+                  return alert("ERROR: invalid line " + child.line.lineID + "\n (indentation issue of a " + child.line.lineType + "-" + child.line.lineDepthAbs + ")");
+                }
+              }
+            }
+          }
+        };
+        return recVerif(root);
+      };
+
+      return AutoTest;
+
+    })(Backbone.View);
+
+  }).call(this);
+  
+}});
+
 window.require.define({"views/beautify": function(exports, require, module) {
   (function() {
     var any, read_settings_from_cookie, store_settings_to_cookie, the, unpacker_filter;
@@ -320,8 +518,6 @@ window.require.define({"views/cozyToMarkdown": function(exports, require, module
           },
           'To': function(blanks, depth) {
             var i, _ref;
-            alert(index);
-            alert(depth);
             if (depth >= index.length) {
               for (i = 0, _ref = depth - index.length; 0 <= _ref ? i <= _ref : i >= _ref; 0 <= _ref ? i++ : i--) {
                 index.push(0);
@@ -397,7 +593,7 @@ window.require.define({"views/editor": function(exports, require, module) {
   #   _insertLineBefore : (param) ->
   #   
   #   editorIframe      : the iframe element where is nested the editor
-  #   editorBody$       : the jquerry pointer on the body of the iframe
+  #   editorBody$       : the jquery pointer on the body of the iframe
   #   _lines            : {} an objet, each property refers a line
   #   _highestId        : 
   #   _firstLine        : pointes the first line : TODO : not taken into account
@@ -1566,162 +1762,6 @@ window.require.define({"views/editor": function(exports, require, module) {
         return this._highestId = lineID;
       };
 
-      /* ------------------------------------------------------------------------
-      # Checks whether the lines are well structured or not
-      # Some suggestions of what could be checked out:
-      #    <> each elt of lines corresponds to a DIV ----------------(  )
-      #    <> each DIV has a matching elt in lines ------------------(  )
-      #    <> type and depth are coherent ---------------------------(OK)
-      #    <> linePrev and LineNext are linked to the correct DIV ---(  )
-      #    <> hierarchy of lines and indentation are okay -----------(OK)
-      #    <> a DIV contains a sequence of SPAN ended by a BR -------(  )
-      #    <> two successive SPAN can't have the same class ---------(  )
-      #    <> empty SPAN are really empty (<span></span>) -----------(  )
-      #    <> a note must  have at least one line
-      */
-
-      CNEditor.prototype.checkLines = function() {
-        var child, children, currentLine, depth, element, error, i, id, iframeGet, iframeNumberOfLines, lastClass, myAncestor, nextLine, nodeType, possibleSon, prevLine, recVerif, root, type, _ref, _ref2;
-        console.log('Lines are being checked');
-        possibleSon = {
-          "Th": function(name) {
-            return name === "Lh" || name === "Th" || name === "To" || name === "Tu";
-          },
-          "Tu": function(name) {
-            return name === "Lu" || name === "To" || name === "Tu";
-          },
-          "To": function(name) {
-            return name === "Lu" || name === "To" || name === "Tu";
-          },
-          "Lh": function(name) {
-            return false;
-          },
-          "Lu": function(name) {
-            return false;
-          },
-          "Lo": function(name) {
-            return false;
-          },
-          "root": function(name) {
-            return true;
-          }
-        };
-        nodeType = function(name) {
-          if (name === "Lh" || name === "Lu" || name === "Lo") {
-            return "L";
-          } else if (name === "Th" || name === "Tu" || name === "To") {
-            return "T";
-          } else {
-            return "ERR";
-          }
-        };
-        id = function(line) {
-          if (line === null) {
-            return -1;
-          } else {
-            return parseInt(line.lineID.split("_")[1], 10);
-          }
-        };
-        error = function(num) {
-          return alert("Une erreur s'est produite ligne " + num);
-        };
-        iframeGet = function(myId) {
-          return $(window.frames[0].document.getElementById(myId));
-        };
-        iframeNumberOfLines = function() {
-          return (window.frames[0].document.getElementsByTagName('DIV')).length;
-        };
-        root = {
-          lineType: "root",
-          lineID: "CNID_0",
-          lineNext: this._lines["CNID_1"],
-          linePrev: null,
-          lineDepthAbs: 0
-        };
-        myAncestor = [root];
-        prevLine = null;
-        currentLine = root;
-        nextLine = root.lineNext;
-        while (nextLine !== null) {
-          type = nodeType(nextLine.lineType);
-          depth = nextLine.lineDepthAbs;
-          if (iframeGet("CNID_" + (id(nextLine))) === null) error(id(nextLine));
-          if (!((id(prevLine) + 2 === (_ref = id(currentLine) + 1) && _ref === id(nextLine)))) {
-            error(id(nextLine));
-          }
-          element = iframeGet("CNID_" + (id(nextLine)));
-          children = element.children();
-          if (children === null || children.length < 2) error(id(nextLine));
-          for (i = 0, _ref2 = children.length - 1; 0 <= _ref2 ? i <= _ref2 : i >= _ref2; 0 <= _ref2 ? i++ : i--) {
-            child = children.get(i);
-            if (child.nodeName === 'SPAN') {
-              if ($(child).attr('class') != null) {
-                if (lastClass === $(child).attr('class')) {
-                  error(id(nextLine));
-                } else {
-                  lastClass = $(child).attr('class');
-                }
-              } else if (child.nodeName === 'A' || child.nodeName === 'IMG') {
-                lastClass = void 0;
-              }
-            } else {
-              if (child.nodeName !== 'BR' || i < children.length - 1) {
-                error(id(nextLine));
-              }
-            }
-          }
-          if (type === "T") {
-            if (depth > myAncestor.length) {
-              myAncestor.push(nextLine);
-            } else {
-              myAncestor[depth] = nextLine;
-            }
-            if (!(myAncestor[depth - 1].sons != null)) {
-              myAncestor[depth - 1].sons = [];
-            }
-            myAncestor[depth - 1].sons.push(nextLine);
-          } else if (type === "L") {
-            if (!(myAncestor[depth].sons != null)) myAncestor[depth].sons = [];
-            myAncestor[depth].sons.push(nextLine);
-          }
-          prevLine = currentLine;
-          currentLine = nextLine;
-          nextLine = currentLine.lineNext;
-        }
-        if (id(currentLine) !== iframeNumberOfLines()) {
-          alert("We should have " + (id(currentLine)) + " = " + (iframeNumberOfLines()));
-          error(id(currentLine));
-        }
-        recVerif = function(line) {
-          var i, _ref3, _results;
-          if (line.sons != null) {
-            _results = [];
-            for (i = 0, _ref3 = line.sons.length - 1; 0 <= _ref3 ? i <= _ref3 : i >= _ref3; 0 <= _ref3 ? i++ : i--) {
-              child = line.sons[i];
-              if (!possibleSon[line.lineType](child.lineType)) {
-                alert("struct " + child.lineType + "-" + child.lineDepthAbs);
-              }
-              if (nodeType(child.lineType) === "T") {
-                if (line.lineDepthAbs + 1 !== child.lineDepthAbs) {
-                  alert("indent title " + child.lineType + "-" + child.lineDepthAbs);
-                }
-                _results.push(recVerif(child));
-              } else if (nodeType(child.lineType) === "L") {
-                if (line.lineDepthAbs !== child.lineDepthAbs) {
-                  _results.push(alert("indent line " + child.lineType + "-" + child.lineDepthAbs));
-                } else {
-                  _results.push(void 0);
-                }
-              } else {
-                _results.push(void 0);
-              }
-            }
-            return _results;
-          }
-        };
-        return recVerif(root);
-      };
-
       return CNEditor;
 
     })(Backbone.View);
@@ -1760,7 +1800,7 @@ window.require.define({"views/home_view": function(exports, require, module) {
 
 window.require.define({"views/initPage": function(exports, require, module) {
   (function() {
-    var CNEditor, CNcozyToMarkdown, CNmarkdownToCozy, beautify, cozy2md, editorBody$, editor_css$, editor_doAddClasseToLines, editor_head$, md2cozy;
+    var AutoTest, CNEditor, CNcozyToMarkdown, CNmarkdownToCozy, beautify, checker, cozy2md, editorBody$, editor_css$, editor_doAddClasseToLines, editor_head$, md2cozy;
 
     beautify = require('views/beautify').beautify;
 
@@ -1770,9 +1810,13 @@ window.require.define({"views/initPage": function(exports, require, module) {
 
     CNmarkdownToCozy = require('views/markdownToCozy').CNmarkdownToCozy;
 
+    AutoTest = require('views/autoTest').AutoTest;
+
     cozy2md = new CNcozyToMarkdown();
 
     md2cozy = new CNmarkdownToCozy();
+
+    checker = new AutoTest();
 
     editorBody$ = void 0;
 
@@ -1838,22 +1882,11 @@ window.require.define({"views/initPage": function(exports, require, module) {
           return editorCtrler.titleList();
         });
         checking = false;
-        $("#checkBtn").toggle(function() {
-          checking = true;
-          return $("#checkBtn").html("Checking ON");
-        }, function() {
-          checking = false;
-          return $("#checkBtn").html("Checking OFF");
+        $("#checkBtn").on("click", function() {
+          return checker.checkLines(editorCtrler);
         });
-        editorBody$.on('keyup', function() {
-          if (checking) return editorCtrler.checkLines();
-        });
-        $("#CozyMarkdown").toggle(function() {
-          $("#CozyMarkdown").html("HTML");
+        $("#CozyMarkdown").on("click", function() {
           return $("#resultText").val(cozy2md.translate($("#resultText").val()));
-        }, function() {
-          $("#CozyMarkdown").html("Markdown");
-          return $("#resultText").val(md2cozy.translate($("#resultText").val()));
         });
         addClass2Line = function() {
           var OPERATOR, line, lineID, lines, range, sel, selectedEndContainer, selectedEndContainerOffset, selectedStartContainer, selectedStartContainerOffset, spanTextNode, textOriginal;
@@ -3652,7 +3685,29 @@ window.require.define({"views/templates/editor": function(exports, require, modu
   buf.push(attrs({ 'value':("content-empty"), 'style':("display:block") }));
   buf.push('>Empty note</option><option');
   buf.push(attrs({ 'value':("content-full-relative-indent"), 'style':("display:block") }));
-  buf.push('>Avec sommaire</option></select><select');
+  buf.push('>Avec sommaire</option><option');
+  buf.push(attrs({ 'value':("test_1"), 'style':("display:block") }));
+  buf.push('>Test numero 1</option><option');
+  buf.push(attrs({ 'value':("test_2"), 'style':("display:block") }));
+  buf.push('>Test numero 2</option><option');
+  buf.push(attrs({ 'value':("test_3"), 'style':("display:block") }));
+  buf.push('>Test numero 3</option><option');
+  buf.push(attrs({ 'value':("test_4"), 'style':("display:block") }));
+  buf.push('>Test numero 4</option><option');
+  buf.push(attrs({ 'value':("test_5"), 'style':("display:block") }));
+  buf.push('>Test numero 5</option><option');
+  buf.push(attrs({ 'value':("test_6"), 'style':("display:block") }));
+  buf.push('>Test numero 6</option><option');
+  buf.push(attrs({ 'value':("test_7"), 'style':("display:block") }));
+  buf.push('>Test numero 7</option><option');
+  buf.push(attrs({ 'value':("test_8"), 'style':("display:block") }));
+  buf.push('>Test numero 8</option><option');
+  buf.push(attrs({ 'value':("test_9"), 'style':("display:block") }));
+  buf.push('>Test numero 9</option><option');
+  buf.push(attrs({ 'value':("test_10"), 'style':("display:block") }));
+  buf.push('>Test numero 10</option><option');
+  buf.push(attrs({ 'value':("test_11"), 'style':("display:block") }));
+  buf.push('>Test numero 11</option></select><select');
   buf.push(attrs({ 'id':('cssSelect') }));
   buf.push('><option');
   buf.push(attrs({ 'value':("images/editor2.css"), 'style':("display:block") }));
@@ -3682,7 +3737,7 @@ window.require.define({"views/templates/editor": function(exports, require, modu
   buf.push(attrs({ 'id':('titleBtn'), "class": ('btn') + ' ' + ('btn-small') + ' ' + ('btn-primary') }));
   buf.push('>1.1.2 Title</button><button');
   buf.push(attrs({ 'id':('checkBtn'), "class": ('btn') + ' ' + ('btn-small') + ' ' + ('btn-primary') }));
-  buf.push('>Checking OFF</button><button');
+  buf.push('>Run Test !</button><button');
   buf.push(attrs({ 'id':('CozyMarkdown'), "class": ('btn') + ' ' + ('btn-small') + ' ' + ('btn-primary') }));
   buf.push('>Markdown</button></div></div><!-- text for the editor--><div');
   buf.push(attrs({ 'id':('editorContent'), "class": ('table-ly-ctnt') }));
@@ -3722,6 +3777,408 @@ window.require.define({"views/templates/home": function(exports, require, module
   var buf = [];
   with (locals || {}) {
   var interp;
+  }
+  return buf.join("");
+  };
+}});
+
+window.require.define({"views/templates/test_1": function(exports, require, module) {
+  module.exports = function anonymous(locals, attrs, escape, rethrow) {
+  var attrs = jade.attrs, escape = jade.escape, rethrow = jade.rethrow;
+  var buf = [];
+  with (locals || {}) {
+  var interp;
+  buf.push('<!--premier titre--><div');
+  buf.push(attrs({ "class": ('Tu-1') }));
+  buf.push('><span>Tu-1</span><br');
+  buf.push(attrs({  }));
+  buf.push('/></div><div');
+  buf.push(attrs({ "class": ('Lu-1') }));
+  buf.push('><span>Lu-1</span><br');
+  buf.push(attrs({  }));
+  buf.push('/></div><!--second titre--><div');
+  buf.push(attrs({ "class": ('Tu-1') }));
+  buf.push('><span>Tu-1</span><br');
+  buf.push(attrs({  }));
+  buf.push('/></div><div');
+  buf.push(attrs({ "class": ('Lu-1') }));
+  buf.push('><span>Lu-1</span><br');
+  buf.push(attrs({  }));
+  buf.push('/></div><div');
+  buf.push(attrs({ "class": ('Tu-2') }));
+  buf.push('><span>Tu-2</span><br');
+  buf.push(attrs({  }));
+  buf.push('/></div><div');
+  buf.push(attrs({ "class": ('Lu-1') }));
+  buf.push('><span>Lu-1</span><br');
+  buf.push(attrs({  }));
+  buf.push('/></div><!--la div suivante ne peut pas être la fille du Tu-2 car un Lu-1 les sépare--><div');
+  buf.push(attrs({ "class": ('Lu-2') }));
+  buf.push('><span>Snif... je suis la ligne 7 et j\'ai pas le droit d\'être ici</span><br');
+  buf.push(attrs({  }));
+  buf.push('/></div><div');
+  buf.push(attrs({ "class": ('Th-1') }));
+  buf.push('><span>Th-1</span><br');
+  buf.push(attrs({  }));
+  buf.push('/></div>');
+  }
+  return buf.join("");
+  };
+}});
+
+window.require.define({"views/templates/test_10": function(exports, require, module) {
+  module.exports = function anonymous(locals, attrs, escape, rethrow) {
+  var attrs = jade.attrs, escape = jade.escape, rethrow = jade.rethrow;
+  var buf = [];
+  with (locals || {}) {
+  var interp;
+  buf.push('<div');
+  buf.push(attrs({ "class": ('Th-1') }));
+  buf.push('><span>Un premier titre</span><br');
+  buf.push(attrs({  }));
+  buf.push('/></div><div');
+  buf.push(attrs({ "class": ('Lh-1') }));
+  buf.push('><span');
+  buf.push(attrs({ "class": ('truc') }));
+  buf.push('>Une ligne Lh-1 </span><span');
+  buf.push(attrs({ "class": ('bob') }));
+  buf.push('>ENCORE Une ligne Lh-1 Une ligne Lh-1</span><a>toto</a><br');
+  buf.push(attrs({  }));
+  buf.push('/></div><div');
+  buf.push(attrs({ "class": ('Tu-2') }));
+  buf.push('><span');
+  buf.push(attrs({ "class": ('bob') }));
+  buf.push('>azertyuiop</span><span>Un second titre</span><br');
+  buf.push(attrs({  }));
+  buf.push('/></div><div');
+  buf.push(attrs({ "class": ('Th-3') }));
+  buf.push('><span');
+  buf.push(attrs({ "class": ('bob') }));
+  buf.push('>azertyuiop</span><br');
+  buf.push(attrs({  }));
+  buf.push('/></div><div');
+  buf.push(attrs({ "class": ('Lh-3') }));
+  buf.push('><span');
+  buf.push(attrs({ "class": ('truc') }));
+  buf.push('>Une ligne Lh-1 </span><br');
+  buf.push(attrs({  }));
+  buf.push('/></div><div');
+  buf.push(attrs({ "class": ('Lu-2') }));
+  buf.push('><span');
+  buf.push(attrs({ "class": ('truc') }));
+  buf.push('>Une ligne Lh-1 </span><br');
+  buf.push(attrs({  }));
+  buf.push('/></div><div');
+  buf.push(attrs({ "class": ('Lh-1') }));
+  buf.push('><span');
+  buf.push(attrs({ "class": ('truc') }));
+  buf.push('>Une ligne Lh-1 </span><br');
+  buf.push(attrs({  }));
+  buf.push('/></div>');
+  }
+  return buf.join("");
+  };
+}});
+
+window.require.define({"views/templates/test_11": function(exports, require, module) {
+  module.exports = function anonymous(locals, attrs, escape, rethrow) {
+  var attrs = jade.attrs, escape = jade.escape, rethrow = jade.rethrow;
+  var buf = [];
+  with (locals || {}) {
+  var interp;
+  buf.push('<div');
+  buf.push(attrs({ "class": ('Th-1') }));
+  buf.push('><span>Un premier titre</span><br');
+  buf.push(attrs({  }));
+  buf.push('/></div><div');
+  buf.push(attrs({ "class": ('Lh-1') }));
+  buf.push('><span');
+  buf.push(attrs({ "class": ('truc') }));
+  buf.push('>Une ligne Lh-1 </span><span');
+  buf.push(attrs({ "class": ('bob') }));
+  buf.push('>ENCORE Une ligne Lh-1 Une ligne Lh-1</span><a>toto</a><br');
+  buf.push(attrs({  }));
+  buf.push('/></div><div');
+  buf.push(attrs({ "class": ('Tu-2') }));
+  buf.push('><span');
+  buf.push(attrs({ "class": ('bob') }));
+  buf.push('>azertyuiop</span><span>Un second titre</span><br');
+  buf.push(attrs({  }));
+  buf.push('/></div><div');
+  buf.push(attrs({ "class": ('Tu-3') }));
+  buf.push('><span');
+  buf.push(attrs({ "class": ('bob') }));
+  buf.push('>azertyuiop</span><br');
+  buf.push(attrs({  }));
+  buf.push('/></div><div');
+  buf.push(attrs({ "class": ('Lu-3') }));
+  buf.push('><span');
+  buf.push(attrs({ "class": ('truc') }));
+  buf.push('>Une ligne Lh-1 </span><br');
+  buf.push(attrs({  }));
+  buf.push('/></div><div');
+  buf.push(attrs({ "class": ('Lu-2') }));
+  buf.push('><span');
+  buf.push(attrs({ "class": ('truc') }));
+  buf.push('>Une ligne Lh-1 </span><br');
+  buf.push(attrs({  }));
+  buf.push('/></div><div');
+  buf.push(attrs({ "class": ('Lh-1') }));
+  buf.push('><span');
+  buf.push(attrs({ "class": ('truc') }));
+  buf.push('>Une ligne Lh-1 </span><br');
+  buf.push(attrs({  }));
+  buf.push('/></div>');
+  }
+  return buf.join("");
+  };
+}});
+
+window.require.define({"views/templates/test_2": function(exports, require, module) {
+  module.exports = function anonymous(locals, attrs, escape, rethrow) {
+  var attrs = jade.attrs, escape = jade.escape, rethrow = jade.rethrow;
+  var buf = [];
+  with (locals || {}) {
+  var interp;
+  buf.push('<div');
+  buf.push(attrs({ "class": ('Tu-1') }));
+  buf.push('><span>Tu-1</span><br');
+  buf.push(attrs({  }));
+  buf.push('/></div><div');
+  buf.push(attrs({ "class": ('Tu-1') }));
+  buf.push('><span>Tu-1</span><br');
+  buf.push(attrs({  }));
+  buf.push('/></div><div');
+  buf.push(attrs({ "class": ('Lu-1') }));
+  buf.push('><span>Lu-1</span><br');
+  buf.push(attrs({  }));
+  buf.push('/></div><!-- une Lo ne peut pas être fille d\'un Tu--><div');
+  buf.push(attrs({ "class": ('Lo-1') }));
+  buf.push('><span>Je suis une Lo fautive</span><br');
+  buf.push(attrs({  }));
+  buf.push('/></div><div');
+  buf.push(attrs({ "class": ('Th-1') }));
+  buf.push('><span>UN SUPER TITRE</span><br');
+  buf.push(attrs({  }));
+  buf.push('/></div>');
+  }
+  return buf.join("");
+  };
+}});
+
+window.require.define({"views/templates/test_3": function(exports, require, module) {
+  module.exports = function anonymous(locals, attrs, escape, rethrow) {
+  var attrs = jade.attrs, escape = jade.escape, rethrow = jade.rethrow;
+  var buf = [];
+  with (locals || {}) {
+  var interp;
+  buf.push('<div');
+  buf.push(attrs({ "class": ('Tu-1') }));
+  buf.push('><span>Tu-1...</span><br');
+  buf.push(attrs({  }));
+  buf.push('/></div><div');
+  buf.push(attrs({ "class": ('Tu-1') }));
+  buf.push('><span>Tu-1...</span><br');
+  buf.push(attrs({  }));
+  buf.push('/></div><div');
+  buf.push(attrs({ "class": ('Lu-1') }));
+  buf.push('><span>Lu-1</span><br');
+  buf.push(attrs({  }));
+  buf.push('/></div><!-- une lh ne peut pas descendre d\'une Tu--><div');
+  buf.push(attrs({ "class": ('Lh-1') }));
+  buf.push('><span>Une ligne qui n\'a pas le droit d\'être ici car c\'est une Lh</span><br');
+  buf.push(attrs({  }));
+  buf.push('/></div><div');
+  buf.push(attrs({ "class": ('Th-1') }));
+  buf.push('><span>UN SUPER TITRE</span><br');
+  buf.push(attrs({  }));
+  buf.push('/></div>');
+  }
+  return buf.join("");
+  };
+}});
+
+window.require.define({"views/templates/test_4": function(exports, require, module) {
+  module.exports = function anonymous(locals, attrs, escape, rethrow) {
+  var attrs = jade.attrs, escape = jade.escape, rethrow = jade.rethrow;
+  var buf = [];
+  with (locals || {}) {
+  var interp;
+  buf.push('<div');
+  buf.push(attrs({ "class": ('Tu-1') }));
+  buf.push('><span>Une ligne Tu-1...</span><br');
+  buf.push(attrs({  }));
+  buf.push('/></div><div');
+  buf.push(attrs({ "class": ('Lu-1') }));
+  buf.push('><span>Une ligne Lu-1</span><br');
+  buf.push(attrs({  }));
+  buf.push('/></div><div');
+  buf.push(attrs({ "class": ('Tu-2') }));
+  buf.push('><span>Un sous-titre Tu-2</span><br');
+  buf.push(attrs({  }));
+  buf.push('/></div><div');
+  buf.push(attrs({ "class": ('To-2') }));
+  buf.push('><span>Un sous-titre To-2</span><br');
+  buf.push(attrs({  }));
+  buf.push('/></div><!-- un titre Th ne peut pas descendre d\'un Tu ou d\'un To--><div');
+  buf.push(attrs({ "class": ('Th-2') }));
+  buf.push('><span>Un titre Th-2 qui n\'a pas le droit d\'être là</span><br');
+  buf.push(attrs({  }));
+  buf.push('/></div><div');
+  buf.push(attrs({ "class": ('Th-1') }));
+  buf.push('><span>UN SUPER TITRE</span><br');
+  buf.push(attrs({  }));
+  buf.push('/></div>');
+  }
+  return buf.join("");
+  };
+}});
+
+window.require.define({"views/templates/test_5": function(exports, require, module) {
+  module.exports = function anonymous(locals, attrs, escape, rethrow) {
+  var attrs = jade.attrs, escape = jade.escape, rethrow = jade.rethrow;
+  var buf = [];
+  with (locals || {}) {
+  var interp;
+  buf.push('<div');
+  buf.push(attrs({ "class": ('Th-1') }));
+  buf.push('><span>Un premier titre</span><br');
+  buf.push(attrs({  }));
+  buf.push('/></div><div');
+  buf.push(attrs({ "class": ('Lh-1') }));
+  buf.push('><span>Une ligne Lh-1 </span><span>ENCORE Une ligne Lh-1 Une ligne Lh-1</span><a>toto</a><br');
+  buf.push(attrs({  }));
+  buf.push('/></div><!-- and poof, an unknown label--><div');
+  buf.push(attrs({ "class": ('To-2') }));
+  buf.push('><span>azertyuiop</span><span>m</span><label></label><span>Un second titre</span><br');
+  buf.push(attrs({  }));
+  buf.push('/></div>');
+  }
+  return buf.join("");
+  };
+}});
+
+window.require.define({"views/templates/test_6": function(exports, require, module) {
+  module.exports = function anonymous(locals, attrs, escape, rethrow) {
+  var attrs = jade.attrs, escape = jade.escape, rethrow = jade.rethrow;
+  var buf = [];
+  with (locals || {}) {
+  var interp;
+  buf.push('<div');
+  buf.push(attrs({ "class": ('Th-1') }));
+  buf.push('><span>Un premier titre</span><br');
+  buf.push(attrs({  }));
+  buf.push('/></div><div');
+  buf.push(attrs({ "class": ('Lh-1') }));
+  buf.push('><span>Une ligne Lh-1 </span><span>ENCORE Une ligne Lh-1 Une ligne Lh-1</span><a>toto</a><br');
+  buf.push(attrs({  }));
+  buf.push('/></div><!--label with a br in the middle of nowhere--><div');
+  buf.push(attrs({ "class": ('To-2') }));
+  buf.push('><span>azertyuiop</span><span>m</span><br');
+  buf.push(attrs({  }));
+  buf.push('/><span>Un second titre</span><br');
+  buf.push(attrs({  }));
+  buf.push('/></div><div');
+  buf.push(attrs({ "class": ('Lh-1') }));
+  buf.push('><span>Une ligne Lh-1 </span><span>ENCORE Une ligne Lh-1 Une ligne Lh-1</span><a>toto</a><br');
+  buf.push(attrs({  }));
+  buf.push('/></div>');
+  }
+  return buf.join("");
+  };
+}});
+
+window.require.define({"views/templates/test_7": function(exports, require, module) {
+  module.exports = function anonymous(locals, attrs, escape, rethrow) {
+  var attrs = jade.attrs, escape = jade.escape, rethrow = jade.rethrow;
+  var buf = [];
+  with (locals || {}) {
+  var interp;
+  buf.push('<div');
+  buf.push(attrs({ "class": ('Th-1') }));
+  buf.push('><span>Un premier titre</span><br');
+  buf.push(attrs({  }));
+  buf.push('/></div><div');
+  buf.push(attrs({ "class": ('Lh-1') }));
+  buf.push('><span>Une ligne Lh-1 </span><span>ENCORE Une ligne Lh-1 Une ligne Lh-1</span><a>toto</a><br');
+  buf.push(attrs({  }));
+  buf.push('/></div><div');
+  buf.push(attrs({ "class": ('To-2') }));
+  buf.push('><span>azertyuiop</span><span>m</span><span>Un second titre</span></div><!--a br should be there -->');
+  }
+  return buf.join("");
+  };
+}});
+
+window.require.define({"views/templates/test_8": function(exports, require, module) {
+  module.exports = function anonymous(locals, attrs, escape, rethrow) {
+  var attrs = jade.attrs, escape = jade.escape, rethrow = jade.rethrow;
+  var buf = [];
+  with (locals || {}) {
+  var interp;
+  buf.push('<div');
+  buf.push(attrs({ "class": ('Th-1') }));
+  buf.push('><span>Un premier titre</span><br');
+  buf.push(attrs({  }));
+  buf.push('/></div><div');
+  buf.push(attrs({ "class": ('Lh-1') }));
+  buf.push('><span');
+  buf.push(attrs({ "class": ('truc') }));
+  buf.push('>Une ligne Lh-1 </span><span');
+  buf.push(attrs({ "class": ('bob') }));
+  buf.push('>ENCORE Une ligne Lh-1 Une ligne Lh-1</span><a>toto</a><br');
+  buf.push(attrs({  }));
+  buf.push('/></div><div');
+  buf.push(attrs({ "class": ('To-2') }));
+  buf.push('><span');
+  buf.push(attrs({ "class": ('bob') }));
+  buf.push('>azertyuiop</span><span');
+  buf.push(attrs({ "class": ('bob') }));
+  buf.push('>m</span><span>Un second titre</span><br');
+  buf.push(attrs({  }));
+  buf.push('/></div>');
+  }
+  return buf.join("");
+  };
+}});
+
+window.require.define({"views/templates/test_9": function(exports, require, module) {
+  module.exports = function anonymous(locals, attrs, escape, rethrow) {
+  var attrs = jade.attrs, escape = jade.escape, rethrow = jade.rethrow;
+  var buf = [];
+  with (locals || {}) {
+  var interp;
+  buf.push('<div');
+  buf.push(attrs({ "class": ('Th-1') }));
+  buf.push('><span>Un premier titre</span><br');
+  buf.push(attrs({  }));
+  buf.push('/></div><div');
+  buf.push(attrs({ "class": ('Lh-1') }));
+  buf.push('><span');
+  buf.push(attrs({ "class": ('truc') }));
+  buf.push('>Une ligne Lh-1 </span><span');
+  buf.push(attrs({ "class": ('bob') }));
+  buf.push('>ENCORE Une ligne Lh-1 Une ligne Lh-1</span><a>toto</a><br');
+  buf.push(attrs({  }));
+  buf.push('/></div><!-- an obvious issue of indentation--><div');
+  buf.push(attrs({ "class": ('To-3') }));
+  buf.push('><span');
+  buf.push(attrs({ "class": ('bob') }));
+  buf.push('>azertyuiop</span><span>Un second titre</span><br');
+  buf.push(attrs({  }));
+  buf.push('/></div><div');
+  buf.push(attrs({ "class": ('Lh-2') }));
+  buf.push('><span');
+  buf.push(attrs({ "class": ('bob') }));
+  buf.push('>azertyuiop</span><br');
+  buf.push(attrs({  }));
+  buf.push('/></div><div');
+  buf.push(attrs({ "class": ('Lh-1') }));
+  buf.push('><span');
+  buf.push(attrs({ "class": ('truc') }));
+  buf.push('>Une ligne Lh-1 </span><br');
+  buf.push(attrs({  }));
+  buf.push('/></div>');
   }
   return buf.join("");
   };

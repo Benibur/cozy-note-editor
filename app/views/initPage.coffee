@@ -2,9 +2,12 @@
 CNEditor = require('views/editor').CNEditor
 CNcozyToMarkdown = require('views/cozyToMarkdown').CNcozyToMarkdown
 CNmarkdownToCozy = require('views/markdownToCozy').CNmarkdownToCozy
+AutoTest = require('views/autoTest').AutoTest
+
 
 cozy2md = new CNcozyToMarkdown()
 md2cozy = new CNmarkdownToCozy()
+checker = new AutoTest()
 
 # attributes of the class
 editorBody$  = undefined # body of iframe
@@ -90,28 +93,29 @@ exports.initPage =  ()->
         # Danger buttons ;-)
         checking = false
         
-        $("#checkBtn").toggle(
-            () ->
-                checking = true
-                $("#checkBtn").html "Checking ON"
-            () ->
-                checking = false
-                $("#checkBtn").html "Checking OFF"
-            )
-        editorBody$.on 'keyup' , () ->
-            if checking
-                editorCtrler.checkLines()
+        $("#checkBtn").on "click", () ->
+            checker.checkLines(editorCtrler)
+                
+        #        checking = true
+        #        $("#checkBtn").html "Checking ON"
+        #    () ->
+        #        checking = false
+        #        $("#checkBtn").html "Checking OFF"
+        #    )
+        # editorBody$.on 'keyup' , () ->
+        #    if checking
+        #        checker.checkLines(editorCtrler)
 
     
         # More danger buttons
-        $("#CozyMarkdown").toggle(
-            () ->
-                $("#CozyMarkdown").html "HTML"
-                $("#resultText").val(cozy2md.translate $("#resultText").val())
-            () ->
-                $("#CozyMarkdown").html "Markdown"
-                $("#resultText").val(md2cozy.translate $("#resultText").val())
-            )
+        $("#CozyMarkdown").on "click", () ->
+            $("#resultText").val(cozy2md.translate $("#resultText").val())
+                # $("#CozyMarkdown").html "HTML"
+                # $("#resultText").val(cozy2md.translate $("#resultText").val())
+            # () ->
+                # $("#CozyMarkdown").html "Markdown"
+                # $("#resultText").val(md2cozy.translate $("#resultText").val())
+            # )
 
         
         # Add at the beginning of each line the Class of the line.
@@ -208,11 +212,3 @@ exports.initPage =  ()->
     # creation of the editor
     editor = new CNEditor( $('#editorIframe')[0], cb )
     return editor
-
-
-
-
-
-
-
-    
