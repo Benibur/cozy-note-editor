@@ -1567,19 +1567,22 @@ window.require.define({"views/editor": function(exports, require, module) {
       };
 
       /* ------------------------------------------------------------------------
-      # Verifies if the lines are well structured or not
+      # Checks whether the lines are well structured or not
+      # Some suggestions of what could be checked out:
+      #    <> each elt of lines corresponds to a DIV ----------------(  )
+      #    <> each DIV has a matching elt in lines ------------------(  )
+      #    <> type and depth are coherent ---------------------------(OK)
+      #    <> linePrev and LineNext are linked to the correct DIV ---(  )
+      #    <> hierarchy of lines and indentation are okay -----------(OK)
+      #    <> a DIV contains a sequence of SPAN ended by a BR -------(  )
+      #    <> two successive SPAN can't have the same class ---------(  )
+      #    <> empty SPAN are really empty (<span></span>) -----------(  )
+      #    <> a note must  have at least one line
       */
 
       CNEditor.prototype.checkLines = function() {
-        var currentLine, depth, myAncestor, next, nodeType, possibleSon, recVerif, root, type;
+        var child, children, currentLine, depth, element, error, i, id, iframeGet, iframeNumberOfLines, lastClass, myAncestor, nextLine, nodeType, possibleSon, prevLine, recVerif, root, type, _ref, _ref2;
         console.log('Lines are being checked');
-        root = {
-          lineType: "root",
-          lineNext: this._lines["CNID_1"],
-          lineDepthAbs: 0
-        };
-        myAncestor = [root];
-        currentLine = root;
         possibleSon = {
           "Th": function(name) {
             return name === "Lh" || name === "Th" || name === "To" || name === "Tu";
@@ -1612,31 +1615,88 @@ window.require.define({"views/editor": function(exports, require, module) {
             return "ERR";
           }
         };
-        while (currentLine.lineNext !== null) {
-          next = currentLine.lineNext;
-          type = nodeType(next.lineType);
-          depth = next.lineDepthAbs;
+        id = function(line) {
+          if (line === null) {
+            return -1;
+          } else {
+            return parseInt(line.lineID.split("_")[1], 10);
+          }
+        };
+        error = function(num) {
+          return alert("Une erreur s'est produite ligne " + num);
+        };
+        iframeGet = function(myId) {
+          return $(window.frames[0].document.getElementById(myId));
+        };
+        iframeNumberOfLines = function() {
+          return (window.frames[0].document.getElementsByTagName('DIV')).length;
+        };
+        root = {
+          lineType: "root",
+          lineID: "CNID_0",
+          lineNext: this._lines["CNID_1"],
+          linePrev: null,
+          lineDepthAbs: 0
+        };
+        myAncestor = [root];
+        prevLine = null;
+        currentLine = root;
+        nextLine = root.lineNext;
+        while (nextLine !== null) {
+          type = nodeType(nextLine.lineType);
+          depth = nextLine.lineDepthAbs;
+          if (iframeGet("CNID_" + (id(nextLine))) === null) error(id(nextLine));
+          if (!((id(prevLine) + 2 === (_ref = id(currentLine) + 1) && _ref === id(nextLine)))) {
+            error(id(nextLine));
+          }
+          element = iframeGet("CNID_" + (id(nextLine)));
+          children = element.children();
+          if (children === null || children.length < 2) error(id(nextLine));
+          for (i = 0, _ref2 = children.length - 1; 0 <= _ref2 ? i <= _ref2 : i >= _ref2; 0 <= _ref2 ? i++ : i--) {
+            child = children.get(i);
+            if (child.nodeName === 'SPAN') {
+              if ($(child).attr('class') != null) {
+                if (lastClass === $(child).attr('class')) {
+                  error(id(nextLine));
+                } else {
+                  lastClass = $(child).attr('class');
+                }
+              } else if (child.nodeName === 'A' || child.nodeName === 'IMG') {
+                lastClass = void 0;
+              }
+            } else {
+              if (child.nodeName !== 'BR' || i < children.length - 1) {
+                error(id(nextLine));
+              }
+            }
+          }
           if (type === "T") {
             if (depth > myAncestor.length) {
-              myAncestor.push(next);
+              myAncestor.push(nextLine);
             } else {
-              myAncestor[depth] = next;
+              myAncestor[depth] = nextLine;
             }
             if (!(myAncestor[depth - 1].sons != null)) {
               myAncestor[depth - 1].sons = [];
             }
-            myAncestor[depth - 1].sons.push(next);
+            myAncestor[depth - 1].sons.push(nextLine);
           } else if (type === "L") {
             if (!(myAncestor[depth].sons != null)) myAncestor[depth].sons = [];
-            myAncestor[depth].sons.push(next);
+            myAncestor[depth].sons.push(nextLine);
           }
-          currentLine = next;
+          prevLine = currentLine;
+          currentLine = nextLine;
+          nextLine = currentLine.lineNext;
+        }
+        if (id(currentLine) !== iframeNumberOfLines()) {
+          alert("We should have " + (id(currentLine)) + " = " + (iframeNumberOfLines()));
+          error(id(currentLine));
         }
         recVerif = function(line) {
-          var child, i, _ref, _results;
+          var i, _ref3, _results;
           if (line.sons != null) {
             _results = [];
-            for (i = 0, _ref = line.sons.length - 1; 0 <= _ref ? i <= _ref : i >= _ref; 0 <= _ref ? i++ : i--) {
+            for (i = 0, _ref3 = line.sons.length - 1; 0 <= _ref3 ? i <= _ref3 : i >= _ref3; 0 <= _ref3 ? i++ : i--) {
               child = line.sons[i];
               if (!possibleSon[line.lineType](child.lineType)) {
                 alert("struct " + child.lineType + "-" + child.lineDepthAbs);
