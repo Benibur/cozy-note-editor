@@ -1810,11 +1810,11 @@ window.require.define({"views/initPage": function(exports, require, module) {
 
     CNmarkdownToCozy = require('views/markdownToCozy').CNmarkdownToCozy;
 
-    AutoTest = require('views/autoTest').AutoTest;
-
     cozy2md = new CNcozyToMarkdown();
 
     md2cozy = new CNmarkdownToCozy();
+
+    AutoTest = require('views/autoTest').AutoTest;
 
     checker = new AutoTest();
 
@@ -1837,7 +1837,7 @@ window.require.define({"views/initPage": function(exports, require, module) {
         this.replaceContent( require('./templates/content-full-marker') )
         this.replaceContent( require('./templates/content-shortlines-marker') )
         */
-        var addClass2Line, checking, editorCtrler, removeClassFromLines,
+        var addClassToLines, editorCtrler, getSelectedLines, removeClassFromLines, restoreSelection,
           _this = this;
         this.replaceContent(require('./templates/content-shortlines-all'));
         editorCtrler = this;
@@ -1881,71 +1881,106 @@ window.require.define({"views/initPage": function(exports, require, module) {
         $("#titleBtn").on("click", function() {
           return editorCtrler.titleList();
         });
-        checking = false;
         $("#checkBtn").on("click", function() {
           return checker.checkLines(editorCtrler);
         });
         $("#CozyMarkdown").on("click", function() {
           return $("#resultText").val(cozy2md.translate($("#resultText").val()));
         });
-        addClass2Line = function() {
-          var OPERATOR, line, lineID, lines, range, sel, selectedEndContainer, selectedEndContainerOffset, selectedStartContainer, selectedStartContainerOffset, spanTextNode, textOriginal;
-          sel = rangy.getIframeSelection(_this.editorIframe);
-          range = sel.getRangeAt(0);
-          selectedStartContainer = range.startContainer;
-          selectedStartContainerOffset = range.startOffset;
-          selectedEndContainer = range.endContainer;
-          selectedEndContainerOffset = range.endOffset;
-          lines = _this._lines;
-          OPERATOR = /(Th|Tu|To|Lh|Lu|Lo)-\d+\]/;
-          for (lineID in lines) {
-            line = lines[lineID];
-            spanTextNode = line.line$[0].firstChild.firstChild;
-            if (spanTextNode !== null) {
-              textOriginal = spanTextNode.textContent;
-              spanTextNode.textContent = ("" + line.lineType + "-" + line.lineDepthAbs + "] ") + textOriginal.replace(OPERATOR, "");
-            }
+        restoreSelection = function(sel) {
+          var i, num, range, _ref;
+          num = sel.rangeCount;
+          if (num === 0) return;
+          for (i = 0, _ref = num - 1; 0 <= _ref ? i <= _ref : i >= _ref; 0 <= _ref ? i++ : i--) {
+            range = sel.getRangeAt(i);
+            sel.setSingleRange(range);
           }
-          range = rangy.createRange();
-          range.setStart(selectedStartContainer, selectedStartContainerOffset + 1);
-          range.setEnd(selectedEndContainer, selectedEndContainerOffset + 1);
-          sel.setSingleRange(range);
           return beautify(editorBody$);
         };
-        removeClassFromLines = function() {
-          var OPERATOR, line, lineID, lines, range, sel, selectedEndContainer, selectedEndContainerOffset, selectedStartContainer, selectedStartContainerOffset, spanTextNode, textOriginal;
-          sel = rangy.getIframeSelection(_this.editorIframe);
-          range = sel.getRangeAt(0);
-          selectedStartContainer = range.startContainer;
-          selectedStartContainerOffset = range.startOffset;
-          selectedEndContainer = range.endContainer;
-          selectedEndContainerOffset = range.endOffset;
-          lines = _this._lines;
-          OPERATOR = /(Th|Tu|To|Lh|Lu|Lo)-\d+\]/;
-          for (lineID in lines) {
-            line = lines[lineID];
-            spanTextNode = line.line$[0].firstChild.firstChild;
-            if (spanTextNode !== null) {
-              textOriginal = spanTextNode.textContent;
-              spanTextNode.textContent = textOriginal.replace(OPERATOR, "");
+        getSelectedLines = function(sel) {
+          var divs, i, k, myDivs, node, range, _ref;
+          myDivs = [];
+          if (sel.rangeCount === 0) return;
+          for (i = 0, _ref = sel.rangeCount - 1; 0 <= _ref ? i <= _ref : i >= _ref; 0 <= _ref ? i++ : i--) {
+            range = sel.getRangeAt(i);
+            divs = range.getNodes([1], function(element) {
+              return element.tagName === 'DIV';
+            });
+            if (divs.length === 0) {
+              if (range.commonAncestorContainer.tagName !== 'BODY') {
+                node = range.commonAncestorContainer;
+                while (node.tagName !== 'DIV') {
+                  node = node.parentNode;
+                }
+                divs.push(node);
+              }
+            }
+            k = 0;
+            while (k < divs.length) {
+              myDivs.push($(divs[k]));
+              k++;
             }
           }
-          range = rangy.createRange();
-          range.setStart(selectedStartContainer, selectedStartContainerOffset + 1 - 6);
-          range.setEnd(selectedEndContainer, selectedEndContainerOffset + 1 - 6);
-          sel.setSingleRange(range);
-          return beautify(editorBody$);
+          return myDivs;
+        };
+        addClassToLines = function(mode) {
+          var div, k, lineID, lines, sel;
+          sel = rangy.getIframeSelection(_this.editorIframe);
+          if (mode === "sel") {
+            lines = getSelectedLines(sel);
+            k = 0;
+            while (k < lines.length) {
+              div = lines[k];
+              div.attr('toDisplay', div.attr('class') + '] ');
+              k++;
+            }
+          } else {
+            lines = _this._lines;
+            for (lineID in lines) {
+              div = $(lines[lineID].line$[0]);
+              div.attr('toDisplay', div.attr('class') + '] ');
+            }
+          }
+          return restoreSelection(sel);
+        };
+        removeClassFromLines = function(mode) {
+          var div, k, lineID, lines, sel;
+          sel = rangy.getIframeSelection(_this.editorIframe);
+          if (mode === "sel") {
+            lines = getSelectedLines(sel);
+            k = 0;
+            while (k < lines.length) {
+              div = lines[k];
+              div.attr('toDisplay', '');
+              k++;
+            }
+          } else {
+            lines = _this._lines;
+            for (lineID in lines) {
+              div = $(lines[lineID].line$[0]);
+              div.attr('toDisplay', '');
+            }
+          }
+          return restoreSelection(sel);
         };
         $("#addClass2LineBtn").on("click", function() {
-          addClass2Line();
+          addClassToLines();
           if (editor_doAddClasseToLines) {
+            $("#addClass2LineBtn").html("Show Class on Lines");
             editor_doAddClasseToLines = false;
-            editorBody$.off('keyup', addClass2Line);
+            editorBody$.off('keyup', addClassToLines);
             return removeClassFromLines();
           } else {
+            $("#addClass2LineBtn").html("Hide Class on Lines");
             editor_doAddClasseToLines = true;
-            return editorBody$.on('keyup', addClass2Line);
+            return editorBody$.on('keyup', addClassToLines);
           }
+        });
+        $("#addClass").on("click", function() {
+          return addClassToLines("sel");
+        });
+        $("#delClass").on("click", function() {
+          return removeClassFromLines("sel");
         });
         return this.editorBody$.on('mouseup', function() {
           this.newPosition = true;
@@ -3671,7 +3706,7 @@ window.require.define({"views/templates/editor": function(exports, require, modu
   buf.push(attrs({ 'id':('printRangeBtn'), "class": ('btn') + ' ' + ('btn-small') + ' ' + ('btn-primary') }));
   buf.push('>Print Range</button><button');
   buf.push(attrs({ 'id':('addClass2LineBtn'), "class": ('btn') + ' ' + ('btn-small') + ' ' + ('btn-primary') }));
-  buf.push('>Add Class on Lines</button></div><select');
+  buf.push('>Show Class on Lines</button></div><select');
   buf.push(attrs({ 'id':('contentSelect') }));
   buf.push('><option');
   buf.push(attrs({ 'value':("content-full"), 'style':("display:block") }));
@@ -3736,6 +3771,10 @@ window.require.define({"views/templates/editor": function(exports, require, modu
   buf.push('>- Marker list</button><button');
   buf.push(attrs({ 'id':('titleBtn'), "class": ('btn') + ' ' + ('btn-small') + ' ' + ('btn-primary') }));
   buf.push('>1.1.2 Title</button><button');
+  buf.push(attrs({ 'id':('addClass'), "class": ('btn') + ' ' + ('btn-small') + ' ' + ('btn-primary') }));
+  buf.push('>Class of sel Lines ON</button><button');
+  buf.push(attrs({ 'id':('delClass'), "class": ('btn') + ' ' + ('btn-small') + ' ' + ('btn-primary') }));
+  buf.push('>Class of sel Lines OFF</button><button');
   buf.push(attrs({ 'id':('checkBtn'), "class": ('btn') + ' ' + ('btn-small') + ' ' + ('btn-primary') }));
   buf.push('>Run Test !</button><button');
   buf.push(attrs({ 'id':('CozyMarkdown'), "class": ('btn') + ' ' + ('btn-small') + ' ' + ('btn-primary') }));

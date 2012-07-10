@@ -14,6 +14,31 @@ class exports.AutoTest extends Backbone.View
     #    <> a note must  have at least one line
     ###
     checkLines : (CNEditor) ->
+        
+        
+        # TO DELETE
+        # 
+        # simu de touches
+        # simuKey = (asciiCode) ->
+        #     letter = String.fromCharCode asciiCode
+        #     myKey = jQuery.Event "keyup"
+        #     myKey.which = asciiCode
+        #    CNEditor.editorBody$.trigger myKey
+        # 
+        # for i in [65..85]
+        #     simuKey i
+        # 
+        # simuClick = (x, y) ->
+        #     myClick = jQuery.Event "click"
+        #     myClick.clientX = x
+        #     myClick.clientY = y
+        #     CNEditor.editorBody$.trigger myClick
+        # 
+        # for i in [1..10]
+        #     simuClick(7*i, 13*i)
+        # 
+       
+        
         console.log 'Detecting incoherences...'
         # We represent the lines architecture with a tree to depth-first
         # explore it. The virtual root is at depth 0 and its sons are the titles
