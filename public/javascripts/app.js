@@ -974,11 +974,11 @@ return buf.join("");
             lineNext = line.lineNext;
             lineTypeTarget = null;
             while (lineNext !== null && lineNext.lineDepthAbs >= line.lineDepthAbs) {
-              if (lineNext.lineDepthAbs === line.lineDepthAbs + 1) {
+              if (lineNext.lineDepthAbs !== line.lineDepthAbs + 1) {
+                lineNext = lineNext.lineNext;
+              } else {
                 lineTypeTarget = lineNext.lineType;
                 lineNext = null;
-              } else {
-                lineNext = lineNext.lineNext;
               }
             }
             if (lineTypeTarget === null) {
