@@ -71,6 +71,7 @@ exports.initPage =  ()->
                 console.log "offsets:  start=#{range.startOffset}  -  end=#{range.endOffset}"
                 console.log range.startContainer
                 console.log range.endContainer
+                i++
         $('#fileSelect').on "change" , (e) ->
             console.log "./templates/#{e.currentTarget.value}"
             editorCtrler.replaceContent( require("./templates/#{e.currentTarget.value}") )
