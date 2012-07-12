@@ -15,30 +15,6 @@ class exports.AutoTest extends Backbone.View
     ###
     checkLines : (CNEditor) ->
         
-        
-        # TO DELETE
-        # 
-        # simu de touches
-        # simuKey = (asciiCode) ->
-        #     letter = String.fromCharCode asciiCode
-        #     myKey = jQuery.Event "keyup"
-        #     myKey.which = asciiCode
-        #    CNEditor.editorBody$.trigger myKey
-        # 
-        # for i in [65..85]
-        #     simuKey i
-        # 
-        # simuClick = (x, y) ->
-        #     myClick = jQuery.Event "click"
-        #     myClick.clientX = x
-        #     myClick.clientY = y
-        #     CNEditor.editorBody$.trigger myClick
-        # 
-        # for i in [1..10]
-        #     simuClick(7*i, 13*i)
-        # 
-       
-        
         console.log 'Detecting incoherences...'
         # We represent the lines architecture with a tree to depth-first
         # explore it. The virtual root is at depth 0 and its sons are the titles
@@ -118,8 +94,8 @@ class exports.AutoTest extends Backbone.View
             
             # First we check the line's legacy
             
-            if ! (id(prevLine)+2 == id(currentLine)+1 == id(nextLine))
-                return alert "ERROR: invalid line #{nextLine.lineID}\n (#{nextLine.lineType}-#{nextLine.lineDepthAbs} has wrong identifier)"
+            # if ! (id(prevLine)+2 == id(currentLine)+1 == id(nextLine))
+            #     return alert "ERROR: invalid line #{nextLine.lineID}\n (#{nextLine.lineType}-#{nextLine.lineDepthAbs} has wrong identifier)"
                 
             element = CNEditor.editorBody$.children("#"+nextLine.lineID)
                         
@@ -186,15 +162,14 @@ class exports.AutoTest extends Backbone.View
             currentLine = nextLine
             nextLine = currentLine.lineNext
         
-        
-        # TODO: is there a line object corresponding to each DIV ?
+        # Is there a line object corresponding to each DIV ? ----------- (OK)
         objDiv = CNEditor.editorBody$.children("div")
         objDiv.each () ->
             if $(@).attr('id')?
                 myId = $(@).attr('id')
                 if /CNID_[0-9]+/.test myId
                     if ! CNEditor._lines[myId]?
-                        return alert "uh oh... missing line "+myId
+                        return alert "ERROR: missing line " + myId
         
         
         # Our tree is finished; now we can recursively check it
@@ -202,9 +177,11 @@ class exports.AutoTest extends Backbone.View
             if node.sons.length > 0
                 for i in [0..node.sons.length-1]
                     child = node.sons[i]
+                    
                     # Hierarchy verification
                     if ! possibleSon[node.line.lineType](child.line.lineType)
                         return alert "ERROR: invalid line #{child.line.lineID}\n (hierarchic issue of a #{child.line.lineType}-#{child.line.lineDepthAbs})"
+                        
                     # Depth verification
                     if nodeType(child.line.lineType) == "T"
                         if node.line.lineDepthAbs+1 != child.line.lineDepthAbs
@@ -215,3 +192,20 @@ class exports.AutoTest extends Backbone.View
                             return alert "ERROR: invalid line #{child.line.lineID}\n (indentation issue of a #{child.line.lineType}-#{child.line.lineDepthAbs})"
 
         recVerif(root)
+
+
+    # Selects a specific (continuous) sequence of lines
+    # Sadly it doesnt work for now... we'll see that
+    selectArea : (CNEditor, start, startOffset, end, endOffset) ->
+        
+        sel = rangy.getIframeSelection(CNEditor.editorIframe)
+        myRange = rangy.createRange()
+        myRange.startContainer = CNEditor.editorBody$.children("#CNID_#{start}")[0]
+        myRange.startOffset   = startOffset
+        myRange.endContainer  = CNEditor.editorBody$.children("#CNID_#{end}")[0]
+        myRange.endOffset     = endOffset
+        console.log myRange
+        sel.removeAllRanges()
+        console.log sel
+        sel.setSingleRange(myRange)
+        console.log sel

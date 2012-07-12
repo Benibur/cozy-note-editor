@@ -86,7 +86,7 @@ class exports.CNEditor extends Backbone.View
     #   .shiftKey
     #   .keyCode
     ###
-    # SHORTCUT
+    # SHORTCUT  |-----------------------> (suggestion: see jquery.hotkeys.js ? )
     #
     # Definition of a shortcut : 
     #   a combination alt,ctrl,shift,meta
@@ -154,31 +154,54 @@ class exports.CNEditor extends Backbone.View
             # TODO : following line is just for test, must be somewhere else.
             $("#editorPropertiesDisplay").text("newPosition = true")
         
-        # if there was no keyboard move action but the previous action was a move
+        #if there was no keyboard move action but the previous action was a move
         # then "normalize" the selection
-        # TODO : make the normalization more robust : at the moment there is only
+        # ____
+        # TODO: make the normalization more robust : at the moment there is only
         # the case of an empty line : the carret is put in the empty span. But
         # there must be other case where the start or end of selection is not in
         # a correct element.
+        # ____
+        # DONE: the problem only seemed to occur when the end of selection was
+        #       right behind a </div>. It seems to behave correctly now
+        #       "empty" div issue detected and fixed
         else
             if @newPosition
                 @newPosition = false
-                # TODO : following line is just for test, must be somewhere else.
+                # TODO: following line is just for test, must be somewhere else.
                 $("#editorPropertiesDisplay").text("newPosition = false")
+
                 sel = rangy.getIframeSelection(@editorIframe)
-                div = sel.getRangeAt(0).startContainer
-                if div.nodeName != "DIV"
-                    div = $(div).parents("div")[0]
-                if div.innerHTML == "<span></span><br>"
-                    # Position caret
-                    range4sel = rangy.createRange()
-                    range4sel.collapseToPoint(div.firstChild,0)
-                    sel.setSingleRange(range4sel)
+                # if sthg is selected
+                num = sel.rangeCount
+                if num > 0
+                    # for each selected area
+                    for i in [0..num-1]
+                        range = sel.getRangeAt(i)
+                        if range.endContainer.nodeName == "DIV"
+                            div = range.endContainer
+                            elt = div.lastChild.previousElementSibling
+                            if elt.firstChild?
+                                offset = $(elt.firstChild).text().length
+                                range.setEnd(elt.firstChild, offset)
+                            else
+                                range.setEnd(elt, 0)
+                        # (just in case)
+                        if range.startContainer.nodeName == "DIV"
+                            div = range.startContainer
+                            elt = div.firstChild
+                            if elt.firstChild?
+                                offset = 0
+                                range.setStart(elt.firstChild, offset)
+                            else
+                                range.setStart(elt, 0)
+                        
+
 
         # 4- the current selection is initialized on each keypress
         this.currentSel = null
        
-        # 4- launch the action corresponding to the pressed shortcut
+        # 5- launch the action corresponding to the pressed shortcut
         switch shortcut
 
             # RETURN                            
@@ -225,7 +248,7 @@ class exports.CNEditor extends Backbone.View
 
 
     ### ------------------------------------------------------------------------
-    #  Manage deletions when ŝuppr key is pressed
+    #  Manage deletions when suppr key is pressed
     ###
     _suppr : (e) ->
         @_findLinesAndIsStartIsEnd()
@@ -243,7 +266,8 @@ class exports.CNEditor extends Backbone.View
                     sel.endLine = startLine.lineNext
                     @_deleteMultiLinesSelections()
                     e.preventDefault()
-                # if there is no next line : no modification, just prevent default action
+                # if there is no next line :
+                # no modification, just prevent default action
                 else
                     e.preventDefault()
             # 1.2 caret is in the middle of the line : nothing to do
@@ -865,6 +889,9 @@ class exports.CNEditor extends Backbone.View
     # 
     ###
     _deleteMultiLinesSelections : (startLine,endLine) ->
+        
+        sel = this.currentSel
+        
         # 0- variables
         if startLine != undefined
             range = rangy.createRange()
@@ -880,7 +907,7 @@ class exports.CNEditor extends Backbone.View
         endLineDepthAbs = endLine.lineDepthAbs
         startLineDepthAbs = startLine.lineDepthAbs
         deltaDepth = endLineDepthAbs - startLineDepthAbs
-
+       
         # 1- copy the end of endLine in a fragment
         range4fragment = rangy.createRangyRange()
         range4fragment.setStart(range.endContainer, range.endOffset)
@@ -894,22 +921,42 @@ class exports.CNEditor extends Backbone.View
                 endLine.lineType = 'T' + endLine.lineType[1]
                 endLine.line$.prop("class","#{endLine.lineType}-#{endLine.lineDepthAbs}")
             @markerList(endLine)
-
+            
+        ##################
+        console.log sel.sel.getRangeAt(0).startContainer
+        ##################
+        #
         # 3- delete lines
-        range.deleteContents() 
-
+        range.deleteContents()
+        ##################
+        # Okay, and now the caret escaped the container !?
+        console.log sel.sel.getRangeAt(0).startContainer
+        ##################
+         
         # 4- append fragment and delete endLine
         if startLine.line$[0].lastChild.nodeName == 'BR'
             startLine.line$[0].removeChild( startLine.line$[0].lastChild)
-        startLine.line$.append( endOfLineFragment )
-            # TODO : after append there is two span one after the other : if 
-            # they have the same class then we should concatenate them.
+        # TODO : after append there is two span one after the other : if 
+        # they have the same class then we should concatenate them.
+        # ____
+        # DONE : if both class are undefined we also concatenate them
+        startFrag = endOfLineFragment.childNodes[0]
+        myEndLine = startLine.line$[0].lastElementChild
+        if (startFrag.tagName == myEndLine.tagName == 'SPAN') and ((! $(startFrag).attr("class")? and ! $(myEndLine).attr("class")?) or ($(startFrag).attr("class") == $(myEndLine).attr("class")))
+            $(myEndLine).text( $(myEndLine).text()+$(startFrag).text() )
+            l=1
+            while l < endOfLineFragment.childNodes.length
+                $(endOfLineFragment.childNodes[l]).appendTo startLine.line$
+                l++
+        else
+            startLine.line$.append( endOfLineFragment )
+            
         startLine.lineNext = endLine.lineNext
         if endLine.lineNext != null
             endLine.lineNext.linePrev=startLine
         endLine.line$.remove()
         delete this._lines[endLine.lineID]
-
+        
         # 5- adapt the depth of the children and siblings of end line
             # in case the depth delta between start and end line is
             # greater than 0, then the structure is not correct : we reduce
@@ -944,14 +991,14 @@ class exports.CNEditor extends Backbone.View
                     @_line2titleList(firstLineAfterSiblingsOfDeleted)
                 else
                     @markerList(firstLineAfterSiblingsOfDeleted)
-
+        
         # 7- position caret
         range4caret = rangy.createRange()
-        range4caret.collapseToPoint(startContainer,startOffset)
+        range4caret.collapseToPoint(startContainer, startOffset)
         this.currentSel.sel.setSingleRange(range4caret)
         this.currentSel = null
 
-
+                
     ### ------------------------------------------------------------------------
     # Insert a line after a source line
     # p = 

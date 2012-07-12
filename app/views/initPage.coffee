@@ -6,7 +6,7 @@ CNcozyToMarkdown = require('views/cozyToMarkdown').CNcozyToMarkdown
 CNmarkdownToCozy = require('views/markdownToCozy').CNmarkdownToCozy
 cozy2md = new CNcozyToMarkdown()
 md2cozy = new CNmarkdownToCozy()
-# Module de test auto
+# Module de test automatique
 AutoTest = require('views/autoTest').AutoTest
 checker = new AutoTest()
 
@@ -93,115 +93,65 @@ exports.initPage =  ()->
             editorCtrler.titleList()
 
 
+        #### -------------------------------------------------------------------
         # Special buttons (to be removed later)
         #  > tests the code structure
         $("#checkBtn").on "click", () ->
             checker.checkLines(editorCtrler)
-        # $("#checkBtn").toggle(
-        #     () ->
-        #        checking = true
-        #        $("#checkBtn").html "Checking ON"
-        #    () ->
-        #        checking = false
-        #        $("#checkBtn").html "Checking OFF"
-        #    )
-        # editorBody$.on 'keyup' , () ->
-        #    if checking
-        #        checker.checkLines(editorCtrler)
-        #
         #  > translate cozy code into markdown and markdown to cozy code
         #    Note: in the markdown code there should be two \n between each line
         $("#CozyMarkdown").on "click", () ->
             $("#resultText").val(cozy2md.translate $("#resultText").val())
-        # $("#CozyMarkdown").toggle (
-        #     () ->
-        #         $("#CozyMarkdown").html "HTML"
-        #         $("#resultText").val(cozy2md.translate $("#resultText").val())
-        #     () ->
-        #         $("#CozyMarkdown").html "Markdown"
-        #         $("#resultText").val(md2cozy.translate $("#resultText").val())
-        #     )
+        $("#addClass").on "click", () ->
+            addClassToLines("sel")
+        $("#delClass").on "click", () ->
+            removeClassFromLines("sel")
+        ####
 
 
-        # Restores selection after the iframe has lost focus
-        restoreSelection = (sel) =>
-            # Let's try and schematize :
-            # <div><span>| </span><br></div>
-            #  offset <->^
-            #            Selection start 
-            # ...
-            # <div><span>     | </span></div> |
-            #       offset <->^               ^offset=1 (1 child between)
-            #       (Selection end can be tricky because of offset definition)
+        #### -------------------------------------------------------------------
+        # Restores a saved selection
+        restoreSelection = (sel) ->
             num = sel.rangeCount
             if num == 0
                 return
             for i in [0..num-1]
                 range = sel.getRangeAt(i)
-                
-                # and obviously i spent hours trying to build a copy of range...
-                # noooooooooooo
-                # 
-                #selStartContainer       = range.startContainer
-                #selStartContainerOffset = range.startOffset
-                #selEndContainer         = range.endContainer
-                #selEndContainerOffset   = range.endOffset
-                # restore selection (Rq : why offset+1 ?? very strange...)
-                #myRange = rangy.createRange()
-                # there was a +1 below, it shouldnt be here
-                #myRange.setStart(selStartContainer, selStartContainerOffset)
-                #myRange.setEnd(selEndContainer, selEndContainerOffset)
-                #console.log range
-                #console.log myRange
-                
                 sel.setSingleRange(range)
-                # sel.setSingleRange(myRange)
-                
             beautify(editorBody$)
-            
-            # it could be nice not to loose the focus when clicking buttons
-            # or such outside the inlineframe
-            editorBody$.focus()
+
         
-        # returns an object containing every selected line in the iframe
-        getSelectedLines = (sel) =>
-            myDivs = []
-            # 1. Fetches every selected DIVs (thank you Rangy ;-) )
-            #    so myDivs contains each of them (eventually several times)
-            # 
-            # if sthg is selected
+        #### -------------------------------------------------------------------
+        # Returns an object containing every selected line in the iframe
+        getSelectedLines = (sel) ->
+            myDivs = []             # Array containing each selected DIV
             if sel.rangeCount == 0
                 return
-            # for each selected area
+            #_For each selected area
             for i in [0..sel.rangeCount-1]
                 range = sel.getRangeAt(i)
-                # case of multiline selection (includes always at least one div)
-                divs = range.getNodes([1], (element) -> element.tagName=='DIV')
-                # if a div's CONTENT was selected
+                #_Case of multiline selection (includes always at least one div)
+                divs = range.getNodes([1], (element) -> element.nodeName=='DIV')
+                #_If a single DIV is selected
                 if divs.length == 0
-                    # nasty bug-counter: the whole body can be "selected"
-                    #   and we don't do anything if it occurs
-                    if range.commonAncestorContainer.tagName != 'BODY'
-                        # So... who's the father?
+                    # (bug-counter) the whole body can be "selected"
+                    if range.commonAncestorContainer.nodeName != 'BODY'
                         node = range.commonAncestorContainer
-                        while node.tagName != 'DIV'
-                            node = node.parentNode
-                        # node is the father
+                        if node.nodeName != 'DIV'
+                            node = $(node).parents("div")[0]
                         divs.push node
-                # We fill myDivs whith the encountered DIV
+                # We fill myDivs with the encountered DIV
                 k = 0
                 while k < divs.length
                     myDivs.push $(divs[k])
                     k++
-
             return myDivs
 
-
-        # Add the class at beginning of each (selected?) line
+            
+        #### -------------------------------------------------------------------
+        # Add class at beginning of lines
         addClassToLines = (mode) =>
-            
             sel = rangy.getIframeSelection(this.editorIframe)
-            
             if mode == "sel"
                 lines = getSelectedLines(sel)
                 k = 0
@@ -209,42 +159,16 @@ exports.initPage =  ()->
                     div = lines[k]
                     div.attr('toDisplay', div.attr('class') + '] ')
                     k++
-                
             else
                 lines = this._lines
                 for lineID of lines
                     div = $ lines[lineID].line$[0]
                     div.attr('toDisplay', div.attr('class') + '] ')
 
-            restoreSelection(sel)
-            
-        # Code below was commented, and would allow history selection
-        # 
-        # OPERATOR = ///  (Th|Tu|To|Lh|Lu|Lo)-\d+\] ///
-        # selectedStartContainer = range.startContainer
-        # selectedStartContainerOffset = range.startOffset
-        # selectedEndContainer = range.endContainer
-        # selectedEndContainerOffset = range.endOffset
-        # ...
-        # spanTextNode = line.line$[0].firstChild.firstChild
-        # if no history expected
-        # if spanTextNode != null
-        #     textOriginal = spanTextNode.textContent
-        #     spanTextNode.textContent = "#{line.lineType}-#{line.lineDepthAbs}] " + textOriginal.replace(OPERATOR,"")
-        # if history expected
-        # span.textContent = "#{line.lineType}-#{line.lineDepthAbs}] " + textOriginal
-        # restore selection (Rq : why offset+1 ?? very strange...)
-        # range = rangy.createRange()
-        # range.setStart(selectedStartContainer,selectedStartContainerOffset+1)
-        # range.setEnd(selectedEndContainer,selectedEndContainerOffset+1)
-        # sel.setSingleRange(range)
-        # beautify(editorBody$)
-                
-        # Remove the class at beginning of each (selected?) line
+        #### -------------------------------------------------------------------
+        # Remove class from beginning of lines
         removeClassFromLines = (mode) =>
-            
             sel = rangy.getIframeSelection(this.editorIframe)
-
             if mode == "sel"
                 lines = getSelectedLines(sel)
                 k = 0
@@ -257,13 +181,9 @@ exports.initPage =  ()->
                 for lineID of lines
                     div = $ lines[lineID].line$[0]
                     div.attr('toDisplay', '')
-                    
-            restoreSelection(sel)
-            
-        # Code below was commented, and would allow history selection
-        # same code treating saving selection management just like addClassToLines
 
-        # active/désactive les classes dvt toutes les lignes
+        #### -------------------------------------------------------------------
+        # (de)Activates class auto-display at the beginning of lines
         $("#addClass2LineBtn").on "click", () ->
             addClassToLines()
             if editor_doAddClasseToLines
@@ -276,11 +196,8 @@ exports.initPage =  ()->
                 editor_doAddClasseToLines = true
                 editorBody$.on 'keyup' , addClassToLines
 
-        # bouton qui ajoute les classes dvt les lignes sélectionnées
-        $("#addClass").on "click", () ->
-            addClassToLines("sel")
-        $("#delClass").on "click", () ->
-            removeClassFromLines("sel")
+
+
             
         # default behaviour regarding the class at the beginning of the line :
         # comment or uncomment depending default expected behaviour
@@ -289,11 +206,15 @@ exports.initPage =  ()->
         # editorBody$.on 'keyup', addClassToLines
         # editor_doAddClasseToLines = true
 
+
         # display whether the user has moved the carret with keyboard or mouse.
-        this.editorBody$.on 'mouseup'  , ()->
+        this.editorBody$.on 'mouseup' , () =>
             this.newPosition = true
             $("#editorPropertiesDisplay").text("newPosition = true")
-
+      
     # creation of the editor
     editor = new CNEditor( $('#editorIframe')[0], cb )
     return editor
+
+# it could useful to give the focus back the iframe in order to avoid loosing
+# current selection when clicking outside (on a button for instance)

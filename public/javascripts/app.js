@@ -192,7 +192,7 @@ window.require.define({"views/autoTest": function(exports, require, module) {
       */
 
       AutoTest.prototype.checkLines = function(CNEditor) {
-        var child, children, currentLine, depth, element, i, id, lastClass, myAncestor, newNode, nextLine, node, nodeType, objDiv, possibleSon, prevLine, recVerif, root, rootLine, type, _ref;
+        var child, children, currentLine, depth, element, i, id, lastClass, myAncestor, newNode, nextLine, node, nodeType, objDiv, possibleSon, prevLine, recVerif, root, rootLine, type;
         console.log('Detecting incoherences...');
         possibleSon = {
           "Th": function(name) {
@@ -254,9 +254,6 @@ window.require.define({"views/autoTest": function(exports, require, module) {
         while (nextLine !== null) {
           type = nodeType(nextLine.lineType);
           depth = nextLine.lineDepthAbs;
-          if (!((id(prevLine) + 2 === (_ref = id(currentLine) + 1) && _ref === id(nextLine)))) {
-            return alert("ERROR: invalid line " + nextLine.lineID + "\n (" + nextLine.lineType + "-" + nextLine.lineDepthAbs + " has wrong identifier)");
-          }
           element = CNEditor.editorBody$.children("#" + nextLine.lineID);
           if (element === null) {
             return alert("ERROR: invalid line " + nextLine.lineID + "\n (" + nextLine.lineType + "-" + nextLine.lineDepthAbs + " has no matching DIV)");
@@ -325,15 +322,15 @@ window.require.define({"views/autoTest": function(exports, require, module) {
             myId = $(this).attr('id');
             if (/CNID_[0-9]+/.test(myId)) {
               if (!(CNEditor._lines[myId] != null)) {
-                return alert("uh oh... missing line " + myId);
+                return alert("ERROR: missing line " + myId);
               }
             }
           }
         });
         recVerif = function(node) {
-          var i, _ref2;
+          var i, _ref;
           if (node.sons.length > 0) {
-            for (i = 0, _ref2 = node.sons.length - 1; 0 <= _ref2 ? i <= _ref2 : i >= _ref2; 0 <= _ref2 ? i++ : i--) {
+            for (i = 0, _ref = node.sons.length - 1; 0 <= _ref ? i <= _ref : i >= _ref; 0 <= _ref ? i++ : i--) {
               child = node.sons[i];
               if (!possibleSon[node.line.lineType](child.line.lineType)) {
                 return alert("ERROR: invalid line " + child.line.lineID + "\n (hierarchic issue of a " + child.line.lineType + "-" + child.line.lineDepthAbs + ")");
@@ -352,6 +349,21 @@ window.require.define({"views/autoTest": function(exports, require, module) {
           }
         };
         return recVerif(root);
+      };
+
+      AutoTest.prototype.selectArea = function(CNEditor, start, startOffset, end, endOffset) {
+        var myRange, sel;
+        sel = rangy.getIframeSelection(CNEditor.editorIframe);
+        myRange = rangy.createRange();
+        myRange.startContainer = CNEditor.editorBody$.children("#CNID_" + start)[0];
+        myRange.startOffset = startOffset;
+        myRange.endContainer = CNEditor.editorBody$.children("#CNID_" + end)[0];
+        myRange.endOffset = endOffset;
+        console.log(myRange);
+        sel.removeAllRanges();
+        console.log(sel);
+        sel.setSingleRange(myRange);
+        return console.log(sel);
       };
 
       return AutoTest;
@@ -666,7 +678,7 @@ window.require.define({"views/editor": function(exports, require, module) {
       */
 
       /*
-          # SHORTCUT
+          # SHORTCUT  |-----------------------> (suggestion: see jquery.hotkeys.js ? )
           #
           # Definition of a shortcut : 
           #   a combination alt,ctrl,shift,meta
@@ -681,7 +693,7 @@ window.require.define({"views/editor": function(exports, require, module) {
       */
 
       CNEditor.prototype._keyPressListener = function(e) {
-        var div, keyStrokesCode, metaKeyStrokesCode, range4sel, sel, shortcut;
+        var div, elt, i, keyStrokesCode, metaKeyStrokesCode, num, offset, range, sel, shortcut, _ref;
         metaKeyStrokesCode = (e.altKey ? "Alt" : "") + 
                                 (e.ctrlKey ? "Ctrl" : "") + 
                                 (e.shiftKey ? "Shift" : "");
@@ -749,12 +761,31 @@ window.require.define({"views/editor": function(exports, require, module) {
             this.newPosition = false;
             $("#editorPropertiesDisplay").text("newPosition = false");
             sel = rangy.getIframeSelection(this.editorIframe);
-            div = sel.getRangeAt(0).startContainer;
-            if (div.nodeName !== "DIV") div = $(div).parents("div")[0];
-            if (div.innerHTML === "<span></span><br>") {
-              range4sel = rangy.createRange();
-              range4sel.collapseToPoint(div.firstChild, 0);
-              sel.setSingleRange(range4sel);
+            num = sel.rangeCount;
+            if (num > 0) {
+              for (i = 0, _ref = num - 1; 0 <= _ref ? i <= _ref : i >= _ref; 0 <= _ref ? i++ : i--) {
+                range = sel.getRangeAt(i);
+                if (range.endContainer.nodeName === "DIV") {
+                  div = range.endContainer;
+                  elt = div.lastChild.previousElementSibling;
+                  if (elt.firstChild != null) {
+                    offset = $(elt.firstChild).text().length;
+                    range.setEnd(elt.firstChild, offset);
+                  } else {
+                    range.setEnd(elt, 0);
+                  }
+                }
+                if (range.startContainer.nodeName === "DIV") {
+                  div = range.startContainer;
+                  elt = div.firstChild;
+                  if (elt.firstChild != null) {
+                    offset = 0;
+                    range.setStart(elt.firstChild, offset);
+                  } else {
+                    range.setStart(elt, 0);
+                  }
+                }
+              }
             }
           }
         }
@@ -784,7 +815,7 @@ window.require.define({"views/editor": function(exports, require, module) {
       };
 
       /* ------------------------------------------------------------------------
-      #  Manage deletions when ŝuppr key is pressed
+      #  Manage deletions when suppr key is pressed
       */
 
       CNEditor.prototype._suppr = function(e) {
@@ -1449,7 +1480,8 @@ window.require.define({"views/editor": function(exports, require, module) {
       */
 
       CNEditor.prototype._deleteMultiLinesSelections = function(startLine, endLine) {
-        var deltaDepth, deltaDepth1stLine, depthSibling, endLineDepthAbs, endOfLineFragment, firstLineAfterSiblingsOfDeleted, line, newDepth, prevSiblingType, range, range4caret, range4fragment, startContainer, startLineDepthAbs, startOffset;
+        var deltaDepth, deltaDepth1stLine, depthSibling, endLineDepthAbs, endOfLineFragment, firstLineAfterSiblingsOfDeleted, l, line, myEndLine, newDepth, prevSiblingType, range, range4caret, range4fragment, sel, startContainer, startFrag, startLineDepthAbs, startOffset, _ref;
+        sel = this.currentSel;
         if (startLine !== void 0) {
           range = rangy.createRange();
           range.setStartBefore(startLine.line$);
@@ -1476,11 +1508,24 @@ window.require.define({"views/editor": function(exports, require, module) {
           }
           this.markerList(endLine);
         }
+        console.log(sel.sel.getRangeAt(0).startContainer);
         range.deleteContents();
+        console.log(sel.sel.getRangeAt(0).startContainer);
         if (startLine.line$[0].lastChild.nodeName === 'BR') {
           startLine.line$[0].removeChild(startLine.line$[0].lastChild);
         }
-        startLine.line$.append(endOfLineFragment);
+        startFrag = endOfLineFragment.childNodes[0];
+        myEndLine = startLine.line$[0].lastElementChild;
+        if (((startFrag.tagName === (_ref = myEndLine.tagName) && _ref === 'SPAN')) && ((!($(startFrag).attr("class") != null) && !($(myEndLine).attr("class") != null)) || ($(startFrag).attr("class") === $(myEndLine).attr("class")))) {
+          $(myEndLine).text($(myEndLine).text() + $(startFrag).text());
+          l = 1;
+          while (l < endOfLineFragment.childNodes.length) {
+            $(endOfLineFragment.childNodes[l]).appendTo(startLine.line$);
+            l++;
+          }
+        } else {
+          startLine.line$.append(endOfLineFragment);
+        }
         startLine.lineNext = endLine.lineNext;
         if (endLine.lineNext !== null) endLine.lineNext.linePrev = startLine;
         endLine.line$.remove();
@@ -1887,6 +1932,12 @@ window.require.define({"views/initPage": function(exports, require, module) {
         $("#CozyMarkdown").on("click", function() {
           return $("#resultText").val(cozy2md.translate($("#resultText").val()));
         });
+        $("#addClass").on("click", function() {
+          return addClassToLines("sel");
+        });
+        $("#delClass").on("click", function() {
+          return removeClassFromLines("sel");
+        });
         restoreSelection = function(sel) {
           var i, num, range, _ref;
           num = sel.rangeCount;
@@ -1904,14 +1955,12 @@ window.require.define({"views/initPage": function(exports, require, module) {
           for (i = 0, _ref = sel.rangeCount - 1; 0 <= _ref ? i <= _ref : i >= _ref; 0 <= _ref ? i++ : i--) {
             range = sel.getRangeAt(i);
             divs = range.getNodes([1], function(element) {
-              return element.tagName === 'DIV';
+              return element.nodeName === 'DIV';
             });
             if (divs.length === 0) {
-              if (range.commonAncestorContainer.tagName !== 'BODY') {
+              if (range.commonAncestorContainer.nodeName !== 'BODY') {
                 node = range.commonAncestorContainer;
-                while (node.tagName !== 'DIV') {
-                  node = node.parentNode;
-                }
+                if (node.nodeName !== 'DIV') node = $(node).parents("div")[0];
                 divs.push(node);
               }
             }
@@ -1924,44 +1973,50 @@ window.require.define({"views/initPage": function(exports, require, module) {
           return myDivs;
         };
         addClassToLines = function(mode) {
-          var div, k, lineID, lines, sel;
+          var div, k, lineID, lines, sel, _results, _results2;
           sel = rangy.getIframeSelection(_this.editorIframe);
           if (mode === "sel") {
             lines = getSelectedLines(sel);
             k = 0;
+            _results = [];
             while (k < lines.length) {
               div = lines[k];
               div.attr('toDisplay', div.attr('class') + '] ');
-              k++;
+              _results.push(k++);
             }
+            return _results;
           } else {
             lines = _this._lines;
+            _results2 = [];
             for (lineID in lines) {
               div = $(lines[lineID].line$[0]);
-              div.attr('toDisplay', div.attr('class') + '] ');
+              _results2.push(div.attr('toDisplay', div.attr('class') + '] '));
             }
+            return _results2;
           }
-          return restoreSelection(sel);
         };
         removeClassFromLines = function(mode) {
-          var div, k, lineID, lines, sel;
+          var div, k, lineID, lines, sel, _results, _results2;
           sel = rangy.getIframeSelection(_this.editorIframe);
           if (mode === "sel") {
             lines = getSelectedLines(sel);
             k = 0;
+            _results = [];
             while (k < lines.length) {
               div = lines[k];
               div.attr('toDisplay', '');
-              k++;
+              _results.push(k++);
             }
+            return _results;
           } else {
             lines = _this._lines;
+            _results2 = [];
             for (lineID in lines) {
               div = $(lines[lineID].line$[0]);
-              div.attr('toDisplay', '');
+              _results2.push(div.attr('toDisplay', ''));
             }
+            return _results2;
           }
-          return restoreSelection(sel);
         };
         $("#addClass2LineBtn").on("click", function() {
           addClassToLines();
@@ -1976,14 +2031,8 @@ window.require.define({"views/initPage": function(exports, require, module) {
             return editorBody$.on('keyup', addClassToLines);
           }
         });
-        $("#addClass").on("click", function() {
-          return addClassToLines("sel");
-        });
-        $("#delClass").on("click", function() {
-          return removeClassFromLines("sel");
-        });
         return this.editorBody$.on('mouseup', function() {
-          this.newPosition = true;
+          _this.newPosition = true;
           return $("#editorPropertiesDisplay").text("newPosition = true");
         });
       };
