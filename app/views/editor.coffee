@@ -624,11 +624,11 @@ class exports.CNEditor extends Backbone.View
                     lineNext = line.lineNext
                     lineTypeTarget = null
                     while lineNext != null and lineNext.lineDepthAbs >= line.lineDepthAbs
-                        if lineNext.lineDepthAbs==line.lineDepthAbs + 1
+                        if lineNext.lineDepthAbs != line.lineDepthAbs + 1
+                            lineNext = lineNext.lineNext
+                        else
                             lineTypeTarget = lineNext.lineType
                             lineNext=null
-                        else
-                            lineNext = lineNext.lineNext
                     if lineTypeTarget == null
                         linePrev = line.linePrev
                         while linePrev != null and linePrev.lineDepthAbs >= line.lineDepthAbs
@@ -949,8 +949,7 @@ class exports.CNEditor extends Backbone.View
             endLine.lineNext.linePrev=startLine
         endLine.line$.remove()
         delete this._lines[endLine.lineID]
-        
-        # 5- adapt the depth of the children and siblings of end line
+        # 5- adapt the depth of the children and following siblings of end line
             # in case the depth delta between start and end line is
             # greater than 0, then the structure is not correct : we reduce
             # the depth of all the children and siblings of endLine.
