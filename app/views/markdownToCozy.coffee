@@ -39,7 +39,18 @@ class exports.CNmarkdownToCozy extends Backbone.View
         # current depth
         depth = 0
         
-        # Reads recursively through the lines
+        # Read sections sequentially
+        readHtml = (obj) ->
+            tag = obj[0].tagName
+            if tag[0] == "H"       # c'est un titre (h1...h6)
+                depth = parseInt(tag[1],10)
+                cozyCode += cozyTurn("Th", depth, obj)
+            else if tag == "P"     # ligne de titre
+                cozyCode += cozyTurn("Lh", depth, obj)
+            else
+                recRead(obj, "u")
+                
+        # Reads recursively through the lists
         recRead = (obj, status) ->
             tag = obj[0].tagName
             if tag == "UL"
@@ -53,28 +64,19 @@ class exports.CNmarkdownToCozy extends Backbone.View
                     recRead($(@), "o")
                 depth--
             else if tag == "LI" && obj.contents().get(0)?
-            
                 # cas du <li>Un seul titre sans lignes en-dessous</li>
                 if obj.contents().get(0).nodeName == "#text"
                     obj = obj.clone().wrap('<p></p>').parent()
                 for i in [0..obj.children().length-1]
                     child = $ obj.children().get i
                     if i == 0
-                        if child.attr("class") == "TH"
-                            cozyCode += cozyTurn("Th", depth, child)
-                        else
-                            cozyCode += cozyTurn("T#{status}", depth, child)
+                        cozyCode += cozyTurn("T#{status}", depth, child)
                     else
-                        if child.attr("class") == "TH"
-                            recRead(child, "h")
-                        else
-                            recRead(child, status)
-                        
+                        recRead(child, status)
             else if tag == "P"
                 cozyCode += cozyTurn("L#{status}", depth, obj)
 
-
         htmlCode.children().each () ->
-            recRead($(@), "u")
+            readHtml $ @
         
         return cozyCode

@@ -60,10 +60,18 @@ exports.initPage =  ()->
         # $("#logKeysBtn").on "click", () ->
         #     editorCtrler.replaceContent( require('./templates/contentFull') )
         #     beautify(editorBody$)
-        # $("#printRangeBtn").on "click", () ->
-        #     editorCtrler.replaceContent( require('./templates/contentFull') )
-        #     beautify(editorBody$)
-        $('#contentSelect').on "change" , (e) ->
+        $("#printRangeBtn").on "click", () ->
+            sel = rangy.getIframeSelection(editorCtrler.editorIframe)
+            i = 0
+            l = sel.rangeCount
+            console.log "Printing current ranges"
+            while i<l
+                console.log "Range N°#{i}"
+                range = sel.getRangeAt(i)
+                console.log "offsets:  start=#{range.startOffset}  -  end=#{range.endOffset}"
+                console.log range.startContainer
+                console.log range.endContainer
+        $('#fileSelect').on "change" , (e) ->
             console.log "./templates/#{e.currentTarget.value}"
             editorCtrler.replaceContent( require("./templates/#{e.currentTarget.value}") )
             beautify(editorBody$)
@@ -88,8 +96,10 @@ exports.initPage =  ()->
             checker.checkLines(editorCtrler)
         #  > translate cozy code into markdown and markdown to cozy code
         #    Note: in the markdown code there should be two \n between each line
-        $("#CozyMarkdown").on "click", () ->
+        $("#markdownBtn").on "click", () ->
             $("#resultText").val(cozy2md.translate $("#resultText").val())
+        $("#cozyBtn").on "click", () ->
+            $("#resultText").val(md2cozy.translate $("#resultText").val())
         $("#addClass").toggle(
             () ->
                 addClassToLines("sel")
@@ -173,7 +183,7 @@ exports.initPage =  ()->
                     div.attr('toDisplay', '')
 
         #### -------------------------------------------------------------------
-        # (de)Activates class auto-display at the beginning of lines
+        # (de)activates class auto-display at the beginning of lines
         $("#addClass2LineBtn").on "click", () ->
             addClassToLines()
             if editor_doAddClasseToLines
@@ -185,9 +195,6 @@ exports.initPage =  ()->
                 $("#addClass2LineBtn").html "Hide Class on Lines"
                 editor_doAddClasseToLines = true
                 editorBody$.on 'keyup' , addClassToLines
-
-
-
             
         # default behaviour regarding the class at the beginning of the line :
         # comment or uncomment depending default expected behaviour
@@ -195,7 +202,6 @@ exports.initPage =  ()->
         # $("#addClass2LineBtn").html "Hide Class on Lines"
         # editorBody$.on 'keyup', addClassToLines
         # editor_doAddClasseToLines = true
-
 
         # display whether the user has moved the carret with keyboard or mouse.
         this.editorBody$.on 'mouseup' , () =>
@@ -205,6 +211,3 @@ exports.initPage =  ()->
     # creation of the editor
     editor = new CNEditor( $('#editorIframe')[0], cb )
     return editor
-
-# it could useful to give the focus back the iframe in order to avoid loosing
-# current selection when clicking outside (on a button for instance)

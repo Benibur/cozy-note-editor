@@ -16,7 +16,6 @@
     //-     li
     //-       a(href="#") another action
     select#contentSelect
-      option(style="display:block") --   Select a file    --
       option(value="content-full", style="display:block") Full note
       option(value="content-full-marker", style="display:block") Tout en puces
       option(value="content-shortlines-marker", style="display:block") Tout en puce, lignes courtes
@@ -34,7 +33,6 @@
       option(value="test_9", style="display:block") Test numero 9
       option(value="test_10", style="display:block") Test numero 10
       option(value="test_11", style="display:block") Test numero 11
-
     select#cssSelect
       option(value="images/editor2.css", style="display:block") css1
       option(value="stylesheets/app.css", style="display:block") css2
@@ -60,10 +58,11 @@
             .table-ly-hder
               #resultBtnBar.btn-group
                 button#resultBtnBar_coller.btn.btn-small.btn-primary Coller
-                button#CozyMarkdown.btn.btn-small.btn-primary Markdown
+                button#markdownBtn.btn.btn-small.btn-primary Convert to Markdown
+                button#cozyBtn.btn.btn-small.btn-primary Convert to Cozy
                 button.btn.btn-small.btn-primary -
                 button.btn.btn-small.btn-primary -
-                button#checkBtn.btn.btn-small.btn-primary Run Test !
+                button#checkBtn.btn.btn-small.btn-primary Run syntax test
               p#editorPropertiesDisplay
             // text for the resulting html
             #resultContent.table-ly-ctnt
