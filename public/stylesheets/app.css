@@ -4190,41 +4190,6 @@ a.thumbnail:hover {
 .invisible {
   visibility: hidden;
 }
-body{background:#91a2c0;font:bold 18px "Helvetica Neue",Arial,Helvetica,sans-serif}
-ul{list-style-type:none}
-a,a:visited{color:#f95a5a;text-decoration:none}
-a:hover{color:#665248}
-#home-view{width:600px;height:200px;margin:20px auto}
-body{font-size:15px;color:#666;background:#fff;font-family:"KievitPro","ff-kievit-web-pro-1","ff-kievit-web-pro-2","Helvetica Neue",Arial,Helvetica,sans-serif}
-h1,h2,h3,h4,h5{font-weight:normal;color:#222;clear:left}
-h1{font-size:5em;line-height:1.4;margin-bottom:.5em}
-h2{font-size:2em;line-height:1;margin-bottom:.5em}
-p{margin:0 0 1.5em}
-a:focus,a:hover{color:#f95a5a;text-decoration:underline}
-a{color:#f95a5a;text-decoration:none}
-#content{width:605px;margin:0 auto;margin-top:40px;margin-bottom:60px}
-h1{background:#91a2c0;background-repeat:no-repeat;background-position:2px;color:#fff;width:330px;padding-left:138px;-webkit-border-radius:5px;-moz-border-radius:5px;border-radius:5px}
-#props{position:relative;top:36px;font-size:18px;padding-left:373px;color:#eee;font-style:italic}
-html,body{width:100%;height:100%;padding:0;margin:0;overflow:hidden;border-spacing:5px}
-#main{background-color:#eee}
-.table-ly-wrpr{display:table;width:100%;height:100%;table-layout:fixed}
-.table-ly-hder{display:table-row;width:100%;border-spacing:0}
-.table-ly-ctnt{display:table-cell;height:100%}
-.monWell{border:1px solid rgba(0,0,0,0.12);border-radius:7px 7px 7px 7px;box-shadow:0 1px 1px rgba(0,0,0,0.05) inset;padding:0;margin:0;height:100%}
-#well-editor{background-color:#333}
-#well-result{background-color:#fff}
-#col-wrap{display:table;border-spacing:10px;width:100%;height:100%}
-#editor-col{display:table-cell;width:50%;height:100%;padding-right:0}
-#result-col{display:table-cell;vertical-align:top}
-#generalBtnBar{padding:0 7px 0 10px;position:relative;top:10px}
-#editorDiv{height:100%;border-spacing:7px}
-#editorContent{padding:0;overflow:hidden;word-wrap:break-word}
-#editorIframe{width:100%;height:100%;overflow:hidden;display:inline-block;font-size:13px;border:0;width:100%;height:100%;margin-bottom:9px}
-#resultDiv{border-spacing:7px}
-#resultContent,#resultText{background-color:#e9eef2;width:100%;height:100%;padding:0;margin:0;position:relative;top:-2px;left:-1px}
-#editorBtnBar{padding:7px 7px 0 7px}
-#resultBtnBar{padding:7px 7px 0 7px}
-#divMainBtn *{display:inline-block;vertical-align:middle}
 #__ed-iframe-html{background-color:#333}
 #__ed-iframe-body{overflow:auto;box-sizing:border-box;-moz-box-sizing:border-box;border:1px solid #333;border-radius:5px 5px 5px 5px;-moz-transition:border .2s linear 0,box-shadow .2s linear 0;box-shadow:inset 0 0 6px rgba(0,0,0,0.80);position:relative;left:0;top:0;font:normal 13px "Helvetica Neue",Arial,Helvetica,sans-serif;color:#8c9ea0;background-color:#042029}
 #nav{width:200px;height:400px;float:right;background-color:#282923;opacity:.5;border:1px solid #413838}
@@ -4284,6 +4249,41 @@ h4{font-size:1em}
 h5{font-size:.83em}
 h6{font-size:.75em}
 img{border:0}
+body{background:#91a2c0;font:bold 18px "Helvetica Neue",Arial,Helvetica,sans-serif}
+ul{list-style-type:none}
+a,a:visited{color:#f95a5a;text-decoration:none}
+a:hover{color:#665248}
+#home-view{width:600px;height:200px;margin:20px auto}
+body{font-size:15px;color:#666;background:#fff;font-family:"KievitPro","ff-kievit-web-pro-1","ff-kievit-web-pro-2","Helvetica Neue",Arial,Helvetica,sans-serif}
+h1,h2,h3,h4,h5{font-weight:normal;color:#222;clear:left}
+h1{font-size:5em;line-height:1.4;margin-bottom:.5em}
+h2{font-size:2em;line-height:1;margin-bottom:.5em}
+p{margin:0 0 1.5em}
+a:focus,a:hover{color:#f95a5a;text-decoration:underline}
+a{color:#f95a5a;text-decoration:none}
+#content{width:605px;margin:0 auto;margin-top:40px;margin-bottom:60px}
+h1{background:#91a2c0;background-repeat:no-repeat;background-position:2px;color:#fff;width:330px;padding-left:138px;-webkit-border-radius:5px;-moz-border-radius:5px;border-radius:5px}
+#props{position:relative;top:36px;font-size:18px;padding-left:373px;color:#eee;font-style:italic}
+html,body{width:100%;height:100%;padding:0;margin:0;overflow:hidden;border-spacing:5px}
+#main{background-color:#eee}
+.table-ly-wrpr{display:table;width:100%;height:100%;table-layout:fixed}
+.table-ly-hder{display:table-row;width:100%;border-spacing:0}
+.table-ly-ctnt{display:table-cell;height:100%}
+.monWell{border:1px solid rgba(0,0,0,0.12);border-radius:7px 7px 7px 7px;box-shadow:0 1px 1px rgba(0,0,0,0.05) inset;padding:0;margin:0;height:100%}
+#well-editor{background-color:#333}
+#well-result{background-color:#fff}
+#col-wrap{display:table;border-spacing:10px;width:100%;height:100%}
+#editor-col{display:table-cell;width:50%;height:100%;padding-right:0}
+#result-col{display:table-cell;vertical-align:top}
+#generalBtnBar{padding:0 7px 0 10px;position:relative;top:10px}
+#editorDiv{height:100%;border-spacing:7px}
+#editorContent{padding:0;overflow:hidden;word-wrap:break-word}
+#editorIframe{width:100%;height:100%;overflow:hidden;display:inline-block;font-size:13px;border:0;width:100%;height:100%;margin-bottom:9px}
+#resultDiv{border-spacing:7px}
+#resultContent,#resultText{background-color:#e9eef2;width:100%;height:100%;padding:0;margin:0;position:relative;top:-2px;left:-1px}
+#editorBtnBar{padding:7px 7px 0 7px}
+#resultBtnBar{padding:7px 7px 0 7px}
+#divMainBtn *{display:inline-block;vertical-align:middle}
 /* ==|== non-semantic helper classes ========================================
    Please define your styles before this section.
    ========================================================================== */

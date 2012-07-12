@@ -10,15 +10,15 @@ class exports.CNcozyToMarkdown extends Backbone.View
         
         # The future converted line
         markCode = ''
+
+        # current depth
+        currDepth = 1
         
         # converts a fragment of a line
         converter = {
-            '#text': (obj) ->
-                return obj.text()
-                
             'A': (obj) ->
                 title = if obj.attr('title')? then obj.attr('title') else ""
-                href = if obj.attr('href')? then obj.attr('href') else ""
+                href  = if obj.attr('href')? then obj.attr('href') else ""
                 return '[' + obj.html() + '](' + href + ' "' + title + '")'
                     
             'IMG': (obj) ->
@@ -31,31 +31,26 @@ class exports.CNcozyToMarkdown extends Backbone.View
                 return obj.text()
             }
 
-        # OL numerotation; the n-th case contains the current numero at depth n
-        index = []
         
         # markup symboles
         markup = {
             'Th' : (blanks, depth) ->
-                if depth < index.length
-                    index[depth] = 0
-                return "\n" + blanks + "* # "
+                # a title is a section rupture
+                currDepth = depth
+                dieses = ''
+                i = 0
+                while i < depth
+                    dieses += '#'
+                    i++
+                return "\n" + dieses + ' '
             'Lh' : (blanks, depth) ->
-                return "\n" + blanks + "    "
+                return "\n"
             'Tu' : (blanks, depth) ->
-                if depth < index.length
-                    index[depth] = 0
                 return "\n" + blanks + "+   "
             'Lu' : (blanks, depth) ->
                 return "\n" + blanks + "    "
             'To' : (blanks, depth) ->
-                #alert index
-                #alert depth
-                if depth >= index.length
-                    for i in [0..depth-index.length]
-                        index.push 0
-                index[depth]++
-                return "\n" + blanks + "#{index[depth]}.   "
+                return "\n" + blanks + "1.   "
             'Lo' : (blanks, depth) ->
                 return "\n" + blanks + "    "
             }
@@ -68,7 +63,7 @@ class exports.CNcozyToMarkdown extends Backbone.View
             depth = parseInt(tab[1], 10) # depth (1,2,3...)
             blanks = ''
             i = 1
-            while i < depth
+            while i < depth - currDepth
                 blanks += '    '
                 i++
             return markup[type](blanks, depth)

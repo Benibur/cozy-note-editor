@@ -57,19 +57,7 @@ exports.initPage =  ()->
             beautify(editorBody$)
         $("#resultBtnBar_coller").on  'click' , ->
             beautify(editorBody$)
-        $("#EmptyTextBtn").on "click", () ->
-            editorCtrler.replaceContent( require('./templates/content-empty') )
-            beautify(editorBody$)        
-        $("#SimpleTextBtn").on "click", () ->
-            editorCtrler.replaceContent( require('./templates/content-simple') )
-            beautify(editorBody$)
-        $("#FullTextBtn").on "click", () ->
-            editorCtrler.replaceContent( require('./templates/content-full') )
-            beautify(editorBody$)        
         # $("#logKeysBtn").on "click", () ->
-        #     editorCtrler.replaceContent( require('./templates/contentFull') )
-        #     beautify(editorBody$)
-        # $("#logRangeBtn").on "click", () ->
         #     editorCtrler.replaceContent( require('./templates/contentFull') )
         #     beautify(editorBody$)
         # $("#printRangeBtn").on "click", () ->
@@ -102,10 +90,12 @@ exports.initPage =  ()->
         #    Note: in the markdown code there should be two \n between each line
         $("#CozyMarkdown").on "click", () ->
             $("#resultText").val(cozy2md.translate $("#resultText").val())
-        $("#addClass").on "click", () ->
-            addClassToLines("sel")
-        $("#delClass").on "click", () ->
-            removeClassFromLines("sel")
+        $("#addClass").toggle(
+            () ->
+                addClassToLines("sel")
+            () ->
+                removeClassFromLines("sel")
+            )
         ####
 
 
