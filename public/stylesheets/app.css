@@ -4190,21 +4190,6 @@ a.thumbnail:hover {
 .invisible {
   visibility: hidden;
 }
-body{background:#91a2c0;font:bold 18px "Helvetica Neue",Arial,Helvetica,sans-serif}
-ul{list-style-type:none}
-a,a:visited{color:#f95a5a;text-decoration:none}
-a:hover{color:#665248}
-#home-view{width:600px;height:200px;margin:20px auto}
-body{font-size:15px;color:#666;background:#fff;font-family:"KievitPro","ff-kievit-web-pro-1","ff-kievit-web-pro-2","Helvetica Neue",Arial,Helvetica,sans-serif}
-h1,h2,h3,h4,h5{font-weight:normal;color:#222;clear:left}
-h1{font-size:5em;line-height:1.4;margin-bottom:.5em}
-h2{font-size:2em;line-height:1;margin-bottom:.5em}
-p{margin:0 0 1.5em}
-a:focus,a:hover{color:#f95a5a;text-decoration:underline}
-a{color:#f95a5a;text-decoration:none}
-#content{width:605px;margin:0 auto;margin-top:40px;margin-bottom:60px}
-h1{background:#91a2c0;background-repeat:no-repeat;background-position:2px;color:#fff;width:330px;padding-left:138px;-webkit-border-radius:5px;-moz-border-radius:5px;border-radius:5px}
-#props{position:relative;top:36px;font-size:18px;padding-left:373px;color:#eee;font-style:italic}
 #__ed-iframe-html{background-color:#333}
 #__ed-iframe-body{overflow:auto;box-sizing:border-box;-moz-box-sizing:border-box;border:1px solid #333;border-radius:5px 5px 5px 5px;-moz-transition:border .2s linear 0,box-shadow .2s linear 0;box-shadow:inset 0 0 6px rgba(0,0,0,0.80);position:relative;left:0;top:0;font:normal 13px "Helvetica Neue",Arial,Helvetica,sans-serif;color:#8c9ea0;background-color:#042029}
 #nav{width:200px;height:400px;float:right;background-color:#282923;opacity:.5;border:1px solid #413838}
@@ -4232,14 +4217,31 @@ dd{margin-left:32px}
 .Tu-4{margin-left:80px;display:list-item;list-style-type:circle}
 .Tu-5{margin-left:100px;display:list-item}
 .Th-1{padding-left:5px;margin-left:0;margin-top:12px;display:list-item;list-style-type:none;border-radius:5px 5px 5px 5px;color:#fe9d41;width:100%;box-sizing:border-box;-moz-box-sizing:border-box;text-transform:uppercase;font-weight:bold;counter-increment:section1;counter-reset:section2 0;counter-reset:section3;counter-reset:section4}
-.Th-1:before{content:counter(section1) " "}
+.Th-1:before{content:counter(section1) " " attr(toDisplay)}
 .Th-2{padding-left:20px;margin-left:0;margin-top:5px;color:#52e3f6;counter-increment:section2;counter-reset:section3;counter-reset:section4}
-.Th-2:before{content:counter(section1) "." counter(section2) " "}
+.Th-2:before{content:counter(section1) "." counter(section2) " " attr(toDisplay)}
 .Th-3{padding-left:40px;margin-left:0;margin-top:5px;color:#859900;counter-increment:section3;counter-reset:section4}
-.Th-3:before{content:counter(section1) "." counter(section2) "." counter(section3) " "}
+.Th-3:before{content:counter(section1) "." counter(section2) "." counter(section3) " " attr(toDisplay)}
 .Th-4{padding-left:60px;margin-left:0;margin-top:5px;color:#586408;counter-increment:section4}
-.Th-4:before{content:counter(section1) "." counter(section2) "." counter(section3) "." counter(section4) " "}
+.Th-4:before{content:counter(section1) "." counter(section2) "." counter(section3) "." counter(section4) " " attr(toDisplay)}
 .vline_02{margin-left:30px;border:1px solid #ddd;width:10px;height:100%;position:relative;top:0}
+.Tu-1:before{content:attr(toDisplay)}
+.Tu-2:before{content:attr(toDisplay)}
+.Tu-3:before{content:attr(toDisplay)}
+.Tu-4:before{content:attr(toDisplay)}
+.Tu-5:before{content:attr(toDisplay)}
+.Lu-1:before{content:attr(toDisplay)}
+.Lu-2:before{content:attr(toDisplay)}
+.Lu-3:before{content:attr(toDisplay)}
+.Lu-4:before{content:attr(toDisplay)}
+.Lo-1:before{content:attr(toDisplay)}
+.Lo-2:before{content:attr(toDisplay)}
+.Lo-3:before{content:attr(toDisplay)}
+.Lo-4:before{content:attr(toDisplay)}
+.Lh-1:before{content:attr(toDisplay)}
+.Lh-2:before{content:attr(toDisplay)}
+.Lh-3:before{content:attr(toDisplay)}
+.Lh-4:before{content:attr(toDisplay)}
 h1{font-size:2em}
 h2{font-size:1.5em}
 h3{font-size:1.17em}
@@ -4247,6 +4249,21 @@ h4{font-size:1em}
 h5{font-size:.83em}
 h6{font-size:.75em}
 img{border:0}
+body{background:#91a2c0;font:bold 18px "Helvetica Neue",Arial,Helvetica,sans-serif}
+ul{list-style-type:none}
+a,a:visited{color:#f95a5a;text-decoration:none}
+a:hover{color:#665248}
+#home-view{width:600px;height:200px;margin:20px auto}
+body{font-size:15px;color:#666;background:#fff;font-family:"KievitPro","ff-kievit-web-pro-1","ff-kievit-web-pro-2","Helvetica Neue",Arial,Helvetica,sans-serif}
+h1,h2,h3,h4,h5{font-weight:normal;color:#222;clear:left}
+h1{font-size:5em;line-height:1.4;margin-bottom:.5em}
+h2{font-size:2em;line-height:1;margin-bottom:.5em}
+p{margin:0 0 1.5em}
+a:focus,a:hover{color:#f95a5a;text-decoration:underline}
+a{color:#f95a5a;text-decoration:none}
+#content{width:605px;margin:0 auto;margin-top:40px;margin-bottom:60px}
+h1{background:#91a2c0;background-repeat:no-repeat;background-position:2px;color:#fff;width:330px;padding-left:138px;-webkit-border-radius:5px;-moz-border-radius:5px;border-radius:5px}
+#props{position:relative;top:36px;font-size:18px;padding-left:373px;color:#eee;font-style:italic}
 html,body{width:100%;height:100%;padding:0;margin:0;overflow:hidden;border-spacing:5px}
 #main{background-color:#eee}
 .table-ly-wrpr{display:table;width:100%;height:100%;table-layout:fixed}

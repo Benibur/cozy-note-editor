@@ -2,6 +2,31 @@
 
 Simple, yet Towerfull : one day it will be !
 
+## Installer l'application
+    1. Cloner le dépôt Git, installer les dépendances
+        + `git clone https://github.com/Benibur/cozy-note-editor.git`
+        + `cd cozy-note-editor`
+        + `npm install`
+    2. Pas sûr de ce que font ces commandes...
+        + `git submodule init`
+        + `git submodule update`
+    3. Installer brunch et lancer le build (dans le répertoire du projet)
+        + `sudo npm install brunch -g`
+        + `brunch build`
+
+
+## Installer l'application
+    1. Cloner le dépôt Git, installer les dépendances
+        + `git clone https://github.com/Benibur/cozy-note-editor.git`
+        + `cd cozy-note-editor`
+        + `npm install`
+    2. Pas sûr de ce que font ces commandes...
+        + `git submodule init`
+        + `git submodule update`
+    3. Installer brunch et lancer le build (dans le répertoire du projet)
+        + `sudo npm install brunch -g`
+        + `brunch build`
+
 ## EBNF for CozyNote :
     * Non-terminals : 
         * <CozyNote> : 

@@ -16,7 +16,7 @@
 #   _insertLineBefore : (param) ->
 #   
 #   editorIframe      : the iframe element where is nested the editor
-#   editorBody$       : the jquerry pointer on the body of the iframe
+#   editorBody$       : the jquery pointer on the body of the iframe
 #   _lines            : {} an objet, each property refers a line
 #   _highestId        : 
 #   _firstLine        : pointes the first line : TODO : not taken into account 
@@ -44,11 +44,11 @@ class exports.CNEditor extends Backbone.View
             editor_css$  = editor_head$.html('<link href="stylesheets/app.css" 
                                                rel="stylesheet">')
             # 2- set the properties of the editor
-            @editorBody$    = editorBody$
-            @editorIframe   = iframe$[0]
-            @_lines          = {}
-            @_highestId      = 0
-            @_firstLine      = null
+            @editorBody$   = editorBody$
+            @editorIframe  = iframe$[0]
+            @_lines        = {}
+            @_highestId    = 0
+            @_firstLine    = null
             # 3- initilize event listeners
             editorBody$.prop( '__editorCtl', this)
             editorBody$.on 'keypress' , @_keyPressListener
@@ -910,7 +910,7 @@ class exports.CNEditor extends Backbone.View
         endLine.line$.remove()
         delete this._lines[endLine.lineID]
 
-        # 5- adapt the depth of the children and siblings of end line
+        # 5- adapt the depth of the children and following siblings of end line
             # in case the depth delta between start and end line is
             # greater than 0, then the structure is not correct : we reduce
             # the depth of all the children and siblings of endLine.
@@ -1149,7 +1149,7 @@ class exports.CNEditor extends Backbone.View
         # return [sel, range, endLine, rangeIsEndLine, startLine, rangeIsStartLine]
 
 
-    ###  ------------------------------------------------------------------------
+    ###  -----------------------------------------------------------------------
     # Parse a raw html inserted in the iframe in order to update the controler
     ###
     _readHtml : () ->
@@ -1158,7 +1158,7 @@ class exports.CNEditor extends Backbone.View
         lineDepthAbs = 0
         lineDepthRel = 0
         lineID       = 0
-        @_lines       = {}
+        @_lines      = {}
         linePrev     = null
         lineNext     = null
         for htmlLine in linesDiv$
@@ -1188,8 +1188,7 @@ class exports.CNEditor extends Backbone.View
                     lineDepthRel : lineDepthRel
                     lineNext     : null
                     linePrev     : linePrev
-                if linePrev != null then linePrev.lineNext=lineNew
+                if linePrev != null then linePrev.lineNext = lineNew
                 linePrev = lineNew
                 @_lines[lineID_st] = lineNew
-        @_highestId=lineID
-
+        @_highestId = lineID

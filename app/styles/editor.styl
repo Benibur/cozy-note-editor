@@ -140,7 +140,8 @@ dd
   counter-reset     : section3
   counter-reset     : section4
 .Th-1:before
-  content: counter(section1) " "
+  content: counter(section1) " " attr(toDisplay)
+
 
 .Th-2
   padding-left    : 20px
@@ -151,7 +152,7 @@ dd
   counter-reset: section3
   counter-reset: section4
 .Th-2:before
-  content: counter(section1) "." counter(section2) " "
+  content: counter(section1) "." counter(section2) " " attr(toDisplay)
 
 .Th-3
   padding-left    : 40px
@@ -161,7 +162,7 @@ dd
   counter-increment: section3
   counter-reset: section4
 .Th-3:before
-  content: counter(section1) "." counter(section2) "." counter(section3) " "
+  content: counter(section1) "." counter(section2) "." counter(section3) " " attr(toDisplay)
 
 .Th-4
   padding-left    : 60px
@@ -170,7 +171,7 @@ dd
   color           : #586408
   counter-increment: section4
 .Th-4:before
-  content: counter(section1) "." counter(section2) "." counter(section3) "." counter(section4) " "
+  content: counter(section1) "." counter(section2) "." counter(section3) "." counter(section4) " " attr(toDisplay)
 
 
 .vline_02
@@ -180,6 +181,57 @@ dd
   height       : 100%
   position     : relative
   top          : 0
+
+.Tu-1:before
+  content: attr(toDisplay)
+
+.Tu-2:before
+  content: attr(toDisplay)
+
+.Tu-3:before
+  content: attr(toDisplay)
+
+.Tu-4:before
+  content: attr(toDisplay)
+
+.Tu-5:before
+  content: attr(toDisplay)
+
+.Lu-1:before
+  content: attr(toDisplay)
+
+.Lu-2:before
+  content: attr(toDisplay)
+
+.Lu-3:before
+  content: attr(toDisplay)
+
+.Lu-4:before
+  content: attr(toDisplay)
+
+.Lo-1:before
+  content: attr(toDisplay)
+
+.Lo-2:before
+  content: attr(toDisplay)
+
+.Lo-3:before
+  content: attr(toDisplay)
+
+.Lo-4:before
+  content: attr(toDisplay)
+
+.Lh-1:before
+  content: attr(toDisplay)
+
+.Lh-2:before
+  content: attr(toDisplay)
+
+.Lh-3:before
+  content: attr(toDisplay)
+
+.Lh-4:before
+  content: attr(toDisplay)
 
 h1
   font-size    : 2em
