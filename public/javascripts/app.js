@@ -1480,8 +1480,7 @@ window.require.define({"views/editor": function(exports, require, module) {
       */
 
       CNEditor.prototype._deleteMultiLinesSelections = function(startLine, endLine) {
-        var deltaDepth, deltaDepth1stLine, depthSibling, endLineDepthAbs, endOfLineFragment, firstLineAfterSiblingsOfDeleted, l, line, myEndLine, newDepth, prevSiblingType, range, range4caret, range4fragment, sel, startContainer, startFrag, startLineDepthAbs, startOffset, _ref;
-        sel = this.currentSel;
+        var deltaDepth, deltaDepth1stLine, depthSibling, endLineDepthAbs, endOfLineFragment, firstLineAfterSiblingsOfDeleted, l, line, myEndLine, newDepth, newText, prevSiblingType, range, range4caret, range4fragment, startContainer, startFrag, startLineDepthAbs, startOffset, _ref;
         if (startLine !== void 0) {
           range = rangy.createRange();
           range.setStartBefore(startLine.line$);
@@ -1508,16 +1507,17 @@ window.require.define({"views/editor": function(exports, require, module) {
           }
           this.markerList(endLine);
         }
-        console.log(sel.sel.getRangeAt(0).startContainer);
         range.deleteContents();
-        console.log(sel.sel.getRangeAt(0).startContainer);
         if (startLine.line$[0].lastChild.nodeName === 'BR') {
           startLine.line$[0].removeChild(startLine.line$[0].lastChild);
         }
         startFrag = endOfLineFragment.childNodes[0];
         myEndLine = startLine.line$[0].lastElementChild;
         if (((startFrag.tagName === (_ref = myEndLine.tagName) && _ref === 'SPAN')) && ((!($(startFrag).attr("class") != null) && !($(myEndLine).attr("class") != null)) || ($(startFrag).attr("class") === $(myEndLine).attr("class")))) {
-          $(myEndLine).text($(myEndLine).text() + $(startFrag).text());
+          startOffset = $(myEndLine).text().length;
+          newText = $(myEndLine).text() + $(startFrag).text();
+          $(myEndLine).text(newText);
+          startContainer = myEndLine.firstChild;
           l = 1;
           while (l < endOfLineFragment.childNodes.length) {
             $(endOfLineFragment.childNodes[l]).appendTo(startLine.line$);

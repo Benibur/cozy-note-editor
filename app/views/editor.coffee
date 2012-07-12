@@ -284,7 +284,6 @@ class exports.CNEditor extends Backbone.View
             e.preventDefault()
 
 
-
     ### ------------------------------------------------------------------------
     #  Manage deletions when backspace key is pressed
     ###
@@ -889,9 +888,6 @@ class exports.CNEditor extends Backbone.View
     # 
     ###
     _deleteMultiLinesSelections : (startLine,endLine) ->
-        
-        sel = this.currentSel
-        
         # 0- variables
         if startLine != undefined
             range = rangy.createRange()
@@ -922,17 +918,9 @@ class exports.CNEditor extends Backbone.View
                 endLine.line$.prop("class","#{endLine.lineType}-#{endLine.lineDepthAbs}")
             @markerList(endLine)
             
-        ##################
-        console.log sel.sel.getRangeAt(0).startContainer
-        ##################
-        #
         # 3- delete lines
         range.deleteContents()
-        ##################
-        # Okay, and now the caret escaped the container !?
-        console.log sel.sel.getRangeAt(0).startContainer
-        ##################
-         
+        
         # 4- append fragment and delete endLine
         if startLine.line$[0].lastChild.nodeName == 'BR'
             startLine.line$[0].removeChild( startLine.line$[0].lastChild)
@@ -943,7 +931,12 @@ class exports.CNEditor extends Backbone.View
         startFrag = endOfLineFragment.childNodes[0]
         myEndLine = startLine.line$[0].lastElementChild
         if (startFrag.tagName == myEndLine.tagName == 'SPAN') and ((! $(startFrag).attr("class")? and ! $(myEndLine).attr("class")?) or ($(startFrag).attr("class") == $(myEndLine).attr("class")))
-            $(myEndLine).text( $(myEndLine).text()+$(startFrag).text() )
+            
+            startOffset = $(myEndLine).text().length
+            newText = $(myEndLine).text() + $(startFrag).text()
+            $(myEndLine).text( newText )
+            startContainer = myEndLine.firstChild
+            
             l=1
             while l < endOfLineFragment.childNodes.length
                 $(endOfLineFragment.childNodes[l]).appendTo startLine.line$
@@ -991,7 +984,7 @@ class exports.CNEditor extends Backbone.View
                     @_line2titleList(firstLineAfterSiblingsOfDeleted)
                 else
                     @markerList(firstLineAfterSiblingsOfDeleted)
-        
+
         # 7- position caret
         range4caret = rangy.createRange()
         range4caret.collapseToPoint(startContainer, startOffset)
