@@ -204,5 +204,8 @@ class exports.AutoTest extends Backbone.View
                             
             return true
 
-        if recVerif(root)
+        success = recVerif(root)
+        if success
             console.log "everything seems ok !"
+
+        return success

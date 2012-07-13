@@ -6,6 +6,7 @@ CNcozyToMarkdown = require('views/cozyToMarkdown').CNcozyToMarkdown
 CNmarkdownToCozy = require('views/markdownToCozy').CNmarkdownToCozy
 cozy2md = new CNcozyToMarkdown()
 md2cozy = new CNmarkdownToCozy()
+
 # Module de test automatique
 AutoTest = require('views/autoTest').AutoTest
 checker = new AutoTest()
@@ -72,7 +73,7 @@ exports.initPage =  ()->
                 console.log range.startContainer
                 console.log range.endContainer
                 i++
-        $('#fileSelect').on "change" , (e) ->
+        $('#contentSelect').on "change" , (e) ->
             console.log "./templates/#{e.currentTarget.value}"
             editorCtrler.replaceContent( require("./templates/#{e.currentTarget.value}") )
             beautify(editorBody$)

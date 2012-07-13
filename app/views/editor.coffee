@@ -48,6 +48,7 @@ class exports.CNEditor extends Backbone.View
             @editorIframe  = iframe$[0]
             @_lines        = {}
             @_highestId    = 0
+            @_deepest      = 1
             @_firstLine    = null
             # 3- initilize event listeners
             editorBody$.prop( '__editorCtl', this)
@@ -56,8 +57,20 @@ class exports.CNEditor extends Backbone.View
             callBack.call(this)
             return this
 
-
-
+    ### ------------------------------------------------------------------------
+    # Find the maximal deep (thus the deepest line) of the text
+    ###
+    _updateDeepest : ->
+        l = @_lines.length
+        c = 0
+        max = 1
+        while c < l
+            if @_lines[c].lineDepthAbs > max
+                max = @_lines[c].lineDepthAbs
+            c++
+        @_deepest = max
+        @editorBody$.attr('deep', max)
+        
     ### ------------------------------------------------------------------------
     # TODO : initialise the editor content from a markdown string
     ###
@@ -163,7 +176,7 @@ class exports.CNEditor extends Backbone.View
         # a correct element.
         # ____
         # DONE: the problem only seemed to occur when the end of selection was
-        #       right behind a </div>. It seems to behave correctly now
+        #       right behind a </div>. It seems to behave correctly now.
         #       "empty" div issue detected and fixed
         else
             if @newPosition
@@ -208,25 +221,30 @@ class exports.CNEditor extends Backbone.View
             when "-return"
                 @_return()
                 e.preventDefault()
+                @_updateDeepest()
             
             # TAB                               
             when "-tab"
                 @tab()
                 e.preventDefault()
+                @_updateDeepest()
             
             # BACKSPACE                               
             when "-backspace"
                 @_backspace(e)
+                @_updateDeepest()
             
             # SUPPR                    
             when "-suppr"
                 # TODO : deal case of a selection in a single line and in an empty line.
                 @_suppr(e)
+                @_updateDeepest()
             
             # TOGGLE LINE TYPE (Alt + a)                  
             when "Shift-tab"
                 @shiftTab()
                 e.preventDefault()
+                @_updateDeepest()
             
             # TOGGLE LINE TYPE (Alt + a)                  
             when "Alt-97"
@@ -238,13 +256,13 @@ class exports.CNEditor extends Backbone.View
                 # TODO
                 # console.log "TODO : PASTE"
                 e.preventDefault()
+                @_updateDeepest()
             
             # SAVE (Ctrl + s)                  
             when "Ctrl-115"
                 # TODO
                 # console.log "TODO : SAVE"
                 e.preventDefault()
-
 
 
     ### ------------------------------------------------------------------------
