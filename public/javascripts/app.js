@@ -48,15 +48,311 @@
     };
   }
 }).call(this);(this.require.define({
-  "views/templates/content-empty": function(exports, require, module) {
+  "views/templates/content-full": function(exports, require, module) {
     module.exports = function anonymous(locals, attrs, escape, rethrow) {
 var attrs = jade.attrs, escape = jade.escape, rethrow = jade.rethrow;
 var buf = [];
 with (locals || {}) {
 var interp;
-buf.push('<div');
-buf.push(attrs({ "class": ('Tu-1') }));
+buf.push('<!-- --------------------------------------------><!-- Premier Th-1--><div');
+buf.push(attrs({ "class": ('Th-1') }));
+buf.push('><span>Un premier titre</span><br');
+buf.push(attrs({  }));
+buf.push('/></div><div');
+buf.push(attrs({ "class": ('Lh-1') }));
+buf.push('><span>Une ligne Lh-1 plutôt longue pour voir où se situe le retour à la ligne plutôt longue pour voir où se situe le retour à la ligne plutôt longue pour voir où se situe le retour à la ligne plutôt longue pour voir où se situe le retour à la ligne plutôt longue pour voir où se situe le retour à la ligne plutôt longue.</span><br');
+buf.push(attrs({  }));
+buf.push('/></div><div');
+buf.push(attrs({ "class": ('Th-2') }));
+buf.push('><span>Un second titre</span><br');
+buf.push(attrs({  }));
+buf.push('/></div><div');
+buf.push(attrs({ "class": ('Lh-2') }));
+buf.push('><span>Une ligne Lh-2 plutôt longue pour voir où se situe le retour à la ligne plutôt longue pour voir où se situe le retour à la ligne plutôt longue pour voir où se situe le retour à la ligne plutôt longue pour voir où se situe le retour à la ligne plutôt longue pour voir où se situe le retour à la ligne plutôt longue.</span><br');
+buf.push(attrs({  }));
+buf.push('/></div><div');
+buf.push(attrs({ "class": ('Th-3') }));
+buf.push('><span>Un troisième titre</span><br');
+buf.push(attrs({  }));
+buf.push('/></div><div');
+buf.push(attrs({ "class": ('Lh-3') }));
+buf.push('><span>Une ligne Lh-3 plutôt longue pour voir où se situe le retour à la ligne plutôt longue pour voir où se situe le retour à la ligne plutôt longue pour voir où se situe le retour à la ligne plutôt longue pour voir où se situe le retour à la ligne plutôt longue pour voir où se situe le retour à la ligne plutôt longue.</span><br');
+buf.push(attrs({  }));
+buf.push('/></div><div');
+buf.push(attrs({ "class": ('Lh-3') }));
+buf.push('><span>Une 2ièmle ligne Lh-3 plutôt longue pour voir où se situe le retour à la ligne plutôt longue pour voir où se situe le retour à la ligne plutôt longue pour voir où se situe le retour à la ligne plutôt longue pour voir où se situe le retour à la ligne plutôt longue pour voir où se situe le retour à la ligne plutôt longue.</span><br');
+buf.push(attrs({  }));
+buf.push('/></div><div');
+buf.push(attrs({ "class": ('Th-3') }));
+buf.push('><span>Un troisième titre</span><br');
+buf.push(attrs({  }));
+buf.push('/></div><div');
+buf.push(attrs({ "class": ('Lh-3') }));
+buf.push('><span>Une ligne Lh-3 plutôt longue pour voir où se situe le retour à la ligne plutôt longue pour voir où se situe le retour à la ligne plutôt longue pour voir où se situe le retour à la ligne plutôt longue pour voir où se situe le retour à la ligne plutôt longue pour voir où se situe le retour à la ligne plutôt longue.</span><br');
+buf.push(attrs({  }));
+buf.push('/></div><div');
+buf.push(attrs({ "class": ('Th-2') }));
+buf.push('><span>Un second titre</span><br');
+buf.push(attrs({  }));
+buf.push('/></div><div');
+buf.push(attrs({ "class": ('Lh-2') }));
+buf.push('><span>Une ligne Lh-2 plutôt longue pour voir où se situe le retour à la ligne plutôt longue pour voir où se situe le retour à la ligne plutôt longue pour voir où se situe le retour à la ligne plutôt longue pour voir où se situe le retour à la ligne plutôt longue pour voir où se situe le retour à la ligne plutôt longue.</span><br');
+buf.push(attrs({  }));
+buf.push('/></div><div');
+buf.push(attrs({ "class": ('Th-3') }));
+buf.push('><span>Un troisième titre</span><br');
+buf.push(attrs({  }));
+buf.push('/></div><div');
+buf.push(attrs({ "class": ('Lh-3') }));
+buf.push('><span>Une ligne Lh-3 plutôt longue pour voir où se situe le retour à la ligne plutôt longue pour voir où se situe le retour à la ligne plutôt longue pour voir où se situe le retour à la ligne plutôt longue pour voir où se situe le retour à la ligne plutôt longue pour voir où se situe le retour à la ligne plutôt longue.</span><br');
+buf.push(attrs({  }));
+buf.push('/></div><div');
+buf.push(attrs({ "class": ('Tu-4') }));
+buf.push('><span>Point 1 blabla</span><br');
+buf.push(attrs({  }));
+buf.push('/></div><div');
+buf.push(attrs({ "class": ('Tu-4') }));
+buf.push('><span>Point 2 blabla</span><br');
+buf.push(attrs({  }));
+buf.push('/></div><div');
+buf.push(attrs({ "class": ('Tu-4') }));
+buf.push('><span>Point 2 blabla</span><br');
+buf.push(attrs({  }));
+buf.push('/></div><div');
+buf.push(attrs({ "class": ('Lh-3') }));
+buf.push('><span>Une 2ièmle ligne Lh-3 plutôt longue pour voir où se situe le retour à la ligne plutôt longue pour voir où se situe le retour à la ligne plutôt longue pour voir où se situe le retour à la ligne plutôt longue pour voir où se situe le retour à la ligne plutôt longue pour voir où se situe le retour à la ligne plutôt longue.</span><br');
+buf.push(attrs({  }));
+buf.push('/></div><div');
+buf.push(attrs({ "class": ('Th-3') }));
+buf.push('><span>Un troisième titre</span><br');
+buf.push(attrs({  }));
+buf.push('/></div><div');
+buf.push(attrs({ "class": ('Lh-3') }));
+buf.push('><span>Une ligne Lh-3 plutôt longue pour voir où se situe le retour à la ligne plutôt longue pour voir où se situe le retour à la ligne plutôt longue pour voir où se situe le retour à la ligne plutôt longue pour voir où se situe le retour à la ligne plutôt longue pour voir où se situe le retour à la ligne plutôt longue.</span><br');
+buf.push(attrs({  }));
+buf.push('/></div><!-- --------------------------------------------><!-- Second Th-1--><div');
+buf.push(attrs({ "class": ('Th-1') }));
+buf.push('><span>Un second Titre Th-1</span><br');
+buf.push(attrs({  }));
+buf.push('/></div><div');
+buf.push(attrs({ "class": ('Lh-1') }));
+buf.push('><span>Nous allons maintenant aborder les chapitres à puces :</span><br');
+buf.push(attrs({  }));
+buf.push('/></div><div');
+buf.push(attrs({ "class": ('Tu-2') }));
+buf.push('><span>Second paragraphe à puce avec un titre et une ligne</span><br');
+buf.push(attrs({  }));
+buf.push('/></div><div');
+buf.push(attrs({ "class": ('Lu-2') }));
+buf.push('><span>Une ligne Lu-2 plutôt longue pour voir où se situe le retour à la ligne plutôt longue pour voir où se situe le retour à la ligne plutôt longue pour voir où se situe le retour à la ligne.</span><br');
+buf.push(attrs({  }));
+buf.push('/></div><div');
+buf.push(attrs({ "class": ('Tu-3') }));
+buf.push('><span>troisième paragraphe à puce avec un titre et une ligne</span><br');
+buf.push(attrs({  }));
+buf.push('/></div><div');
+buf.push(attrs({ "class": ('Lu-3') }));
+buf.push('><span>Une ligne Lu-2 plutôt longue pour voir où se situe le retour à la ligne plutôt longue pour voir où se situe le retour à la ligne plutôt longue pour voir où se situe le retour à la ligne.</span><br');
+buf.push(attrs({  }));
+buf.push('/></div><div');
+buf.push(attrs({ "class": ('Tu-4') }));
+buf.push('><span>Quatrième paragraphe à puce avec un titre et une ligne</span><br');
+buf.push(attrs({  }));
+buf.push('/></div><div');
+buf.push(attrs({ "class": ('Lu-4') }));
+buf.push('><span>Une ligne Lu-2 plutôt longue pour voir où se situe le retour à la ligne plutôt longue pour voir où se situe le retour à la ligne plutôt longue pour voir où se situe le retour à la ligne.</span><br');
+buf.push(attrs({  }));
+buf.push('/></div><div');
+buf.push(attrs({ "class": ('Tu-4') }));
+buf.push('><span>Quatrième paragraphe à puce avec un titre et une ligne</span><br');
+buf.push(attrs({  }));
+buf.push('/></div><div');
+buf.push(attrs({ "class": ('Tu-3') }));
+buf.push('><span>troisième paragraphe à puce avec un titre et une ligne</span><br');
+buf.push(attrs({  }));
+buf.push('/></div><div');
+buf.push(attrs({ "class": ('Lu-3') }));
+buf.push('><span>Une ligne Lu-2 plutôt longue pour voir où se situe le retour à la ligne plutôt longue pour voir où se situe le retour à la ligne plutôt longue pour voir où se situe le retour à la ligne.</span><br');
+buf.push(attrs({  }));
+buf.push('/></div><div');
+buf.push(attrs({ "class": ('Tu-3') }));
+buf.push('><span>troisième paragraphe à puce avec un titre et une ligne</span><br');
+buf.push(attrs({  }));
+buf.push('/></div><div');
+buf.push(attrs({ "class": ('Tu-3') }));
+buf.push('><span>troisième paragraphe à puce avec un titre et une ligne</span><br');
+buf.push(attrs({  }));
+buf.push('/></div><div');
+buf.push(attrs({ "class": ('Tu-3') }));
+buf.push('><span>troisième paragraphe à puce avec un titre et une ligne</span><br');
+buf.push(attrs({  }));
+buf.push('/></div><div');
+buf.push(attrs({ "class": ('Tu-2') }));
+buf.push('><span>Second paragraphe à puce avec un titre et une ligne</span><br');
+buf.push(attrs({  }));
+buf.push('/></div><div');
+buf.push(attrs({ "class": ('Lu-2') }));
+buf.push('><span>Une ligne Lu-2 plutôt longue pour voir où se situe le retour à la ligne plutôt longue pour voir où se situe le retour à la ligne plutôt longue pour voir où se situe le retour à la ligne.</span><br');
+buf.push(attrs({  }));
+buf.push('/></div><div');
+buf.push(attrs({ "class": ('Tu-3') }));
+buf.push('><span>troisième paragraphe à puce avec un titre et une ligne</span><br');
+buf.push(attrs({  }));
+buf.push('/></div><div');
+buf.push(attrs({ "class": ('Lu-3') }));
+buf.push('><span>Une ligne Lu-2 plutôt longue pour voir où se situe le retour à la ligne plutôt longue pour voir où se situe le retour à la ligne plutôt longue pour voir où se situe le retour à la ligne.</span><br');
+buf.push(attrs({  }));
+buf.push('/></div><div');
+buf.push(attrs({ "class": ('Tu-4') }));
+buf.push('><span>Quatrième paragraphe à puce avec un titre et une ligne</span><br');
+buf.push(attrs({  }));
+buf.push('/></div><div');
+buf.push(attrs({ "class": ('Lu-4') }));
+buf.push('><span>Une ligne Lu-2 plutôt longue pour voir où se situe le retour à la ligne plutôt longue pour voir où se situe le retour à la ligne plutôt longue pour voir où se situe le retour à la ligne.</span><br');
+buf.push(attrs({  }));
+buf.push('/></div><div');
+buf.push(attrs({ "class": ('Th-1') }));
+buf.push('><span>Un premier titre</span><br');
+buf.push(attrs({  }));
+buf.push('/></div><div');
+buf.push(attrs({ "class": ('Lh-1') }));
+buf.push('><span>Une ligne de niveau 1 plutôt longue pour voir où se situe le retour à la ligne plutôt longue pour voir où se situe le retour à la ligne plutôt longue pour voir où se situe le retour à la ligne plutôt longue pour voir où se situe le retour à la ligne plutôt longue pour voir où se situe le retour à la ligne plutôt longue pour voir où se situe le retour à la ligne plutôt longue pour voir où se situe le retour à la ligne plutôt longue pour voir où se situe le retour à la ligne plutôt longue pour voir où se situe le retour à la ligne plutôt longue pour voir où se situe le retour à la ligne </span><br');
+buf.push(attrs({  }));
+buf.push('/></div><div');
+buf.push(attrs({ "class": ('Lh-1') }));
+buf.push('><span>Une seconde ligne de niveau 1 </span><br');
+buf.push(attrs({  }));
+buf.push('/></div><div');
+buf.push(attrs({ "class": ('Tu-2') }));
+buf.push('><span>Un paragraphe avec juste un titre</span><br');
+buf.push(attrs({  }));
+buf.push('/></div><div');
+buf.push(attrs({ "class": ('Tu-2') }));
+buf.push('><span>Un second paragraphe avec un titre long et une ligne, un second paragraphe avec un titre long, un second paragraphe avec un titre long, un second paragraphe avec un titre long, un second paragraphe avec un titre long, un second paragraphe avec un titre long !</span><br');
+buf.push(attrs({  }));
+buf.push('/></div><div');
+buf.push(attrs({ "class": ('Lu-2') }));
+buf.push('><span>Ligne du Second paragraphe </span><br');
+buf.push(attrs({  }));
+buf.push('/></div><div');
+buf.push(attrs({ "class": ('Tu-2') }));
+buf.push('><span>Un troisième paragraphe avec une liste en dessous :</span><br');
+buf.push(attrs({  }));
+buf.push('/></div><div');
+buf.push(attrs({ "class": ('Tu-3') }));
+buf.push('><span>Premier paragraphe (1 titre seul)</span><br');
+buf.push(attrs({  }));
+buf.push('/></div><div');
+buf.push(attrs({ "class": ('Tu-3') }));
+buf.push('><span>Second paragraphe (1 titre & une ligne)</span><br');
+buf.push(attrs({  }));
+buf.push('/></div><div');
+buf.push(attrs({ "class": ('Lu-3') }));
+buf.push('><span>Ligne du Second paragraphe (1 titre & une ligne), longue ligne mais avec des variations de longueurs, Très longue ligne mais avec des variations de longueurs, Très longue ligne mais avec des variations de longueurs, Très longue ligne mais avec des variations de longueurs, Très longue ligne mais avec des variations de longueurs, Très longue ligne mais avec des variations de longueurs.</span><br');
+buf.push(attrs({  }));
+buf.push('/></div><div');
+buf.push(attrs({ "class": ('Tu-3') }));
+buf.push('><span>3ième paragraphe (1 titre & 2 lignes)</span><br');
+buf.push(attrs({  }));
+buf.push('/></div><div');
+buf.push(attrs({ "class": ('Lu-3') }));
+buf.push('><span>Ligne 1 du 3ième paragraphe, pas longue.</span><br');
+buf.push(attrs({  }));
+buf.push('/></div><div');
+buf.push(attrs({ "class": ('Lu-3') }));
+buf.push('><span>Ligne 2 du 3ième paragraphe (1 titre & une ligne), longue ligne mais avec des variations de longueurs, Très longue ligne mais avec des variations de longueurs, Très longue ligne mais avec des variations de longueurs, Très longue ligne mais avec des variations de longueurs, Très longue ligne mais avec des variations de longueurs, Très longue ligne mais avec des variations de longueurs.</span><br');
+buf.push(attrs({  }));
+buf.push('/></div><div');
+buf.push(attrs({ "class": ('Tu-3') }));
+buf.push('><span>Quatrième paragraphe avec une sous liste :</span><br');
+buf.push(attrs({  }));
+buf.push('/></div><div');
+buf.push(attrs({ "class": ('Tu-4') }));
+buf.push('><span>Premier paragraphe</span><br');
+buf.push(attrs({  }));
+buf.push('/></div><div');
+buf.push(attrs({ "class": ('Tu-4') }));
+buf.push('><span>Second paragraphe</span><br');
+buf.push(attrs({  }));
+buf.push('/></div><div');
+buf.push(attrs({ "class": ('Lu-4') }));
+buf.push('><span>Ligne 1 du 2nd paragraphe, pas longue.</span><br');
+buf.push(attrs({  }));
+buf.push('/></div><div');
+buf.push(attrs({ "class": ('Tu-4') }));
+buf.push('><span>troisième paragraphe</span><br');
+buf.push(attrs({  }));
+buf.push('/></div><div');
+buf.push(attrs({ "class": ('Tu-4') }));
+buf.push('><span>Quatrième paragraphe</span><br');
+buf.push(attrs({  }));
+buf.push('/></div><div');
+buf.push(attrs({ "class": ('Th-1') }));
+buf.push('><span>Un titre de niveau 1</span><br');
+buf.push(attrs({  }));
+buf.push('/></div><div');
+buf.push(attrs({ "class": ('Th-2') }));
+buf.push('><span>Un titre de niveau 2</span><br');
+buf.push(attrs({  }));
+buf.push('/></div><div');
+buf.push(attrs({ "class": ('Tu-3') }));
+buf.push('><span>Un paragraphe un  titre et deux lignes</span><br');
+buf.push(attrs({  }));
+buf.push('/></div><div');
+buf.push(attrs({ "class": ('Lu-3') }));
+buf.push('><span>Très longue ligne mais avec des variations de longueurs, Très longue ligne mais avec des variations de longueurs, Très longue ligne mais avec des variations de longueurs, Très longue ligne mais avec des variations de longueurs, Très longue ligne mais avec des variations de longueurs, Très longue ligne mais avec des variations de longueurs, Très longue ligne mais avec des variations de longueurs, Très longue ligne mais avec des variations de longueurs, Très longue ligne mais avec des variations de longueurs, Très longue ligne mais avec des variations de longueurs, Très longue ligne mais avec des variations de longueurs, Très longue ligne mais avec des variations de longueurs, Très longue ligne mais avec des variations de longueurs, Très longue ligne mais avec des variations de longueurs, Très longue ligne mais avec des variations de longueurs, Très longue ligne mais avec des variations de longueurs, Très longue ligne mais avec des variations de longueurs, Très longue ligne mais avec des variations de longueurs, Très longue ligne mais avec des variations de longueurs, Très longue ligne mais avec des variations de longueurs, Très longue ligne mais avec des variations de longueurs, Très longue ligne mais avec des variations de longueurs, Très longue ligne mais avec des variations de longueurs.</span><br');
+buf.push(attrs({  }));
+buf.push('/></div><div');
+buf.push(attrs({ "class": ('Lu-3') }));
+buf.push('><span>Seconde ligne, pas très longue.</span><br');
+buf.push(attrs({  }));
+buf.push('/></div><div');
+buf.push(attrs({ "class": ('Th-2') }));
+buf.push('><span>Un second titre de niveau 2</span><br');
+buf.push(attrs({  }));
+buf.push('/></div><div');
+buf.push(attrs({ "class": ('Lh-2') }));
+buf.push('><span>Ligne commentant le paragraphe</span><br');
+buf.push(attrs({  }));
+buf.push('/></div><div');
+buf.push(attrs({ "class": ('Lh-2') }));
+buf.push('><span>Seconde ligne commentant le paragraphe</span><br');
+buf.push(attrs({  }));
+buf.push('/></div><div');
+buf.push(attrs({ "class": ('Tu-3') }));
+buf.push('><span>Un paragraphe avec juste un titre</span><br');
+buf.push(attrs({  }));
+buf.push('/></div><div');
+buf.push(attrs({ "class": ('Tu-3') }));
+buf.push('><span>Un second paragraphe avec un titre long, un second paragraphe avec un titre long, un second paragraphe avec un titre long, un second paragraphe avec un titre long, un second paragraphe avec un titre long, un second paragraphe avec un titre long !</span><br');
+buf.push(attrs({  }));
+buf.push('/></div><div');
+buf.push(attrs({ "class": ('Tu-3') }));
+buf.push('><span>Un troisième paragraphe avec une liste en dessous :</span><br');
+buf.push(attrs({  }));
+buf.push('/></div><div');
+buf.push(attrs({ "class": ('Tu-4') }));
+buf.push('><span>Premier paragraphe (1 titre seul)</span><br');
+buf.push(attrs({  }));
+buf.push('/></div><div');
+buf.push(attrs({ "class": ('Tu-4') }));
+buf.push('><span>Second paragraphe (1 titre & une ligne)</span><br');
+buf.push(attrs({  }));
+buf.push('/></div><div');
+buf.push(attrs({ "class": ('Lu-4') }));
+buf.push('><span>Ligne du Second paragraphe (1 titre & une ligne), longue ligne mais avec des variations de longueurs, Très longue ligne mais avec des variations de longueurs, Très longue ligne mais avec des variations de longueurs, Très longue ligne mais avec des variations de longueurs, Très longue ligne mais avec des variations de longueurs, Très longue ligne mais avec des variations de longueurs.</span><br');
+buf.push(attrs({  }));
+buf.push('/></div><div');
+buf.push(attrs({ "class": ('Tu-4') }));
 buf.push('><span></span><br');
+buf.push(attrs({  }));
+buf.push('/></div><div');
+buf.push(attrs({ "class": ('Tu-4') }));
+buf.push('><span>c\'était un paragraphe vide :-)</span><br');
+buf.push(attrs({  }));
+buf.push('/></div><div');
+buf.push(attrs({ "class": ('Tu-4') }));
+buf.push('><span>12</span><br');
 buf.push(attrs({  }));
 buf.push('/></div>');
 }
@@ -65,39 +361,26 @@ return buf.join("");
   }
 }));
 (this.require.define({
-  "initialize": function(exports, require, module) {
+  "helpers": function(exports, require, module) {
     (function() {
-  var BrunchApplication, HomeView, MainRouter, initPage,
-    __hasProp = Object.prototype.hasOwnProperty,
-    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
 
-  BrunchApplication = require('helpers').BrunchApplication;
+  exports.BrunchApplication = (function() {
 
-  MainRouter = require('routers/main_router').MainRouter;
-
-  HomeView = require('views/home_view').HomeView;
-
-  initPage = require('views/initPage').initPage;
-
-  exports.Application = (function(_super) {
-
-    __extends(Application, _super);
-
-    function Application() {
-      Application.__super__.constructor.apply(this, arguments);
+    function BrunchApplication() {
+      var _this = this;
+      $(function() {
+        _this.initialize(_this);
+        return Backbone.history.start();
+      });
     }
 
-    Application.prototype.initialize = function() {
-      this.router = new MainRouter;
-      this.homeView = new HomeView;
-      return initPage();
+    BrunchApplication.prototype.initialize = function() {
+      return null;
     };
 
-    return Application;
+    return BrunchApplication;
 
-  })(BrunchApplication);
-
-  window.app = new exports.Application;
+  })();
 
 }).call(this);
 
@@ -1884,9 +2167,7 @@ return buf.join("");
 (this.require.define({
   "views/initPage": function(exports, require, module) {
     (function() {
-  var AutoTest, CNEditor, CNcozyToMarkdown, CNmarkdownToCozy, beautify, checker, cozy2md, editorBody$, editor_css$, editor_doAddClasseToLines, editor_head$, md2cozy;
-
-  beautify = require('views/beautify').beautify;
+  var AutoTest, CNEditor, CNcozyToMarkdown, CNmarkdownToCozy, checker, cozy2md, editorBody$, editor_css$, editor_doAddClasseToLines, editor_head$, md2cozy;
 
   CNEditor = require('views/editor').CNEditor;
 
@@ -1916,39 +2197,19 @@ return buf.join("");
     editorIframe$ = $("iframe");
     cb = function() {
       /* initialisation of the page
-      this.replaceContent( require('./templates/content-full') )
       this.replaceContent( require('./templates/content-empty') )
       this.replaceContent( require('./templates/content-full-marker') )
       this.replaceContent( require('./templates/content-shortlines-marker') )
+      this.replaceContent( require('./templates/content-shortlines-all') )
       */
       var addClassToLines, editorCtrler, getSelectedLines, removeClassFromLines, restoreSelection,
         _this = this;
-      this.replaceContent(require('./templates/content-shortlines-all'));
+      this.replaceContent(require('./templates/content-full'));
       editorCtrler = this;
       editorBody$ = this.editorBody$;
-      beautify(editorBody$);
-      editorBody$.on('keyup', function() {
-        return beautify(editorBody$);
-      });
-      $("#resultBtnBar_coller").on('click', function() {
-        return beautify(editorBody$);
-      });
-      $("#EmptyTextBtn").on("click", function() {
-        editorCtrler.replaceContent(require('./templates/content-empty'));
-        return beautify(editorBody$);
-      });
-      $("#SimpleTextBtn").on("click", function() {
-        editorCtrler.replaceContent(require('./templates/content-simple'));
-        return beautify(editorBody$);
-      });
-      $("#FullTextBtn").on("click", function() {
-        editorCtrler.replaceContent(require('./templates/content-full'));
-        return beautify(editorBody$);
-      });
       $('#contentSelect').on("change", function(e) {
         console.log("./templates/" + e.currentTarget.value);
-        editorCtrler.replaceContent(require("./templates/" + e.currentTarget.value));
-        return beautify(editorBody$);
+        return editorCtrler.replaceContent(require("./templates/" + e.currentTarget.value));
       });
       $('#cssSelect').on("change", function(e) {
         return editorCtrler.replaceCSS(e.currentTarget.value);
@@ -1965,27 +2226,16 @@ return buf.join("");
       $("#titleBtn").on("click", function() {
         return editorCtrler.titleList();
       });
-      $("#checkBtn").on("click", function() {
-        return checker.checkLines(editorCtrler);
-      });
-      $("#CozyMarkdown").on("click", function() {
-        return $("#resultText").val(cozy2md.translate($("#resultText").val()));
-      });
-      $("#addClass").on("click", function() {
-        return addClassToLines("sel");
-      });
-      $("#delClass").on("click", function() {
-        return removeClassFromLines("sel");
-      });
       restoreSelection = function(sel) {
-        var i, num, range, _ref;
+        var i, num, range, _ref, _results;
         num = sel.rangeCount;
         if (num === 0) return;
+        _results = [];
         for (i = 0, _ref = num - 1; 0 <= _ref ? i <= _ref : i >= _ref; 0 <= _ref ? i++ : i--) {
           range = sel.getRangeAt(i);
-          sel.setSingleRange(range);
+          _results.push(sel.setSingleRange(range));
         }
-        return beautify(editorBody$);
+        return _results;
       };
       getSelectedLines = function(sel) {
         var divs, i, k, myDivs, node, range, _ref;
@@ -2425,162 +2675,6 @@ return buf.join("");
   }
 }));
 (this.require.define({
-  "views/templates/test_5": function(exports, require, module) {
-    module.exports = function anonymous(locals, attrs, escape, rethrow) {
-var attrs = jade.attrs, escape = jade.escape, rethrow = jade.rethrow;
-var buf = [];
-with (locals || {}) {
-var interp;
-buf.push('<div');
-buf.push(attrs({ "class": ('Th-1') }));
-buf.push('><span>Un premier titre</span><br');
-buf.push(attrs({  }));
-buf.push('/></div><div');
-buf.push(attrs({ "class": ('Lh-1') }));
-buf.push('><span>Une ligne Lh-1 </span><span>ENCORE Une ligne Lh-1 Une ligne Lh-1</span><a>toto</a><br');
-buf.push(attrs({  }));
-buf.push('/></div><!-- and poof, an unknown label--><div');
-buf.push(attrs({ "class": ('To-2') }));
-buf.push('><span>azertyuiop</span><span>m</span><label></label><span>Un second titre</span><br');
-buf.push(attrs({  }));
-buf.push('/></div>');
-}
-return buf.join("");
-};
-  }
-}));
-(this.require.define({
-  "views/templates/editor": function(exports, require, module) {
-    module.exports = function anonymous(locals, attrs, escape, rethrow) {
-var attrs = jade.attrs, escape = jade.escape, rethrow = jade.rethrow;
-var buf = [];
-with (locals || {}) {
-var interp;
-buf.push('<div');
-buf.push(attrs({ 'id':('main'), "class": ('table-ly-wrpr') }));
-buf.push('><!-- boutons for the editor--><div');
-buf.push(attrs({ 'id':('divMainBtn'), "class": ('table-ly-hder') }));
-buf.push('><div');
-buf.push(attrs({ 'id':('generalBtnBar'), "class": ('btn-group') }));
-buf.push('><button');
-buf.push(attrs({ 'id':('EmptyTextBtn'), "class": ('btn') + ' ' + ('btn-small') + ' ' + ('btn-primary') }));
-buf.push('>Init texte vide  </button><button');
-buf.push(attrs({ 'id':('SimpleTextBtn'), "class": ('btn') + ' ' + ('btn-small') + ' ' + ('btn-primary') }));
-buf.push('>Init texte simple</button><button');
-buf.push(attrs({ 'id':('FullTextBtn'), "class": ('btn') + ' ' + ('btn-small') + ' ' + ('btn-primary') }));
-buf.push('>Init texte long</button><button');
-buf.push(attrs({ 'id':('logKeysBtn'), "class": ('btn') + ' ' + ('btn-small') + ' ' + ('btn-primary') }));
-buf.push('>Log keystrokes</button><button');
-buf.push(attrs({ 'id':('logRangeBtn'), "class": ('btn') + ' ' + ('btn-small') + ' ' + ('btn-primary') }));
-buf.push('>Log range</button><button');
-buf.push(attrs({ 'id':('printRangeBtn'), "class": ('btn') + ' ' + ('btn-small') + ' ' + ('btn-primary') }));
-buf.push('>Print Range</button><button');
-buf.push(attrs({ 'id':('addClass2LineBtn'), "class": ('btn') + ' ' + ('btn-small') + ' ' + ('btn-primary') }));
-buf.push('>Show Class on Lines</button></div><select');
-buf.push(attrs({ 'id':('contentSelect') }));
-buf.push('><option');
-buf.push(attrs({ 'value':("content-full"), 'style':("display:block") }));
-buf.push('>Full note</option><option');
-buf.push(attrs({ 'value':("content-full-marker"), 'style':("display:block") }));
-buf.push('>Tout en puces</option><option');
-buf.push(attrs({ 'value':("content-shortlines-marker"), 'style':("display:block") }));
-buf.push('>Tout en puce, lignes courtes</option><option');
-buf.push(attrs({ 'value':("content-shortlines-all"), 'style':("display:block") }));
-buf.push('>Puces et titres, lignes courtes</option><option');
-buf.push(attrs({ 'value':("content-empty"), 'style':("display:block") }));
-buf.push('>Empty note</option><option');
-buf.push(attrs({ 'value':("content-full-relative-indent"), 'style':("display:block") }));
-buf.push('>Avec sommaire</option><option');
-buf.push(attrs({ 'value':("test_1"), 'style':("display:block") }));
-buf.push('>Test numero 1</option><option');
-buf.push(attrs({ 'value':("test_2"), 'style':("display:block") }));
-buf.push('>Test numero 2</option><option');
-buf.push(attrs({ 'value':("test_3"), 'style':("display:block") }));
-buf.push('>Test numero 3</option><option');
-buf.push(attrs({ 'value':("test_4"), 'style':("display:block") }));
-buf.push('>Test numero 4</option><option');
-buf.push(attrs({ 'value':("test_5"), 'style':("display:block") }));
-buf.push('>Test numero 5</option><option');
-buf.push(attrs({ 'value':("test_6"), 'style':("display:block") }));
-buf.push('>Test numero 6</option><option');
-buf.push(attrs({ 'value':("test_7"), 'style':("display:block") }));
-buf.push('>Test numero 7</option><option');
-buf.push(attrs({ 'value':("test_8"), 'style':("display:block") }));
-buf.push('>Test numero 8</option><option');
-buf.push(attrs({ 'value':("test_9"), 'style':("display:block") }));
-buf.push('>Test numero 9</option><option');
-buf.push(attrs({ 'value':("test_10"), 'style':("display:block") }));
-buf.push('>Test numero 10</option><option');
-buf.push(attrs({ 'value':("test_11"), 'style':("display:block") }));
-buf.push('>Test numero 11</option></select><select');
-buf.push(attrs({ 'id':('cssSelect') }));
-buf.push('><option');
-buf.push(attrs({ 'value':("images/editor2.css"), 'style':("display:block") }));
-buf.push('>css1</option><option');
-buf.push(attrs({ 'value':("stylesheets/app.css"), 'style':("display:block") }));
-buf.push('>css2</option></select></div><div');
-buf.push(attrs({ 'id':('main-div'), "class": ('table-ly-ctnt') }));
-buf.push('><div');
-buf.push(attrs({ 'id':('col-wrap') }));
-buf.push('><div');
-buf.push(attrs({ 'id':('editor-col') }));
-buf.push('><div');
-buf.push(attrs({ 'id':('well-editor'), "class": ('monWell') }));
-buf.push('><div');
-buf.push(attrs({ 'id':('editorDiv'), "class": ('table-ly-wrpr') }));
-buf.push('><!-- boutons for the editor--><div');
-buf.push(attrs({ "class": ('table-ly-hder') }));
-buf.push('><div');
-buf.push(attrs({ 'id':('editorBtnBar'), "class": ('btn-group') }));
-buf.push('><button');
-buf.push(attrs({ 'id':('indentBtn'), "class": ('btn') + ' ' + ('btn-small') + ' ' + ('btn-primary') }));
-buf.push('>Indent</button><button');
-buf.push(attrs({ 'id':('unIndentBtn'), "class": ('btn') + ' ' + ('btn-small') + ' ' + ('btn-primary') }));
-buf.push('>Un-indent</button><button');
-buf.push(attrs({ 'id':('markerListBtn'), "class": ('btn') + ' ' + ('btn-small') + ' ' + ('btn-primary') }));
-buf.push('>- Marker list</button><button');
-buf.push(attrs({ 'id':('titleBtn'), "class": ('btn') + ' ' + ('btn-small') + ' ' + ('btn-primary') }));
-buf.push('>1.1.2 Title</button><button');
-buf.push(attrs({ 'id':('addClass'), "class": ('btn') + ' ' + ('btn-small') + ' ' + ('btn-primary') }));
-buf.push('>Class of sel Lines ON</button><button');
-buf.push(attrs({ 'id':('delClass'), "class": ('btn') + ' ' + ('btn-small') + ' ' + ('btn-primary') }));
-buf.push('>Class of sel Lines OFF</button><button');
-buf.push(attrs({ 'id':('checkBtn'), "class": ('btn') + ' ' + ('btn-small') + ' ' + ('btn-primary') }));
-buf.push('>Run Test !</button><button');
-buf.push(attrs({ 'id':('CozyMarkdown'), "class": ('btn') + ' ' + ('btn-small') + ' ' + ('btn-primary') }));
-buf.push('>Markdown</button></div></div><!-- text for the editor--><div');
-buf.push(attrs({ 'id':('editorContent'), "class": ('table-ly-ctnt') }));
-buf.push('><iframe');
-buf.push(attrs({ 'id':('editorIframe') }));
-buf.push('></iframe></div></div></div></div><div');
-buf.push(attrs({ 'id':('result-col') }));
-buf.push('><div');
-buf.push(attrs({ 'id':('well-result'), "class": ('monWell') }));
-buf.push('><div');
-buf.push(attrs({ 'id':('resultDiv'), "class": ('table-ly-wrpr') }));
-buf.push('><div');
-buf.push(attrs({ "class": ('table-ly-hder') }));
-buf.push('><div');
-buf.push(attrs({ 'id':('resultBtnBar'), "class": ('btn-group') }));
-buf.push('><button');
-buf.push(attrs({ 'id':('resultBtnBar_coller'), "class": ('btn') + ' ' + ('btn-small') + ' ' + ('btn-primary') }));
-buf.push('>Coller</button><button');
-buf.push(attrs({ "class": ('btn') + ' ' + ('btn-small') + ' ' + ('btn-primary') }));
-buf.push('>-</button><button');
-buf.push(attrs({ "class": ('btn') + ' ' + ('btn-small') + ' ' + ('btn-primary') }));
-buf.push('>-</button></div><p');
-buf.push(attrs({ 'id':('editorPropertiesDisplay') }));
-buf.push('></p></div><!-- text for the resulting html--><div');
-buf.push(attrs({ 'id':('resultContent'), "class": ('table-ly-ctnt') }));
-buf.push('><textarea');
-buf.push(attrs({ 'id':('resultText') }));
-buf.push('></textarea></div></div></div></div></div></div></div>');
-}
-return buf.join("");
-};
-  }
-}));
-(this.require.define({
   "views/templates/content-full-marker": function(exports, require, module) {
     module.exports = function anonymous(locals, attrs, escape, rethrow) {
 var attrs = jade.attrs, escape = jade.escape, rethrow = jade.rethrow;
@@ -2894,29 +2988,171 @@ return buf.join("");
   }
 }));
 (this.require.define({
-  "helpers": function(exports, require, module) {
+  "views/templates/test_5": function(exports, require, module) {
+    module.exports = function anonymous(locals, attrs, escape, rethrow) {
+var attrs = jade.attrs, escape = jade.escape, rethrow = jade.rethrow;
+var buf = [];
+with (locals || {}) {
+var interp;
+buf.push('<div');
+buf.push(attrs({ "class": ('Th-1') }));
+buf.push('><span>Un premier titre</span><br');
+buf.push(attrs({  }));
+buf.push('/></div><div');
+buf.push(attrs({ "class": ('Lh-1') }));
+buf.push('><span>Une ligne Lh-1 </span><span>ENCORE Une ligne Lh-1 Une ligne Lh-1</span><a>toto</a><br');
+buf.push(attrs({  }));
+buf.push('/></div><!-- and poof, an unknown label--><div');
+buf.push(attrs({ "class": ('To-2') }));
+buf.push('><span>azertyuiop</span><span>m</span><label></label><span>Un second titre</span><br');
+buf.push(attrs({  }));
+buf.push('/></div>');
+}
+return buf.join("");
+};
+  }
+}));
+(this.require.define({
+  "views/templates/editor": function(exports, require, module) {
+    module.exports = function anonymous(locals, attrs, escape, rethrow) {
+var attrs = jade.attrs, escape = jade.escape, rethrow = jade.rethrow;
+var buf = [];
+with (locals || {}) {
+var interp;
+buf.push('<div');
+buf.push(attrs({ 'id':('main'), "class": ('table-ly-wrpr') }));
+buf.push('><!-- boutons for the editor--><div');
+buf.push(attrs({ 'id':('divMainBtn'), "class": ('table-ly-hder') }));
+buf.push('><div');
+buf.push(attrs({ 'id':('generalBtnBar'), "class": ('btn-group') }));
+buf.push('></div><select');
+buf.push(attrs({ 'id':('contentSelect') }));
+buf.push('><option');
+buf.push(attrs({ 'value':("content-full"), 'style':("display:block") }));
+buf.push('>Full note</option><option');
+buf.push(attrs({ 'value':("content-full-marker"), 'style':("display:block") }));
+buf.push('>Tout en puces</option><option');
+buf.push(attrs({ 'value':("content-shortlines-marker"), 'style':("display:block") }));
+buf.push('>Tout en puce, lignes courtes</option><option');
+buf.push(attrs({ 'value':("content-shortlines-all"), 'style':("display:block") }));
+buf.push('>Puces et titres, lignes courtes</option><option');
+buf.push(attrs({ 'value':("content-empty"), 'style':("display:block") }));
+buf.push('>Empty note</option><option');
+buf.push(attrs({ 'value':("content-full-relative-indent"), 'style':("display:block") }));
+buf.push('>Avec sommaire</option><option');
+buf.push(attrs({ 'value':("test_1"), 'style':("display:block") }));
+buf.push('>Test numero 1</option><option');
+buf.push(attrs({ 'value':("test_2"), 'style':("display:block") }));
+buf.push('>Test numero 2</option><option');
+buf.push(attrs({ 'value':("test_3"), 'style':("display:block") }));
+buf.push('>Test numero 3</option><option');
+buf.push(attrs({ 'value':("test_4"), 'style':("display:block") }));
+buf.push('>Test numero 4</option><option');
+buf.push(attrs({ 'value':("test_5"), 'style':("display:block") }));
+buf.push('>Test numero 5</option><option');
+buf.push(attrs({ 'value':("test_6"), 'style':("display:block") }));
+buf.push('>Test numero 6</option><option');
+buf.push(attrs({ 'value':("test_7"), 'style':("display:block") }));
+buf.push('>Test numero 7</option><option');
+buf.push(attrs({ 'value':("test_8"), 'style':("display:block") }));
+buf.push('>Test numero 8</option><option');
+buf.push(attrs({ 'value':("test_9"), 'style':("display:block") }));
+buf.push('>Test numero 9</option><option');
+buf.push(attrs({ 'value':("test_10"), 'style':("display:block") }));
+buf.push('>Test numero 10</option><option');
+buf.push(attrs({ 'value':("test_11"), 'style':("display:block") }));
+buf.push('>Test numero 11</option></select><select');
+buf.push(attrs({ 'id':('cssSelect') }));
+buf.push('><option');
+buf.push(attrs({ 'value':("images/editor2.css"), 'style':("display:block") }));
+buf.push('>css1</option><option');
+buf.push(attrs({ 'value':("stylesheets/app.css"), 'style':("display:block") }));
+buf.push('>css2</option></select></div><div');
+buf.push(attrs({ 'id':('main-div'), "class": ('table-ly-ctnt') }));
+buf.push('><div');
+buf.push(attrs({ 'id':('col-wrap') }));
+buf.push('><div');
+buf.push(attrs({ 'id':('editor-col') }));
+buf.push('><div');
+buf.push(attrs({ 'id':('well-editor'), "class": ('monWell') }));
+buf.push('><div');
+buf.push(attrs({ 'id':('editorDiv'), "class": ('table-ly-wrpr') }));
+buf.push('><!-- boutons for the editor--><div');
+buf.push(attrs({ "class": ('table-ly-hder') }));
+buf.push('><div');
+buf.push(attrs({ 'id':('editorBtnBar'), "class": ('btn-group') }));
+buf.push('><button');
+buf.push(attrs({ 'id':('indentBtn'), "class": ('btn') + ' ' + ('btn-small') + ' ' + ('btn-primary') }));
+buf.push('>Indent</button><button');
+buf.push(attrs({ 'id':('unIndentBtn'), "class": ('btn') + ' ' + ('btn-small') + ' ' + ('btn-primary') }));
+buf.push('>Un-indent</button><button');
+buf.push(attrs({ 'id':('markerListBtn'), "class": ('btn') + ' ' + ('btn-small') + ' ' + ('btn-primary') }));
+buf.push('>- Marker list</button><button');
+buf.push(attrs({ 'id':('titleBtn'), "class": ('btn') + ' ' + ('btn-small') + ' ' + ('btn-primary') }));
+buf.push('>1.1.2 Title</button></div></div><!-- text for the editor--><div');
+buf.push(attrs({ 'id':('editorContent'), "class": ('table-ly-ctnt') }));
+buf.push('><iframe');
+buf.push(attrs({ 'id':('editorIframe') }));
+buf.push('></iframe></div></div></div></div></div></div></div>');
+}
+return buf.join("");
+};
+  }
+}));
+(this.require.define({
+  "initialize": function(exports, require, module) {
     (function() {
+  var BrunchApplication, HomeView, MainRouter, initPage,
+    __hasProp = Object.prototype.hasOwnProperty,
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
 
-  exports.BrunchApplication = (function() {
+  BrunchApplication = require('helpers').BrunchApplication;
 
-    function BrunchApplication() {
-      var _this = this;
-      $(function() {
-        _this.initialize(_this);
-        return Backbone.history.start();
-      });
+  MainRouter = require('routers/main_router').MainRouter;
+
+  HomeView = require('views/home_view').HomeView;
+
+  initPage = require('views/initPage').initPage;
+
+  exports.Application = (function(_super) {
+
+    __extends(Application, _super);
+
+    function Application() {
+      Application.__super__.constructor.apply(this, arguments);
     }
 
-    BrunchApplication.prototype.initialize = function() {
-      return null;
+    Application.prototype.initialize = function() {
+      this.router = new MainRouter;
+      this.homeView = new HomeView;
+      return initPage();
     };
 
-    return BrunchApplication;
+    return Application;
 
-  })();
+  })(BrunchApplication);
+
+  window.app = new exports.Application;
 
 }).call(this);
 
+  }
+}));
+(this.require.define({
+  "views/templates/content-empty": function(exports, require, module) {
+    module.exports = function anonymous(locals, attrs, escape, rethrow) {
+var attrs = jade.attrs, escape = jade.escape, rethrow = jade.rethrow;
+var buf = [];
+with (locals || {}) {
+var interp;
+buf.push('<div');
+buf.push(attrs({ "class": ('Tu-1') }));
+buf.push('><span></span><br');
+buf.push(attrs({  }));
+buf.push('/></div>');
+}
+return buf.join("");
+};
   }
 }));
 (this.require.define({
@@ -2957,319 +3193,6 @@ buf.push(attrs({  }));
 buf.push('/></div><div');
 buf.push(attrs({ "class": ('Th-1') }));
 buf.push('><span>Th-1</span><br');
-buf.push(attrs({  }));
-buf.push('/></div>');
-}
-return buf.join("");
-};
-  }
-}));
-(this.require.define({
-  "views/templates/content-full": function(exports, require, module) {
-    module.exports = function anonymous(locals, attrs, escape, rethrow) {
-var attrs = jade.attrs, escape = jade.escape, rethrow = jade.rethrow;
-var buf = [];
-with (locals || {}) {
-var interp;
-buf.push('<!-- --------------------------------------------><!-- Premier Th-1--><div');
-buf.push(attrs({ "class": ('Th-1') }));
-buf.push('><span>Un premier titre</span><br');
-buf.push(attrs({  }));
-buf.push('/></div><div');
-buf.push(attrs({ "class": ('Lh-1') }));
-buf.push('><span>Une ligne Lh-1 plutôt longue pour voir où se situe le retour à la ligne plutôt longue pour voir où se situe le retour à la ligne plutôt longue pour voir où se situe le retour à la ligne plutôt longue pour voir où se situe le retour à la ligne plutôt longue pour voir où se situe le retour à la ligne plutôt longue.</span><br');
-buf.push(attrs({  }));
-buf.push('/></div><div');
-buf.push(attrs({ "class": ('Th-2') }));
-buf.push('><span>Un second titre</span><br');
-buf.push(attrs({  }));
-buf.push('/></div><div');
-buf.push(attrs({ "class": ('Lh-2') }));
-buf.push('><span>Une ligne Lh-2 plutôt longue pour voir où se situe le retour à la ligne plutôt longue pour voir où se situe le retour à la ligne plutôt longue pour voir où se situe le retour à la ligne plutôt longue pour voir où se situe le retour à la ligne plutôt longue pour voir où se situe le retour à la ligne plutôt longue.</span><br');
-buf.push(attrs({  }));
-buf.push('/></div><div');
-buf.push(attrs({ "class": ('Th-3') }));
-buf.push('><span>Un troisième titre</span><br');
-buf.push(attrs({  }));
-buf.push('/></div><div');
-buf.push(attrs({ "class": ('Lh-3') }));
-buf.push('><span>Une ligne Lh-3 plutôt longue pour voir où se situe le retour à la ligne plutôt longue pour voir où se situe le retour à la ligne plutôt longue pour voir où se situe le retour à la ligne plutôt longue pour voir où se situe le retour à la ligne plutôt longue pour voir où se situe le retour à la ligne plutôt longue.</span><br');
-buf.push(attrs({  }));
-buf.push('/></div><div');
-buf.push(attrs({ "class": ('Lh-3') }));
-buf.push('><span>Une 2ièmle ligne Lh-3 plutôt longue pour voir où se situe le retour à la ligne plutôt longue pour voir où se situe le retour à la ligne plutôt longue pour voir où se situe le retour à la ligne plutôt longue pour voir où se situe le retour à la ligne plutôt longue pour voir où se situe le retour à la ligne plutôt longue.</span><br');
-buf.push(attrs({  }));
-buf.push('/></div><div');
-buf.push(attrs({ "class": ('Th-3') }));
-buf.push('><span>Un troisième titre</span><br');
-buf.push(attrs({  }));
-buf.push('/></div><div');
-buf.push(attrs({ "class": ('Lh-3') }));
-buf.push('><span>Une ligne Lh-3 plutôt longue pour voir où se situe le retour à la ligne plutôt longue pour voir où se situe le retour à la ligne plutôt longue pour voir où se situe le retour à la ligne plutôt longue pour voir où se situe le retour à la ligne plutôt longue pour voir où se situe le retour à la ligne plutôt longue.</span><br');
-buf.push(attrs({  }));
-buf.push('/></div><div');
-buf.push(attrs({ "class": ('Th-2') }));
-buf.push('><span>Un second titre</span><br');
-buf.push(attrs({  }));
-buf.push('/></div><div');
-buf.push(attrs({ "class": ('Lh-2') }));
-buf.push('><span>Une ligne Lh-2 plutôt longue pour voir où se situe le retour à la ligne plutôt longue pour voir où se situe le retour à la ligne plutôt longue pour voir où se situe le retour à la ligne plutôt longue pour voir où se situe le retour à la ligne plutôt longue pour voir où se situe le retour à la ligne plutôt longue.</span><br');
-buf.push(attrs({  }));
-buf.push('/></div><div');
-buf.push(attrs({ "class": ('Th-3') }));
-buf.push('><span>Un troisième titre</span><br');
-buf.push(attrs({  }));
-buf.push('/></div><div');
-buf.push(attrs({ "class": ('Lh-3') }));
-buf.push('><span>Une ligne Lh-3 plutôt longue pour voir où se situe le retour à la ligne plutôt longue pour voir où se situe le retour à la ligne plutôt longue pour voir où se situe le retour à la ligne plutôt longue pour voir où se situe le retour à la ligne plutôt longue pour voir où se situe le retour à la ligne plutôt longue.</span><br');
-buf.push(attrs({  }));
-buf.push('/></div><div');
-buf.push(attrs({ "class": ('Tu-4') }));
-buf.push('><span>Point 1 blabla</span><br');
-buf.push(attrs({  }));
-buf.push('/></div><div');
-buf.push(attrs({ "class": ('Tu-4') }));
-buf.push('><span>Point 2 blabla</span><br');
-buf.push(attrs({  }));
-buf.push('/></div><div');
-buf.push(attrs({ "class": ('Tu-4') }));
-buf.push('><span>Point 2 blabla</span><br');
-buf.push(attrs({  }));
-buf.push('/></div><div');
-buf.push(attrs({ "class": ('Lh-3') }));
-buf.push('><span>Une 2ièmle ligne Lh-3 plutôt longue pour voir où se situe le retour à la ligne plutôt longue pour voir où se situe le retour à la ligne plutôt longue pour voir où se situe le retour à la ligne plutôt longue pour voir où se situe le retour à la ligne plutôt longue pour voir où se situe le retour à la ligne plutôt longue.</span><br');
-buf.push(attrs({  }));
-buf.push('/></div><div');
-buf.push(attrs({ "class": ('Th-3') }));
-buf.push('><span>Un troisième titre</span><br');
-buf.push(attrs({  }));
-buf.push('/></div><div');
-buf.push(attrs({ "class": ('Lh-3') }));
-buf.push('><span>Une ligne Lh-3 plutôt longue pour voir où se situe le retour à la ligne plutôt longue pour voir où se situe le retour à la ligne plutôt longue pour voir où se situe le retour à la ligne plutôt longue pour voir où se situe le retour à la ligne plutôt longue pour voir où se situe le retour à la ligne plutôt longue.</span><br');
-buf.push(attrs({  }));
-buf.push('/></div><!-- --------------------------------------------><!-- Second Th-1--><div');
-buf.push(attrs({ "class": ('Th-1') }));
-buf.push('><span>Un second Titre Th-1</span><br');
-buf.push(attrs({  }));
-buf.push('/></div><div');
-buf.push(attrs({ "class": ('Lh-1') }));
-buf.push('><span>Nous allons maintenant aborder les chapitres à puces :</span><br');
-buf.push(attrs({  }));
-buf.push('/></div><div');
-buf.push(attrs({ "class": ('Tu-2') }));
-buf.push('><span>Second paragraphe à puce avec un titre et une ligne</span><br');
-buf.push(attrs({  }));
-buf.push('/></div><div');
-buf.push(attrs({ "class": ('Lu-2') }));
-buf.push('><span>Une ligne Lu-2 plutôt longue pour voir où se situe le retour à la ligne plutôt longue pour voir où se situe le retour à la ligne plutôt longue pour voir où se situe le retour à la ligne.</span><br');
-buf.push(attrs({  }));
-buf.push('/></div><div');
-buf.push(attrs({ "class": ('Tu-3') }));
-buf.push('><span>troisième paragraphe à puce avec un titre et une ligne</span><br');
-buf.push(attrs({  }));
-buf.push('/></div><div');
-buf.push(attrs({ "class": ('Lu-3') }));
-buf.push('><span>Une ligne Lu-2 plutôt longue pour voir où se situe le retour à la ligne plutôt longue pour voir où se situe le retour à la ligne plutôt longue pour voir où se situe le retour à la ligne.</span><br');
-buf.push(attrs({  }));
-buf.push('/></div><div');
-buf.push(attrs({ "class": ('Tu-4') }));
-buf.push('><span>Quatrième paragraphe à puce avec un titre et une ligne</span><br');
-buf.push(attrs({  }));
-buf.push('/></div><div');
-buf.push(attrs({ "class": ('Lu-4') }));
-buf.push('><span>Une ligne Lu-2 plutôt longue pour voir où se situe le retour à la ligne plutôt longue pour voir où se situe le retour à la ligne plutôt longue pour voir où se situe le retour à la ligne.</span><br');
-buf.push(attrs({  }));
-buf.push('/></div><div');
-buf.push(attrs({ "class": ('Tu-4') }));
-buf.push('><span>Quatrième paragraphe à puce avec un titre et une ligne</span><br');
-buf.push(attrs({  }));
-buf.push('/></div><div');
-buf.push(attrs({ "class": ('Tu-3') }));
-buf.push('><span>troisième paragraphe à puce avec un titre et une ligne</span><br');
-buf.push(attrs({  }));
-buf.push('/></div><div');
-buf.push(attrs({ "class": ('Lu-3') }));
-buf.push('><span>Une ligne Lu-2 plutôt longue pour voir où se situe le retour à la ligne plutôt longue pour voir où se situe le retour à la ligne plutôt longue pour voir où se situe le retour à la ligne.</span><br');
-buf.push(attrs({  }));
-buf.push('/></div><div');
-buf.push(attrs({ "class": ('Tu-3') }));
-buf.push('><span>troisième paragraphe à puce avec un titre et une ligne</span><br');
-buf.push(attrs({  }));
-buf.push('/></div><div');
-buf.push(attrs({ "class": ('Tu-3') }));
-buf.push('><span>troisième paragraphe à puce avec un titre et une ligne</span><br');
-buf.push(attrs({  }));
-buf.push('/></div><div');
-buf.push(attrs({ "class": ('Tu-3') }));
-buf.push('><span>troisième paragraphe à puce avec un titre et une ligne</span><br');
-buf.push(attrs({  }));
-buf.push('/></div><div');
-buf.push(attrs({ "class": ('Tu-2') }));
-buf.push('><span>Second paragraphe à puce avec un titre et une ligne</span><br');
-buf.push(attrs({  }));
-buf.push('/></div><div');
-buf.push(attrs({ "class": ('Lu-2') }));
-buf.push('><span>Une ligne Lu-2 plutôt longue pour voir où se situe le retour à la ligne plutôt longue pour voir où se situe le retour à la ligne plutôt longue pour voir où se situe le retour à la ligne.</span><br');
-buf.push(attrs({  }));
-buf.push('/></div><div');
-buf.push(attrs({ "class": ('Tu-3') }));
-buf.push('><span>troisième paragraphe à puce avec un titre et une ligne</span><br');
-buf.push(attrs({  }));
-buf.push('/></div><div');
-buf.push(attrs({ "class": ('Lu-3') }));
-buf.push('><span>Une ligne Lu-2 plutôt longue pour voir où se situe le retour à la ligne plutôt longue pour voir où se situe le retour à la ligne plutôt longue pour voir où se situe le retour à la ligne.</span><br');
-buf.push(attrs({  }));
-buf.push('/></div><div');
-buf.push(attrs({ "class": ('Tu-4') }));
-buf.push('><span>Quatrième paragraphe à puce avec un titre et une ligne</span><br');
-buf.push(attrs({  }));
-buf.push('/></div><div');
-buf.push(attrs({ "class": ('Lu-4') }));
-buf.push('><span>Une ligne Lu-2 plutôt longue pour voir où se situe le retour à la ligne plutôt longue pour voir où se situe le retour à la ligne plutôt longue pour voir où se situe le retour à la ligne.</span><br');
-buf.push(attrs({  }));
-buf.push('/></div><div');
-buf.push(attrs({ "class": ('Th-1') }));
-buf.push('><span>Un premier titre</span><br');
-buf.push(attrs({  }));
-buf.push('/></div><div');
-buf.push(attrs({ "class": ('Lh-1') }));
-buf.push('><span>Une ligne de niveau 1 plutôt longue pour voir où se situe le retour à la ligne plutôt longue pour voir où se situe le retour à la ligne plutôt longue pour voir où se situe le retour à la ligne plutôt longue pour voir où se situe le retour à la ligne plutôt longue pour voir où se situe le retour à la ligne plutôt longue pour voir où se situe le retour à la ligne plutôt longue pour voir où se situe le retour à la ligne plutôt longue pour voir où se situe le retour à la ligne plutôt longue pour voir où se situe le retour à la ligne plutôt longue pour voir où se situe le retour à la ligne </span><br');
-buf.push(attrs({  }));
-buf.push('/></div><div');
-buf.push(attrs({ "class": ('Lh-1') }));
-buf.push('><span>Une seconde ligne de niveau 1 </span><br');
-buf.push(attrs({  }));
-buf.push('/></div><div');
-buf.push(attrs({ "class": ('Tu-2') }));
-buf.push('><span>Un paragraphe avec juste un titre</span><br');
-buf.push(attrs({  }));
-buf.push('/></div><div');
-buf.push(attrs({ "class": ('Tu-2') }));
-buf.push('><span>Un second paragraphe avec un titre long et une ligne, un second paragraphe avec un titre long, un second paragraphe avec un titre long, un second paragraphe avec un titre long, un second paragraphe avec un titre long, un second paragraphe avec un titre long !</span><br');
-buf.push(attrs({  }));
-buf.push('/></div><div');
-buf.push(attrs({ "class": ('Lu-2') }));
-buf.push('><span>Ligne du Second paragraphe </span><br');
-buf.push(attrs({  }));
-buf.push('/></div><div');
-buf.push(attrs({ "class": ('Tu-2') }));
-buf.push('><span>Un troisième paragraphe avec une liste en dessous :</span><br');
-buf.push(attrs({  }));
-buf.push('/></div><div');
-buf.push(attrs({ "class": ('Tu-3') }));
-buf.push('><span>Premier paragraphe (1 titre seul)</span><br');
-buf.push(attrs({  }));
-buf.push('/></div><div');
-buf.push(attrs({ "class": ('Tu-3') }));
-buf.push('><span>Second paragraphe (1 titre & une ligne)</span><br');
-buf.push(attrs({  }));
-buf.push('/></div><div');
-buf.push(attrs({ "class": ('Lu-3') }));
-buf.push('><span>Ligne du Second paragraphe (1 titre & une ligne), longue ligne mais avec des variations de longueurs, Très longue ligne mais avec des variations de longueurs, Très longue ligne mais avec des variations de longueurs, Très longue ligne mais avec des variations de longueurs, Très longue ligne mais avec des variations de longueurs, Très longue ligne mais avec des variations de longueurs.</span><br');
-buf.push(attrs({  }));
-buf.push('/></div><div');
-buf.push(attrs({ "class": ('Tu-3') }));
-buf.push('><span>3ième paragraphe (1 titre & 2 lignes)</span><br');
-buf.push(attrs({  }));
-buf.push('/></div><div');
-buf.push(attrs({ "class": ('Lu-3') }));
-buf.push('><span>Ligne 1 du 3ième paragraphe, pas longue.</span><br');
-buf.push(attrs({  }));
-buf.push('/></div><div');
-buf.push(attrs({ "class": ('Lu-3') }));
-buf.push('><span>Ligne 2 du 3ième paragraphe (1 titre & une ligne), longue ligne mais avec des variations de longueurs, Très longue ligne mais avec des variations de longueurs, Très longue ligne mais avec des variations de longueurs, Très longue ligne mais avec des variations de longueurs, Très longue ligne mais avec des variations de longueurs, Très longue ligne mais avec des variations de longueurs.</span><br');
-buf.push(attrs({  }));
-buf.push('/></div><div');
-buf.push(attrs({ "class": ('Tu-3') }));
-buf.push('><span>Quatrième paragraphe avec une sous liste :</span><br');
-buf.push(attrs({  }));
-buf.push('/></div><div');
-buf.push(attrs({ "class": ('Tu-4') }));
-buf.push('><span>Premier paragraphe</span><br');
-buf.push(attrs({  }));
-buf.push('/></div><div');
-buf.push(attrs({ "class": ('Tu-4') }));
-buf.push('><span>Second paragraphe</span><br');
-buf.push(attrs({  }));
-buf.push('/></div><div');
-buf.push(attrs({ "class": ('Lu-4') }));
-buf.push('><span>Ligne 1 du 2nd paragraphe, pas longue.</span><br');
-buf.push(attrs({  }));
-buf.push('/></div><div');
-buf.push(attrs({ "class": ('Tu-4') }));
-buf.push('><span>troisième paragraphe</span><br');
-buf.push(attrs({  }));
-buf.push('/></div><div');
-buf.push(attrs({ "class": ('Tu-4') }));
-buf.push('><span>Quatrième paragraphe</span><br');
-buf.push(attrs({  }));
-buf.push('/></div><div');
-buf.push(attrs({ "class": ('Th-1') }));
-buf.push('><span>Un titre de niveau 1</span><br');
-buf.push(attrs({  }));
-buf.push('/></div><div');
-buf.push(attrs({ "class": ('Th-2') }));
-buf.push('><span>Un titre de niveau 2</span><br');
-buf.push(attrs({  }));
-buf.push('/></div><div');
-buf.push(attrs({ "class": ('Tu-3') }));
-buf.push('><span>Un paragraphe un  titre et deux lignes</span><br');
-buf.push(attrs({  }));
-buf.push('/></div><div');
-buf.push(attrs({ "class": ('Lu-3') }));
-buf.push('><span>Très longue ligne mais avec des variations de longueurs, Très longue ligne mais avec des variations de longueurs, Très longue ligne mais avec des variations de longueurs, Très longue ligne mais avec des variations de longueurs, Très longue ligne mais avec des variations de longueurs, Très longue ligne mais avec des variations de longueurs, Très longue ligne mais avec des variations de longueurs, Très longue ligne mais avec des variations de longueurs, Très longue ligne mais avec des variations de longueurs, Très longue ligne mais avec des variations de longueurs, Très longue ligne mais avec des variations de longueurs, Très longue ligne mais avec des variations de longueurs, Très longue ligne mais avec des variations de longueurs, Très longue ligne mais avec des variations de longueurs, Très longue ligne mais avec des variations de longueurs, Très longue ligne mais avec des variations de longueurs, Très longue ligne mais avec des variations de longueurs, Très longue ligne mais avec des variations de longueurs, Très longue ligne mais avec des variations de longueurs, Très longue ligne mais avec des variations de longueurs, Très longue ligne mais avec des variations de longueurs, Très longue ligne mais avec des variations de longueurs, Très longue ligne mais avec des variations de longueurs.</span><br');
-buf.push(attrs({  }));
-buf.push('/></div><div');
-buf.push(attrs({ "class": ('Lu-3') }));
-buf.push('><span>Seconde ligne, pas très longue.</span><br');
-buf.push(attrs({  }));
-buf.push('/></div><div');
-buf.push(attrs({ "class": ('Th-2') }));
-buf.push('><span>Un second titre de niveau 2</span><br');
-buf.push(attrs({  }));
-buf.push('/></div><div');
-buf.push(attrs({ "class": ('Lh-2') }));
-buf.push('><span>Ligne commentant le paragraphe</span><br');
-buf.push(attrs({  }));
-buf.push('/></div><div');
-buf.push(attrs({ "class": ('Lh-2') }));
-buf.push('><span>Seconde ligne commentant le paragraphe</span><br');
-buf.push(attrs({  }));
-buf.push('/></div><div');
-buf.push(attrs({ "class": ('Tu-3') }));
-buf.push('><span>Un paragraphe avec juste un titre</span><br');
-buf.push(attrs({  }));
-buf.push('/></div><div');
-buf.push(attrs({ "class": ('Tu-3') }));
-buf.push('><span>Un second paragraphe avec un titre long, un second paragraphe avec un titre long, un second paragraphe avec un titre long, un second paragraphe avec un titre long, un second paragraphe avec un titre long, un second paragraphe avec un titre long !</span><br');
-buf.push(attrs({  }));
-buf.push('/></div><div');
-buf.push(attrs({ "class": ('Tu-3') }));
-buf.push('><span>Un troisième paragraphe avec une liste en dessous :</span><br');
-buf.push(attrs({  }));
-buf.push('/></div><div');
-buf.push(attrs({ "class": ('Tu-4') }));
-buf.push('><span>Premier paragraphe (1 titre seul)</span><br');
-buf.push(attrs({  }));
-buf.push('/></div><div');
-buf.push(attrs({ "class": ('Tu-4') }));
-buf.push('><span>Second paragraphe (1 titre & une ligne)</span><br');
-buf.push(attrs({  }));
-buf.push('/></div><div');
-buf.push(attrs({ "class": ('Lu-4') }));
-buf.push('><span>Ligne du Second paragraphe (1 titre & une ligne), longue ligne mais avec des variations de longueurs, Très longue ligne mais avec des variations de longueurs, Très longue ligne mais avec des variations de longueurs, Très longue ligne mais avec des variations de longueurs, Très longue ligne mais avec des variations de longueurs, Très longue ligne mais avec des variations de longueurs.</span><br');
-buf.push(attrs({  }));
-buf.push('/></div><div');
-buf.push(attrs({ "class": ('Tu-4') }));
-buf.push('><span></span><br');
-buf.push(attrs({  }));
-buf.push('/></div><div');
-buf.push(attrs({ "class": ('Tu-4') }));
-buf.push('><span>c\'était un paragraphe vide :-)</span><br');
-buf.push(attrs({  }));
-buf.push('/></div><div');
-buf.push(attrs({ "class": ('Tu-4') }));
-buf.push('><span>12</span><br');
 buf.push(attrs({  }));
 buf.push('/></div>');
 }

@@ -1,4 +1,4 @@
-{beautify} = require 'views/beautify'
+# {beautify} = require 'views/beautify'
 CNEditor = require('views/editor').CNEditor
 
 # Modules de conversion Markdown <--> Cozy
@@ -41,31 +41,31 @@ exports.initPage =  ()->
         #edCtrl = editorFactory.create( editorIframe$ )
 
         ### initialisation of the page
-        this.replaceContent( require('./templates/content-full') )
         this.replaceContent( require('./templates/content-empty') )
         this.replaceContent( require('./templates/content-full-marker') )
         this.replaceContent( require('./templates/content-shortlines-marker') )
-        ###
         this.replaceContent( require('./templates/content-shortlines-all') )
+        ###
+        this.replaceContent( require('./templates/content-full') )
         
         # buttons init, beautify actions
         editorCtrler = this
         editorBody$  = this.editorBody$
 
-        beautify(editorBody$)
-        editorBody$.on 'keyup' , ->
-            beautify(editorBody$)
-        $("#resultBtnBar_coller").on  'click' , ->
-            beautify(editorBody$)
-        $("#EmptyTextBtn").on "click", () ->
-            editorCtrler.replaceContent( require('./templates/content-empty') )
-            beautify(editorBody$)        
-        $("#SimpleTextBtn").on "click", () ->
-            editorCtrler.replaceContent( require('./templates/content-simple') )
-            beautify(editorBody$)
-        $("#FullTextBtn").on "click", () ->
-            editorCtrler.replaceContent( require('./templates/content-full') )
-            beautify(editorBody$)        
+        # beautify(editorBody$)
+        # editorBody$.on 'keyup' , ->
+        #     beautify(editorBody$)
+        # $("#resultBtnBar_coller").on  'click' , ->
+        #     beautify(editorBody$)
+        # $("#EmptyTextBtn").on "click", () ->
+        #     editorCtrler.replaceContent( require('./templates/content-empty') )
+        #     # beautify(editorBody$)        
+        # $("#SimpleTextBtn").on "click", () ->
+        #     editorCtrler.replaceContent( require('./templates/content-simple') )
+        #     # beautify(editorBody$)
+        # $("#FullTextBtn").on "click", () ->
+        #     editorCtrler.replaceContent( require('./templates/content-full') )
+            # beautify(editorBody$)        
         # $("#logKeysBtn").on "click", () ->
         #     editorCtrler.replaceContent( require('./templates/contentFull') )
         #     beautify(editorBody$)
@@ -78,7 +78,7 @@ exports.initPage =  ()->
         $('#contentSelect').on "change" , (e) ->
             console.log "./templates/#{e.currentTarget.value}"
             editorCtrler.replaceContent( require("./templates/#{e.currentTarget.value}") )
-            beautify(editorBody$)
+            # beautify(editorBody$)
         $('#cssSelect').on "change" , (e) ->
             editorCtrler.replaceCSS( e.currentTarget.value )
 
@@ -96,16 +96,16 @@ exports.initPage =  ()->
         #### -------------------------------------------------------------------
         # Special buttons (to be removed later)
         #  > tests the code structure
-        $("#checkBtn").on "click", () ->
-            checker.checkLines(editorCtrler)
-        #  > translate cozy code into markdown and markdown to cozy code
-        #    Note: in the markdown code there should be two \n between each line
-        $("#CozyMarkdown").on "click", () ->
-            $("#resultText").val(cozy2md.translate $("#resultText").val())
-        $("#addClass").on "click", () ->
-            addClassToLines("sel")
-        $("#delClass").on "click", () ->
-            removeClassFromLines("sel")
+        # $("#checkBtn").on "click", () ->
+        #     checker.checkLines(editorCtrler)
+        # #  > translate cozy code into markdown and markdown to cozy code
+        # #    Note: in the markdown code there should be two \n between each line
+        # $("#CozyMarkdown").on "click", () ->
+        #     $("#resultText").val(cozy2md.translate $("#resultText").val())
+        # $("#addClass").on "click", () ->
+        #     addClassToLines("sel")
+        # $("#delClass").on "click", () ->
+        #     removeClassFromLines("sel")
         ####
 
 
@@ -118,7 +118,7 @@ exports.initPage =  ()->
             for i in [0..num-1]
                 range = sel.getRangeAt(i)
                 sel.setSingleRange(range)
-            beautify(editorBody$)
+            # beautify(editorBody$)
 
         
         #### -------------------------------------------------------------------
