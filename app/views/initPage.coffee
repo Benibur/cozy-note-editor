@@ -54,13 +54,13 @@ exports.initPage =  ()->
         editorBody$  = this.editorBody$
 
         beautify(editorBody$)
+        
         editorBody$.on 'keyup' , ->
             beautify(editorBody$)
+            
         $("#resultBtnBar_coller").on  'click' , ->
             beautify(editorBody$)
-        # $("#logKeysBtn").on "click", () ->
-        #     editorCtrler.replaceContent( require('./templates/contentFull') )
-        #     beautify(editorBody$)
+            
         $("#printRangeBtn").on "click", () ->
             sel = rangy.getIframeSelection(editorCtrler.editorIframe)
             i = 0
@@ -73,14 +73,18 @@ exports.initPage =  ()->
                 console.log range.startContainer
                 console.log range.endContainer
                 i++
+                
+        # Allows user to load a file in the Cozy format
         $('#contentSelect').on "change" , (e) ->
             console.log "./templates/#{e.currentTarget.value}"
             editorCtrler.replaceContent( require("./templates/#{e.currentTarget.value}") )
             beautify(editorBody$)
+
+        # Allows user to load a style sheet for the page
         $('#cssSelect').on "change" , (e) ->
             editorCtrler.replaceCSS( e.currentTarget.value )
 
-        #buttons for the editor
+        # Buttons for the editor
         $("#indentBtn").on "click", () ->
             editorCtrler.tab()
         $("#unIndentBtn").on "click", () ->

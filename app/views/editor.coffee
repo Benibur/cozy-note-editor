@@ -1,5 +1,4 @@
 
-
 ### ------------------------------------------------------------------------
 # CLASS FOR THE COZY NOTE EDITOR
 #
@@ -61,31 +60,92 @@ class exports.CNEditor extends Backbone.View
     # Find the maximal deep (thus the deepest line) of the text
     ###
     _updateDeepest : ->
-        l = @_lines.length
-        c = 0
         max = 1
-        while c < l
-            if @_lines[c].lineDepthAbs > max
+        lines = @_lines
+        for c of lines
+            if @editorBody$.children("#" + "#{lines[c].lineID}").length > 0 and lines[c].lineType == "Th" and lines[c].lineDepthAbs > max
                 max = @_lines[c].lineDepthAbs
-            c++
-        @_deepest = max
-        @editorBody$.attr('deep', max)
+                
+        # Following code is way too ugly to be kept
+        # It needs to be replaced with a way to change a variable in a styl or
+        # css file... but I don't even know if it is possible.
+        if max != @_deepest
+            @_deepest = max
+            if max < 4
+                @replaceCSS("stylesheets/app-deep-#{max}.css")
+            else
+                @replaceCSS("stylesheets/app-deep-4.css")
         
+
     ### ------------------------------------------------------------------------
-    # TODO : initialise the editor content from a markdown string
+    # TODO : initialize the editor content from a markdown string
+    # ok... now how do I load a .md file?
+    # Initialize the editor content from a html string
     ###
     replaceContent : (htmlContent) ->
         @editorBody$.html( htmlContent )
         @_readHtml()
-
+                  
     ###
     # Change the path of the css applied to the editor iframe
     ###
     replaceCSS : (path) ->
         $(this.editorIframe).contents().find("link[rel=stylesheet]").attr({href : path})
 
+    putEndOnEnd : (range, elt) ->
+        # caution: the text node may not exist
+        if elt.firstChild?
+            offset = $(elt.firstChild).text().length
+            range.setEnd(elt.firstChild, offset)
+        else
+            range.setEnd(elt, 0)
+            
+    putStartOnEnd : (range, elt) ->
+        # caution: the text node may not exist
+        if elt.firstChild?
+            offset = $(elt.firstChild).text().length
+            range.setStart(elt.firstChild, offset)
+        else
+            range.setStart(elt, 0)
+            
+    putStartOnStart : (range, elt) ->
+        # caution: the text node may not exist
+        if elt.firstChild?
+            range.setStart(elt.firstChild, 0)
+        else
+            range.setStart(elt, 0)
 
+    normalize : (range) ->
+        # We suppose that a div can be selected only when clicking on the right
+        # 1. if it's a div
+        startContainer = range.startContainer
+        if startContainer.nodeName == "DIV"
+            elt = startContainer.lastChild.previousElementSibling
+            @putStartOnEnd(range, elt)
+        # 2. if it's between two labels span/img/a
+        else if ! startContainer.parentNode in ["SPAN","IMG","A"]
+            next=startContainer.nextElementSibling
+            prev=startContainer.previousElementSibling
+            if next != null
+                @putStartOnStart(range, next)
+            else
+                @putEndOnEnd(range, prev)
+                
+        # same with the selection end
+        # 1. if it's a div
+        endContainer = range.endContainer
+        if endContainer.nodeName == "DIV"
+            elt = endContainer.lastChild.previousElementSibling
+            @putEndOnEnd(range, elt)
+        else if ! endContainer.parentNode in ["SPAN","IMG","A"]
+            next=endContainer.nextElementSibling
+            prev=endContainer.previousElementSibling
+            if next != null
+                @putStartOnStart(range, next)
+            else
+                @putEndOnEnd(range, prev)
 
+    
     ### ------------------------------------------------------------------------
     #    The listner of keyPress event on the editor's iframe... the king !
     ###
@@ -191,25 +251,7 @@ class exports.CNEditor extends Backbone.View
                     # for each selected area
                     for i in [0..num-1]
                         range = sel.getRangeAt(i)
-                        if range.endContainer.nodeName == "DIV"
-                            div = range.endContainer
-                            elt = div.lastChild.previousElementSibling
-                            if elt.firstChild?
-                                offset = $(elt.firstChild).text().length
-                                range.setEnd(elt.firstChild, offset)
-                            else
-                                range.setEnd(elt, 0)
-                        # (just in case)
-                        if range.startContainer.nodeName == "DIV"
-                            div = range.startContainer
-                            elt = div.firstChild
-                            if elt.firstChild?
-                                offset = 0
-                                range.setStart(elt.firstChild, offset)
-                            else
-                                range.setStart(elt, 0)
-                        
-
+                        @normalize(range)
 
         # 4- the current selection is initialized on each keypress
         this.currentSel = null
@@ -217,30 +259,41 @@ class exports.CNEditor extends Backbone.View
         # 5- launch the action corresponding to the pressed shortcut
         switch shortcut
 
-            # RETURN                            
+            # RETURN
             when "-return"
                 @_return()
                 e.preventDefault()
                 @_updateDeepest()
             
-            # TAB                               
+            # TAB
             when "-tab"
                 @tab()
                 e.preventDefault()
                 @_updateDeepest()
             
-            # BACKSPACE                               
+            # BACKSPACE
             when "-backspace"
                 @_backspace(e)
                 @_updateDeepest()
             
-            # SUPPR                    
+            # SUPPR
             when "-suppr"
-                # TODO : deal case of a selection in a single line and in an empty line.
+                # TODO : deal case of a selection in a single line
+                # and in an empty line (done)
                 @_suppr(e)
                 @_updateDeepest()
-            
-            # TOGGLE LINE TYPE (Alt + a)                  
+
+            when "CtrlShift-down"
+                # TODO : adapt classes when a multiline block is moved
+                @moveLinesDown()
+                e.preventDefault()
+
+            when "CtrlShift-up"
+                # TODO : adapt classes when a multiline block is moved
+                @moveLinesUp()
+                e.preventDefault()
+
+            # TOGGLE LINE TYPE (Alt + a)
             when "Shift-tab"
                 @shiftTab()
                 e.preventDefault()
@@ -321,7 +374,8 @@ class exports.CNEditor extends Backbone.View
                     sel.startLine = startLine.linePrev
                     @_deleteMultiLinesSelections()
                     e.preventDefault()
-                # if there is no previous line : no modification, just prevent default action
+                # if there is no previous line :
+                # no modification, just prevent default action
                 else
                     e.preventDefault()
             # 1.2 caret is in the middle of the line : nothing to do
@@ -985,7 +1039,8 @@ class exports.CNEditor extends Backbone.View
         #    end line. Its previous sibling or parent might have been deleted, 
         #    we then must find its new one in order to adapt its type.
         if line != null
-            # if the line is a line (Lx), then make it "independant" by turning it in a Tx
+            # if the line is a line (Lx), then make it "independant"
+            # by turning it in a Tx
             if line.lineType[0] == 'L'
                 line.lineType = 'T' + line.lineType[1]
                 line.line$.prop("class","#{line.lineType}-#{line.lineDepthAbs}")
@@ -1249,3 +1304,59 @@ class exports.CNEditor extends Backbone.View
                 linePrev = lineNew
                 @_lines[lineID_st] = lineNew
         @_highestId = lineID
+
+    moveLinesDown : () ->
+        @_findLinesAndIsStartIsEnd()
+        sel = this.currentSel
+        
+        lineStart = sel.startLine
+        lineEnd   = sel.endLine
+        linePrev  = lineStart.linePrev
+        lineNext  = lineEnd.lineNext
+
+        # Modifies the Dom and the linking
+        if lineNext != null
+            lineNext.linePrev = linePrev
+            lineStart.linePrev = lineNext
+            if lineNext.lineNext != null
+                lineNext.lineNext.linePrev = lineEnd
+            lineEnd.lineNext = lineNext.lineNext
+            lineNext.lineNext = lineStart
+            if linePrev != null
+                linePrev.lineNext = lineNext
+            lineStart.line$.before(lineNext.line$)
+            # adaptation of the moved block's class
+            # TODO: only the first line is treated for now
+            if lineStart.linePrev != null
+                lineStart.line$.attr('class', lineStart.linePrev.line$.attr('class'))
+                lineStart.lineType = lineStart.linePrev.lineType
+                lineStart.lineDepthAbs = lineStart.linePrev.lineDepthAbs
+                lineStart.lineDepthRel = lineStart.linePrev.lineDepthRel
+
+    moveLinesUp : () ->
+        @_findLinesAndIsStartIsEnd()
+        sel = this.currentSel
+        
+        lineStart = sel.startLine
+        lineEnd   = sel.endLine
+        linePrev  = lineStart.linePrev
+        lineNext  = lineEnd.lineNext
+
+        # Modifies the Dom and the linking
+        if linePrev != null
+            linePrev.lineNext = lineNext
+            lineEnd.lineNext = linePrev
+            if linePrev.linePrev != null
+                linePrev.linePrev.lineNext = lineStart
+            lineStart.linePrev = linePrev.linePrev
+            linePrev.linePrev = lineEnd
+            if lineNext != null
+                lineNext.linePrev = linePrev
+            lineEnd.line$.after(linePrev.line$)
+            # adaptation of the moved block's class
+            # TODO: only the first line is treated for now
+            if lineStart.linePrev != null
+                lineStart.line$.attr('class', lineStart.linePrev.line$.attr('class'))
+                lineStart.lineType = lineStart.linePrev.lineType
+                lineStart.lineDepthAbs = lineStart.linePrev.lineDepthAbs
+                lineStart.lineDepthRel = lineStart.linePrev.lineDepthRel

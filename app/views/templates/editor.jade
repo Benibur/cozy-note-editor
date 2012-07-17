@@ -33,9 +33,16 @@
       option(value="test_9", style="display:block") Test numero 9
       option(value="test_10", style="display:block") Test numero 10
       option(value="test_11", style="display:block") Test numero 11
+    select#mdSelect
+      option(value="exemple1.md", style="display:block") ex1
+      option(value="exemple2.md", style="display:block") ex2
     select#cssSelect
       option(value="images/editor2.css", style="display:block") css1
       option(value="stylesheets/app.css", style="display:block") css2
+      option(value="stylesheets/app-deep-1.css", style="display:block") depth_1
+      option(value="stylesheets/app-deep-2.css", style="display:block") depth_2
+      option(value="stylesheets/app-deep-3.css", style="display:block") depth_3
+      option(value="stylesheets/app-deep-4.css", style="display:block") depth_4
 
   #main-div.table-ly-ctnt
     #col-wrap
@@ -60,8 +67,6 @@
                 button#resultBtnBar_coller.btn.btn-small.btn-primary Coller
                 button#markdownBtn.btn.btn-small.btn-primary Convert to Markdown
                 button#cozyBtn.btn.btn-small.btn-primary Convert to Cozy
-                button.btn.btn-small.btn-primary -
-                button.btn.btn-small.btn-primary -
                 button#checkBtn.btn.btn-small.btn-primary Run syntax test
               p#editorPropertiesDisplay
             // text for the resulting html
