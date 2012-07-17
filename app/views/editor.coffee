@@ -58,6 +58,11 @@ class exports.CNEditor extends Backbone.View
 
     ### ------------------------------------------------------------------------
     # Find the maximal deep (thus the deepest line) of the text
+    # TODO: improve it so it only calculates the new depth from the modified
+    #       lines (not all of them)
+    # TODO: set a class system rather than multiple CSS files. Thus titles
+    #       classes look like "Th-n depth3" for instance if max depth is 3
+    # note: These todos arent our priority for now
     ###
     _updateDeepest : ->
         max = 1
@@ -85,6 +90,7 @@ class exports.CNEditor extends Backbone.View
     replaceContent : (htmlContent) ->
         @editorBody$.html( htmlContent )
         @_readHtml()
+        @buildSummary()
                   
     ###
     # Change the path of the css applied to the editor iframe
@@ -263,25 +269,23 @@ class exports.CNEditor extends Backbone.View
             when "-return"
                 @_return()
                 e.preventDefault()
-                @_updateDeepest()
+                #@_updateDeepest()
             
             # TAB
             when "-tab"
                 @tab()
                 e.preventDefault()
-                @_updateDeepest()
+                #@_updateDeepest()
             
             # BACKSPACE
             when "-backspace"
                 @_backspace(e)
-                @_updateDeepest()
+                #@_updateDeepest()
             
             # SUPPR
             when "-suppr"
-                # TODO : deal case of a selection in a single line
-                # and in an empty line (done)
                 @_suppr(e)
-                @_updateDeepest()
+                #@_updateDeepest()
 
             when "CtrlShift-down"
                 # TODO : adapt classes when a multiline block is moved
@@ -293,11 +297,11 @@ class exports.CNEditor extends Backbone.View
                 @moveLinesUp()
                 e.preventDefault()
 
-            # TOGGLE LINE TYPE (Alt + a)
+            # SHIFT TAB
             when "Shift-tab"
                 @shiftTab()
                 e.preventDefault()
-                @_updateDeepest()
+                #@_updateDeepest()
             
             # TOGGLE LINE TYPE (Alt + a)                  
             when "Alt-97"
@@ -309,7 +313,7 @@ class exports.CNEditor extends Backbone.View
                 # TODO
                 # console.log "TODO : PASTE"
                 e.preventDefault()
-                @_updateDeepest()
+                #@_updateDeepest()
             
             # SAVE (Ctrl + s)                  
             when "Ctrl-115"
@@ -1360,3 +1364,19 @@ class exports.CNEditor extends Backbone.View
                 lineStart.lineType = lineStart.linePrev.lineType
                 lineStart.lineDepthAbs = lineStart.linePrev.lineDepthAbs
                 lineStart.lineDepthRel = lineStart.linePrev.lineDepthRel
+
+    initSummary : () ->
+        summary = @editorBody$.children("#nav")
+        if summary.length == 0
+            summary = $ document.createElement('div')
+            summary.attr('id', 'nav')
+            summary.prependTo @editorBody$
+        return summary
+        
+    buildSummary : () ->
+        summary = @initSummary()
+        @editorBody$.children("#nav").children().remove()
+        lines = @_lines
+        for c of lines
+            if (@editorBody$.children("#" + "#{lines[c].lineID}").length > 0 and lines[c].lineType == "Th")
+                lines[c].line$.clone().appendTo summary

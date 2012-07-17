@@ -112,21 +112,9 @@ exports.initPage =  ()->
             () ->
                 removeClassFromLines("sel")
             )
-        ####
+        $("#summaryBtn").on "click", () ->
+            editorCtrler.buildSummary()
 
-
-        #### -------------------------------------------------------------------
-        # Restores a saved selection
-        restoreSelection = (sel) ->
-            num = sel.rangeCount
-            if num == 0
-                return
-            for i in [0..num-1]
-                range = sel.getRangeAt(i)
-                sel.setSingleRange(range)
-            beautify(editorBody$)
-
-        
         #### -------------------------------------------------------------------
         # Returns an object containing every selected line in the iframe
         getSelectedLines = (sel) ->
@@ -213,7 +201,12 @@ exports.initPage =  ()->
         this.editorBody$.on 'mouseup' , () =>
             this.newPosition = true
             $("#editorPropertiesDisplay").text("newPosition = true")
-      
+
+        # automatic summary
+        this.editorBody$.on 'mouseup', () =>
+            this.buildSummary()
+        this.editorBody$.on 'keyup', () =>
+            this.buildSummary()
     # creation of the editor
     editor = new CNEditor( $('#editorIframe')[0], cb )
     return editor

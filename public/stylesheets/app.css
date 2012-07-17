@@ -4199,7 +4199,7 @@ dt{margin:0;padding:0}
 ul,ol{margin:3px 0 0 0;padding:0;list-style-type:none}
 li{margin:0;padding:0;list-style-type:disc}
 dd{margin-left:32px}
-.Th-1{padding-left:5px;margin-left:0;margin-top:12px;display:list-item;border-radius:5px 5px 5px 5px;color:#ffa500;width:100%;box-sizing:border-box;-moz-box-sizing:border-box;-webkit-box-sizing:border-box;text-transform:uppercase;font-weight:bold;counter-reset:section4;counter-reset:section3;counter-reset:section2;counter-increment:section1}
+.Th-1{padding-left:5px;margin-left:0;margin-top:12px;border-radius:5px 5px 5px 5px;color:#ffa500;width:100%;box-sizing:border-box;-moz-box-sizing:border-box;-webkit-box-sizing:border-box;text-transform:uppercase;font-weight:bold;counter-reset:section4;counter-reset:section3;counter-reset:section2;counter-increment:section1}
 .To-1{margin-left:20px;counter-increment:list1}
 .Tu-1{margin-left:20px;margin-top:2px;display:list-item;}
 .Lu-1,.Lo-1{padding-left:22px}
