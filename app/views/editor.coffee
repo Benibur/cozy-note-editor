@@ -113,6 +113,13 @@ class exports.CNEditor extends Backbone.View
             range.setStart(elt.firstChild, offset)
         else
             range.setStart(elt, 0)
+
+    putEndOnStart : (range, elt) ->
+        # caution: the text node may not exist
+        if elt.firstChild?
+            range.setEnd(elt.firstChild, 0)
+        else
+            range.setEnd(elt, 0)
             
     putStartOnStart : (range, elt) ->
         # caution: the text node may not exist
@@ -323,7 +330,7 @@ class exports.CNEditor extends Backbone.View
 
 
     ### ------------------------------------------------------------------------
-    #  Manage deletions when suppr key is pressed
+    # Manage deletions when suppr key is pressed
     ###
     _suppr : (e) ->
         @_findLinesAndIsStartIsEnd()
@@ -963,12 +970,13 @@ class exports.CNEditor extends Backbone.View
     #        :
     # 
     ###
-    _deleteMultiLinesSelections : (startLine,endLine) ->
+    _deleteMultiLinesSelections : (startLine, endLine) ->
+        
         # 0- variables
         if startLine != undefined
             range = rangy.createRange()
-            range.setStartBefore(startLine.line$)
-            range.setStartAfter(endLine.line$)
+            @putStartOnEnd(range, startLine.line$[0].lastElementChild.previousElementSibling)
+            @putEndOnEnd(range, endLine.line$[0].lastElementChild.previousElementSibling)
         else
             @_findLines()
             range = this.currentSel.range
@@ -979,15 +987,15 @@ class exports.CNEditor extends Backbone.View
         endLineDepthAbs = endLine.lineDepthAbs
         startLineDepthAbs = startLine.lineDepthAbs
         deltaDepth = endLineDepthAbs - startLineDepthAbs
-       
+
         # 1- copy the end of endLine in a fragment
         range4fragment = rangy.createRangyRange()
         range4fragment.setStart(range.endContainer, range.endOffset)
         range4fragment.setEndAfter(endLine.line$[0].lastChild)
         endOfLineFragment = range4fragment.cloneContents()
         
-        # 2- adapt the type of endLine and of its children to startLine 
-        # the only usefull case is when endLine must be changed from Th to Tu or To
+        # 2- adapt the type of endLine and of its children to startLine 
+        # the only useful case is when endLine must be changed from Th to Tu or To
         if endLine.lineType[1] == 'h' and startLine.lineType[1] != 'h'
             if endLine.lineType[0] == 'L'
                 endLine.lineType = 'T' + endLine.lineType[1]
@@ -1000,10 +1008,6 @@ class exports.CNEditor extends Backbone.View
         # 4- append fragment and delete endLine
         if startLine.line$[0].lastChild.nodeName == 'BR'
             startLine.line$[0].removeChild( startLine.line$[0].lastChild)
-        # TODO : after append there is two span one after the other : if 
-        # they have the same class then we should concatenate them.
-        # ____
-        # DONE : if both class are undefined we also concatenate them
         startFrag = endOfLineFragment.childNodes[0]
         myEndLine = startLine.line$[0].lastElementChild
         if (startFrag.tagName == myEndLine.tagName == 'SPAN') and ((! $(startFrag).attr("class")? and ! $(myEndLine).attr("class")?) or ($(startFrag).attr("class") == $(myEndLine).attr("class")))
@@ -1025,10 +1029,11 @@ class exports.CNEditor extends Backbone.View
             endLine.lineNext.linePrev=startLine
         endLine.line$.remove()
         delete this._lines[endLine.lineID]
+        
         # 5- adapt the depth of the children and following siblings of end line
-            # in case the depth delta between start and end line is
-            # greater than 0, then the structure is not correct : we reduce
-            # the depth of all the children and siblings of endLine.
+        #    in case the depth delta between start and end line is
+        #    greater than 0, then the structure is not correct : we reduce
+        #    the depth of all the children and siblings of endLine.
         line = startLine.lineNext
         if line != null
             deltaDepth1stLine = line.lineDepthAbs - startLineDepthAbs
@@ -1062,11 +1067,14 @@ class exports.CNEditor extends Backbone.View
                     @markerList(firstLineAfterSiblingsOfDeleted)
 
         # 7- position caret
-        range4caret = rangy.createRange()
-        range4caret.collapseToPoint(startContainer, startOffset)
-        this.currentSel.sel.setSingleRange(range4caret)
-        this.currentSel = null
-
+        if startLine == undefined
+            range4caret = rangy.createRange()
+            range4caret.collapseToPoint(startContainer, startOffset)
+            this.currentSel.sel.setSingleRange(range4caret)
+            this.currentSel = null
+        # else
+        #   do nothing
+        
                 
     ### ------------------------------------------------------------------------
     # Insert a line after a source line
@@ -1310,16 +1318,29 @@ class exports.CNEditor extends Backbone.View
         @_highestId = lineID
 
     moveLinesDown : () ->
-        @_findLinesAndIsStartIsEnd()
+        @_findLines()
         sel = this.currentSel
-        
         lineStart = sel.startLine
         lineEnd   = sel.endLine
         linePrev  = lineStart.linePrev
         lineNext  = lineEnd.lineNext
-
-        # Modifies the Dom and the linking
+        
         if lineNext != null
+            # save lineNext
+            cloneLine =
+                line$        : lineNext.line$.clone()
+                lineID       : lineNext.lineID
+                lineType     : lineNext.lineType
+                lineDepthAbs : lineNext.lineDepthAbs
+                lineDepthRel : lineNext.lineDepthRel
+                linePrev     : lineNext.linePrev
+                lineNext     : lineNext.lineNext
+            # Delete the upperline content
+            @_deleteMultiLinesSelections(lineEnd, lineNext)
+            # Restore the lower line
+            lineNext = cloneLine
+            @_lines[lineNext.lineID] = lineNext
+            # Modify the linking
             lineNext.linePrev = linePrev
             lineStart.linePrev = lineNext
             if lineNext.lineNext != null
@@ -1328,26 +1349,39 @@ class exports.CNEditor extends Backbone.View
             lineNext.lineNext = lineStart
             if linePrev != null
                 linePrev.lineNext = lineNext
+            # Modify the DOM
             lineStart.line$.before(lineNext.line$)
-            # adaptation of the moved block's class
-            # TODO: only the first line is treated for now
-            if lineStart.linePrev != null
-                lineStart.line$.attr('class', lineStart.linePrev.line$.attr('class'))
-                lineStart.lineType = lineStart.linePrev.lineType
-                lineStart.lineDepthAbs = lineStart.linePrev.lineDepthAbs
-                lineStart.lineDepthRel = lineStart.linePrev.lineDepthRel
+
+            # Re-insert properly lineNext before the start of the moved block
+            if lineStart.lineDepthAbs < lineNext.lineDeptAbs
+                lineNext.lineDepthRel = lineStart.lineDepthRel
+                lineNext.lineDepthAbs = lineStart.lineDepthAbs
+                lineNext.line$.attr('class', "#{lineNext.lineType}-#{lineNext.lineDepthAbs}")   
 
     moveLinesUp : () ->
-        @_findLinesAndIsStartIsEnd()
+        @_findLines()
         sel = this.currentSel
-        
         lineStart = sel.startLine
         lineEnd   = sel.endLine
         linePrev  = lineStart.linePrev
         lineNext  = lineEnd.lineNext
-
-        # Modifies the Dom and the linking
+        
         if linePrev != null
+            # save linePrev
+            cloneLine =
+                line$        : linePrev.line$.clone()
+                lineID       : linePrev.lineID
+                lineType     : linePrev.lineType
+                lineDepthAbs : linePrev.lineDepthAbs
+                lineDepthRel : linePrev.lineDepthRel
+                linePrev     : linePrev.linePrev
+                lineNext     : linePrev.lineNext
+            # Delete the upperline content
+            @_deleteMultiLinesSelections(linePrev.linePrev, linePrev)
+            # Restore the upper  line
+            linePrev = cloneLine
+            @_lines[linePrev.lineID] = linePrev
+            # Modify the linking
             linePrev.lineNext = lineNext
             lineEnd.lineNext = linePrev
             if linePrev.linePrev != null
@@ -1356,15 +1390,21 @@ class exports.CNEditor extends Backbone.View
             linePrev.linePrev = lineEnd
             if lineNext != null
                 lineNext.linePrev = linePrev
+            # Modify the DOM
             lineEnd.line$.after(linePrev.line$)
-            # adaptation of the moved block's class
-            # TODO: only the first line is treated for now
-            if lineStart.linePrev != null
-                lineStart.line$.attr('class', lineStart.linePrev.line$.attr('class'))
-                lineStart.lineType = lineStart.linePrev.lineType
-                lineStart.lineDepthAbs = lineStart.linePrev.lineDepthAbs
-                lineStart.lineDepthRel = lineStart.linePrev.lineDepthRel
-
+           
+            # Re-insert properly linePrev after the end of the moved block
+            #if the block ends with a title
+            if lineEnd.lineType[0] == 'T'
+                linePrev.lineType = lineEnd.lineType
+                linePrev.lineDepthRel = lineEnd.lineDepthRel
+                linePrev.lineDepthAbs = lineEnd.lineDepthAbs
+                linePrev.line$.attr('class', lineEnd.line$.attr('class'))
+            if linePrev.lineDepthAbs > lineEnd.lineDepthAbs
+                linePrev.lineDepthRel = lineEnd.lineDepthRel
+                linePrev.lineDepthAbs = lineEnd.lineDepthAbs
+                linePrev.line$.attr('class', "#{linePrev.lineType}-#{linePrev.lineDepthAbs}")
+            
     initSummary : () ->
         summary = @editorBody$.children("#nav")
         if summary.length == 0
@@ -1380,3 +1420,6 @@ class exports.CNEditor extends Backbone.View
         for c of lines
             if (@editorBody$.children("#" + "#{lines[c].lineID}").length > 0 and lines[c].lineType == "Th")
                 lines[c].line$.clone().appendTo summary
+                
+
+            
