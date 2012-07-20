@@ -11,7 +11,7 @@ class exports.AutoTest extends Backbone.View
     #    <> a DIV contains a sequence of SPAN ended by a BR --------- (OK)
     #    <> two successive SPAN can't have the same class ----------- (OK)
     #    <> empty SPAN are really empty (<span></span>) ------------- (huh?)
-    #    <> a note must  have at least one line
+    #    <> a note must  have at least one line --------------------- (todo)
     ###
     checkLines : (CNEditor) ->
         
@@ -93,21 +93,20 @@ class exports.AutoTest extends Backbone.View
             depth = nextLine.lineDepthAbs
             
             # First we check the line's legacy
-            
-            # if ! (id(prevLine)+2 == id(currentLine)+1 == id(nextLine))
-            #     return alert "ERROR: invalid line #{nextLine.lineID}\n (#{nextLine.lineType}-#{nextLine.lineDepthAbs} has wrong identifier)"
                 
             element = CNEditor.editorBody$.children("#"+nextLine.lineID)
                         
             if element == null
-                return alert "ERROR: invalid line #{nextLine.lineID}\n (#{nextLine.lineType}-#{nextLine.lineDepthAbs} has no matching DIV)"
+                console.log "ERROR: invalid line #{nextLine.lineID}\n (#{nextLine.lineType}-#{nextLine.lineDepthAbs} has no matching DIV)"
+                return
             
             # a DIV contains a sequence of SPAN ended by a BR -----------(OK)
             children = element.children()
             
             # a DIV has at least a span/a/img then a br
             if children == null or children.length < 2
-                return alert "ERROR: invalid line #{nextLine.lineID}\n (#{nextLine.lineType}-#{nextLine.lineDepthAbs} content is too short)"
+                console.log "ERROR: invalid line #{nextLine.lineID}\n (#{nextLine.lineType}-#{nextLine.lineDepthAbs} content is too short)"
+                return
             lastClass = undefined
             i = 0
             while i < children.length-1
@@ -116,25 +115,29 @@ class exports.AutoTest extends Backbone.View
                 if child.nodeName == 'SPAN'
                     if $(child).attr('class')?
                         if lastClass == $(child).attr('class')
-                            return alert "ERROR: invalid line #{nextLine.lineID}\n (#{nextLine.lineType}-#{nextLine.lineDepthAbs} two consecutive SPAN with same class #{lastClass})"
+                            console.log "ERROR: invalid line #{nextLine.lineID}\n (#{nextLine.lineType}-#{nextLine.lineDepthAbs} two consecutive SPAN with same class #{lastClass})"
+                            return
                         else
                             lastClass = $(child).attr('class')
                 else if child.nodeName == 'A' or child.nodeName == 'IMG'
                     lastClass = undefined
                 else
-                    return alert "ERROR: invalid line #{nextLine.lineID}\n (#{nextLine.lineType}-#{nextLine.lineDepthAbs} invalid label #{child.nodeName})"
+                    console.log "ERROR: invalid line #{nextLine.lineID}\n (#{nextLine.lineType}-#{nextLine.lineDepthAbs} invalid label #{child.nodeName})"
+                    return
                 i++
                     
             child = children.get(children.length-1)
             if child.nodeName != 'BR'
-                return alert "ERROR: invalid line #{nextLine.lineID}\n (#{nextLine.lineType}-#{nextLine.lineDepthAbs} must end with BR)"
+                console.log "ERROR: invalid line #{nextLine.lineID}\n (#{nextLine.lineType}-#{nextLine.lineDepthAbs} must end with BR)"
+                return
 
             # Then we add it to the tree
             newNode = new node(nextLine, [])
             if type == "T"       # internal node
                 # updates the ancestors
                 if depth > myAncestor.length
-                    return alert "ERROR: invalid line #{nextLine.lineID}\n (#{nextLine.lineType}-#{nextLine.lineDepthAbs} indentation issue)"
+                    console.log "ERROR: invalid line #{nextLine.lineID}\n (#{nextLine.lineType}-#{nextLine.lineDepthAbs} indentation issue)"
+                    return
                 else if depth == myAncestor.length
                     myAncestor.push(newNode)
                 else
@@ -142,19 +145,22 @@ class exports.AutoTest extends Backbone.View
                 # adds title to the tree
                 
                 if myAncestor[depth-1] == null
-                    return alert "ERROR: invalid line #{nextLine.lineID}"
+                    console.log "ERROR: invalid line #{nextLine.lineID}"
+                    return
                 else
                     myAncestor[depth-1].sons.push(newNode)
                 
             else if type == "L"  # leaf
                 # adds line to the tree
                 if depth >= myAncestor.length
-                    return alert "ERROR: invalid line #{nextLine.lineID}\n (#{nextLine.lineType}-#{nextLine.lineDepthAbs} indentation issue)"
+                    console.log "ERROR: invalid line #{nextLine.lineID}\n (#{nextLine.lineType}-#{nextLine.lineDepthAbs} indentation issue)"
+                    return
                 else
                     myAncestor[depth+1] = null
                     
                 if myAncestor[depth] == null
-                    return alert "ERROR: invalid line #{nextLine.lineID}"
+                    console.log "ERROR: invalid line #{nextLine.lineID}"
+                    return
                 else
                     myAncestor[depth].sons.push(newNode)
             # goes to the next node
@@ -169,7 +175,8 @@ class exports.AutoTest extends Backbone.View
                 myId = $(@).attr('id')
                 if /CNID_[0-9]+/.test myId
                     if ! CNEditor._lines[myId]?
-                        return alert "ERROR: missing line " + myId
+                        console.log "ERROR: missing line " + myId
+                        return
         
         
         # Our tree is finished; now we can recursively check it
@@ -180,32 +187,25 @@ class exports.AutoTest extends Backbone.View
                     
                     # Hierarchy verification
                     if ! possibleSon[node.line.lineType](child.line.lineType)
-                        return alert "ERROR: invalid line #{child.line.lineID}\n (hierarchic issue of a #{child.line.lineType}-#{child.line.lineDepthAbs})"
+                        console.log "ERROR: invalid line #{child.line.lineID}\n (hierarchic issue of a #{child.line.lineType}-#{child.line.lineDepthAbs})"
+                        return false
                         
                     # Depth verification
                     if nodeType(child.line.lineType) == "T"
                         if node.line.lineDepthAbs+1 != child.line.lineDepthAbs
-                            return alert "ERROR: invalid line #{child.line.lineID}\n (indentation issue of a #{child.line.lineType}-#{child.line.lineDepthAbs})"
-                        recVerif(child)
+                            console.log "ERROR: invalid line #{child.line.lineID}\n (indentation issue of a #{child.line.lineType}-#{child.line.lineDepthAbs})"
+                            return false
+                        if ! recVerif(child)
+                            return false
                     else if nodeType(child.line.lineType) == "L"
                         if node.line.lineDepthAbs != child.line.lineDepthAbs
-                            return alert "ERROR: invalid line #{child.line.lineID}\n (indentation issue of a #{child.line.lineType}-#{child.line.lineDepthAbs})"
+                            console.log "ERROR: invalid line #{child.line.lineID}\n (indentation issue of a #{child.line.lineType}-#{child.line.lineDepthAbs})"
+                            return false
+                            
+            return true
 
-        recVerif(root)
+        success = recVerif(root)
+        if success
+            console.log "everything seems ok !"
 
-
-    # Selects a specific (continuous) sequence of lines
-    # Sadly it doesnt work for now... we'll see that
-    selectArea : (CNEditor, start, startOffset, end, endOffset) ->
-        
-        sel = rangy.getIframeSelection(CNEditor.editorIframe)
-        myRange = rangy.createRange()
-        myRange.startContainer = CNEditor.editorBody$.children("#CNID_#{start}")[0]
-        myRange.startOffset   = startOffset
-        myRange.endContainer  = CNEditor.editorBody$.children("#CNID_#{end}")[0]
-        myRange.endOffset     = endOffset
-        console.log myRange
-        sel.removeAllRanges()
-        console.log sel
-        sel.setSingleRange(myRange)
-        console.log sel
+        return success

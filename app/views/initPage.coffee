@@ -52,33 +52,13 @@ exports.initPage =  ()->
         editorCtrler = this
         editorBody$  = this.editorBody$
 
-        # beautify(editorBody$)
-        # editorBody$.on 'keyup' , ->
-        #     beautify(editorBody$)
-        # $("#resultBtnBar_coller").on  'click' , ->
-        #     beautify(editorBody$)
-        # $("#EmptyTextBtn").on "click", () ->
-        #     editorCtrler.replaceContent( require('./templates/content-empty') )
-        #     # beautify(editorBody$)        
-        # $("#SimpleTextBtn").on "click", () ->
-        #     editorCtrler.replaceContent( require('./templates/content-simple') )
-        #     # beautify(editorBody$)
-        # $("#FullTextBtn").on "click", () ->
-        #     editorCtrler.replaceContent( require('./templates/content-full') )
-            # beautify(editorBody$)        
-        # $("#logKeysBtn").on "click", () ->
-        #     editorCtrler.replaceContent( require('./templates/contentFull') )
-        #     beautify(editorBody$)
-        # $("#logRangeBtn").on "click", () ->
-        #     editorCtrler.replaceContent( require('./templates/contentFull') )
-        #     beautify(editorBody$)
-        # $("#printRangeBtn").on "click", () ->
-        #     editorCtrler.replaceContent( require('./templates/contentFull') )
-        #     beautify(editorBody$)
+
         $('#contentSelect').on "change" , (e) ->
             console.log "./templates/#{e.currentTarget.value}"
             editorCtrler.replaceContent( require("./templates/#{e.currentTarget.value}") )
             # beautify(editorBody$)
+
+        # Allows user to load a style sheet for the page
         $('#cssSelect').on "change" , (e) ->
             editorCtrler.replaceCSS( e.currentTarget.value )
 
@@ -93,34 +73,7 @@ exports.initPage =  ()->
             editorCtrler.titleList()
 
 
-        #### -------------------------------------------------------------------
-        # Special buttons (to be removed later)
-        #  > tests the code structure
-        # $("#checkBtn").on "click", () ->
-        #     checker.checkLines(editorCtrler)
-        # #  > translate cozy code into markdown and markdown to cozy code
-        # #    Note: in the markdown code there should be two \n between each line
-        # $("#CozyMarkdown").on "click", () ->
-        #     $("#resultText").val(cozy2md.translate $("#resultText").val())
-        # $("#addClass").on "click", () ->
-        #     addClassToLines("sel")
-        # $("#delClass").on "click", () ->
-        #     removeClassFromLines("sel")
-        ####
 
-
-        #### -------------------------------------------------------------------
-        # Restores a saved selection
-        restoreSelection = (sel) ->
-            num = sel.rangeCount
-            if num == 0
-                return
-            for i in [0..num-1]
-                range = sel.getRangeAt(i)
-                sel.setSingleRange(range)
-            # beautify(editorBody$)
-
-        
         #### -------------------------------------------------------------------
         # Returns an object containing every selected line in the iframe
         getSelectedLines = (sel) ->
@@ -183,7 +136,7 @@ exports.initPage =  ()->
                     div.attr('toDisplay', '')
 
         #### -------------------------------------------------------------------
-        # (de)Activates class auto-display at the beginning of lines
+        # (de)activates class auto-display at the beginning of lines
         $("#addClass2LineBtn").on "click", () ->
             addClassToLines()
             if editor_doAddClasseToLines
@@ -195,9 +148,6 @@ exports.initPage =  ()->
                 $("#addClass2LineBtn").html "Hide Class on Lines"
                 editor_doAddClasseToLines = true
                 editorBody$.on 'keyup' , addClassToLines
-
-
-
             
         # default behaviour regarding the class at the beginning of the line :
         # comment or uncomment depending default expected behaviour
@@ -206,12 +156,16 @@ exports.initPage =  ()->
         # editorBody$.on 'keyup', addClassToLines
         # editor_doAddClasseToLines = true
 
-
         # display whether the user has moved the carret with keyboard or mouse.
         this.editorBody$.on 'mouseup' , () =>
             this.newPosition = true
             $("#editorPropertiesDisplay").text("newPosition = true")
-      
+
+        # automatic summary
+        this.editorBody$.on 'mouseup', () =>
+            this.buildSummary()
+        this.editorBody$.on 'keyup', () =>
+            this.buildSummary()
     # creation of the editor
     editor = new CNEditor( $('#editorIframe')[0], cb )
     return editor
