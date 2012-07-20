@@ -95,13 +95,13 @@ class exports.CNEditor extends Backbone.View
     ###
     getEditorContent : () ->
         cozyContent = @editorBody$.html()
-        return @cozy2md cozyContent
+        return @_cozy2md cozyContent
         
     ###
     # Sets the editor content from a markdown string
     ###
     setEditorContent : (mdContent) ->
-        cozyContent = md2cozy mdContent
+        cozyContent = @_md2cozy mdContent
         @editorBody$.html cozyContent
         # update the controler
         @_readHtml()
@@ -1481,7 +1481,7 @@ class exports.CNEditor extends Backbone.View
     # Reads a string that represents html code in our cozy format and turns it
     # into a string in markdown format
     ###
-    cozy2md : (text) ->
+    _cozy2md : (text) ->
         
         # Writes the string into a jQuery object
         htmlCode = $(document.createElement 'div').html text
@@ -1578,7 +1578,7 @@ class exports.CNEditor extends Backbone.View
 
     # Reads a string of html code given by showdown
     # and turns it into our proper cozy html code.
-    md2cozy: (text) ->
+    _md2cozy: (text) ->
 
         conv = new Showdown.converter()
         text = conv.makeHtml text

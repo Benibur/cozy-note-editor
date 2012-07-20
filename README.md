@@ -6,7 +6,8 @@ Simple, yet Towerfull : one day it will be !
 ## The main object CNEditor
 
     * constructor(iframeTarget, callBack) : the editor is set within the specified iframe label.
-
+    * getEditorContent()
+    * setEditorContent(mdContent)
 
 ## Install editor's environment
     1. Clone git repository and install dependancies

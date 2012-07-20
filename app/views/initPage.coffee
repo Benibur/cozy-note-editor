@@ -96,9 +96,9 @@ exports.initPage =  ()->
         #  > translate cozy code into markdown and markdown to cozy code
         #    Note: in the markdown code there should be two \n between each line
         $("#markdownBtn").on "click", () ->
-            $("#resultText").val(editorCtrler.cozy2md $("#resultText").val())
+            $("#resultText").val(editorCtrler._cozy2md $("#resultText").val())
         $("#cozyBtn").on "click", () ->
-            $("#resultText").val(editorCtrler.md2cozy $("#resultText").val())
+            $("#resultText").val(editorCtrler._md2cozy $("#resultText").val())
         $("#addClass").toggle(
             () ->
                 addClassToLines("sel")
