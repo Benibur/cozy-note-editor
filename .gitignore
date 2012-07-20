@@ -1,6 +1,4 @@
 node_modules
 *.swp
 *~
-public/javascripts/app.js
-public/javascripts/vendor.js
-public/hackShowdown.js
+public/*
