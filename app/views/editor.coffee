@@ -9,7 +9,7 @@
 #   callBack     = launched when editor ready, the context 
 #                  is set to the editorCtrl (callBack.call(this))
 # properties & methods :
-#   replaceContent    : (htmlContent) ->  # TODO : replace with markdown
+#   replaceContent    : (htmlContent) ->  # TODO: replace with markdown
 #   _keyPressListener : (e) =>
 #   _insertLineAfter  : (param) ->
 #   _insertLineBefore : (param) ->
@@ -49,7 +49,7 @@ class exports.CNEditor extends Backbone.View
             @_highestId    = 0
             @_deepest      = 1
             @_firstLine    = null
-            # 3- initilize event listeners
+            # 3- initialize event listeners
             editorBody$.prop( '__editorCtl', this)
             editorBody$.on 'keypress' , @_keyPressListener
             # 4- return a ref to the editor's controler
@@ -83,14 +83,28 @@ class exports.CNEditor extends Backbone.View
         
 
     ### ------------------------------------------------------------------------
-    # TODO : initialize the editor content from a markdown string
-    # ok... now how do I load a .md file?
     # Initialize the editor content from a html string
     ###
     replaceContent : (htmlContent) ->
         @editorBody$.html( htmlContent )
         @_readHtml()
-        @buildSummary()
+        #@_buildSummary()
+
+    ###
+    # Returns a markdown string representing the editor content
+    ###
+    getEditorContent : () ->
+        cozyContent = @editorBody$.html()
+        return @cozy2md cozyContent
+        
+    ###
+    # Sets the editor content from a markdown string
+    ###
+    setEditorContent : (mdContent) ->
+        cozyContent = md2cozy mdContent
+        @editorBody$.html cozyContent
+        # update the controler
+        @_readHtml()
                   
     ###
     # Change the path of the css applied to the editor iframe
@@ -98,69 +112,68 @@ class exports.CNEditor extends Backbone.View
     replaceCSS : (path) ->
         $(this.editorIframe).contents().find("link[rel=stylesheet]").attr({href : path})
 
-    putEndOnEnd : (range, elt) ->
-        # caution: the text node may not exist
+    ###
+    # Utility functions for accurate node selections
+    ###
+    _putEndOnEnd : (range, elt) ->
         if elt.firstChild?
             offset = $(elt.firstChild).text().length
             range.setEnd(elt.firstChild, offset)
         else
             range.setEnd(elt, 0)
-            
-    putStartOnEnd : (range, elt) ->
-        # caution: the text node may not exist
+    _putStartOnEnd : (range, elt) ->
         if elt.firstChild?
             offset = $(elt.firstChild).text().length
             range.setStart(elt.firstChild, offset)
         else
             range.setStart(elt, 0)
-
-    putEndOnStart : (range, elt) ->
-        # caution: the text node may not exist
+    _putEndOnStart : (range, elt) ->
         if elt.firstChild?
             range.setEnd(elt.firstChild, 0)
         else
             range.setEnd(elt, 0)
-            
-    putStartOnStart : (range, elt) ->
-        # caution: the text node may not exist
+    _putStartOnStart : (range, elt) ->
         if elt.firstChild?
             range.setStart(elt.firstChild, 0)
         else
             range.setStart(elt, 0)
 
-    normalize : (range) ->
+    ###
+    # Normalize the actual selection
+    ###
+    _normalize : (range) ->
         # We suppose that a div can be selected only when clicking on the right
         # 1. if it's a div
         startContainer = range.startContainer
         if startContainer.nodeName == "DIV"
             elt = startContainer.lastChild.previousElementSibling
-            @putStartOnEnd(range, elt)
+            @_putStartOnEnd(range, elt)
         # 2. if it's between two labels span/img/a
         else if ! startContainer.parentNode in ["SPAN","IMG","A"]
             next=startContainer.nextElementSibling
             prev=startContainer.previousElementSibling
             if next != null
-                @putStartOnStart(range, next)
+                @_putStartOnStart(range, next)
             else
-                @putEndOnEnd(range, prev)
+                @_putEndOnEnd(range, prev)
                 
         # same with the selection end
         # 1. if it's a div
         endContainer = range.endContainer
         if endContainer.nodeName == "DIV"
             elt = endContainer.lastChild.previousElementSibling
-            @putEndOnEnd(range, elt)
+            @_putEndOnEnd(range, elt)
         else if ! endContainer.parentNode in ["SPAN","IMG","A"]
             next=endContainer.nextElementSibling
             prev=endContainer.previousElementSibling
             if next != null
-                @putStartOnStart(range, next)
+                @_putStartOnStart(range, next)
             else
-                @putEndOnEnd(range, prev)
+                @_putEndOnEnd(range, prev)
 
     
     ### ------------------------------------------------------------------------
-    #    The listner of keyPress event on the editor's iframe... the king !
+    #    The listener of keyPress event on the editor's iframe... the king !
     ###
     # 
     # Params :
@@ -193,6 +206,7 @@ class exports.CNEditor extends Backbone.View
     _keyPressListener : (e) =>
         
         # 1- Prepare the shortcut corresponding to pressed keys
+        # TODO: when pressed key is a letter, prevent the browser default action
         metaKeyStrokesCode = `(e.altKey ? "Alt" : "") + 
                               (e.ctrlKey ? "Ctrl" : "") + 
                               (e.shiftKey ? "Shift" : "")`
@@ -237,20 +251,9 @@ class exports.CNEditor extends Backbone.View
                               "home"] and 
                               shortcut not in ['CtrlShift-down','CtrlShift-up']
             @newPosition = true
-            # TODO : following line is just for test, must be somewhere else.
-            $("#editorPropertiesDisplay").text("newPosition = true")
         
         #if there was no keyboard move action but the previous action was a move
         # then "normalize" the selection
-        # ____
-        # TODO: make the normalization more robust : at the moment there is only
-        # the case of an empty line : the carret is put in the empty span. But
-        # there must be other case where the start or end of selection is not in
-        # a correct element.
-        # ____
-        # DONE: the problem only seemed to occur when the end of selection was
-        #       right behind a </div>. It seems to behave correctly now.
-        #       "empty" div issue detected and fixed
         else
             if @newPosition
                 @newPosition = false
@@ -264,7 +267,7 @@ class exports.CNEditor extends Backbone.View
                     # for each selected area
                     for i in [0..num-1]
                         range = sel.getRangeAt(i)
-                        @normalize(range)
+                        @_normalize(range)
 
         # 4- the current selection is initialized on each keypress
         this.currentSel = null
@@ -294,14 +297,14 @@ class exports.CNEditor extends Backbone.View
                 @_suppr(e)
                 #@_updateDeepest()
 
+            # CTRL SHIFT DOWN
             when "CtrlShift-down"
-                # TODO : adapt classes when a multiline block is moved
-                @moveLinesDown()
+                @_moveLinesDown()
                 e.preventDefault()
 
+            # CTRL SHIFT UP
             when "CtrlShift-up"
-                # TODO : adapt classes when a multiline block is moved
-                @moveLinesUp()
+                @_moveLinesUp()
                 e.preventDefault()
 
             # SHIFT TAB
@@ -650,7 +653,7 @@ class exports.CNEditor extends Backbone.View
             range    = sel.getRangeAt(0)
             startDiv = range.startContainer
             endDiv   = range.endContainer
-
+       
         # 2- find first and last div corresponding to the 1rst and
         #    last selected lines
         if startDiv.nodeName != "DIV"
@@ -751,61 +754,65 @@ class exports.CNEditor extends Backbone.View
 
         # 1- Variables
         sel                = rangy.getIframeSelection(@editorIframe)
-        range              = sel.getRangeAt(0)
-        startDiv           = range.startContainer
-        endDiv             = range.endContainer
-        initialStartOffset = range.startOffset
-        initialEndOffset   = range.endOffset
-        
-        # 2- find first and last div corresponding to the 1rst and
-        #    last selected lines
-        if startDiv.nodeName != "DIV"
-            startDiv = $(startDiv).parents("div")[0]
-        if endDiv.nodeName != "DIV"
-            endDiv = $(endDiv).parents("div")[0]
-        endLineID = endDiv.id
-        
-        # 3- loop on each line between the firts and last line selected
-        # TODO : deal the case of a multi range (multi selections). 
-        #        Currently only the first range is taken into account.
-        line = @_lines[startDiv.id]
-        loop
-            switch line.lineType
-                when 'Tu','Th'
-                    # find parent to choose the lineType.
-                    parent = line.linePrev
-                    while parent != null and parent.lineDepthAbs >= line.lineDepthAbs
-                        parent = parent.linePrev
-                    if parent != null
-                        isTabAllowed   = true
-                        lineTypeTarget = parent.lineType
-                        lineTypeTarget = "L" + lineTypeTarget.charAt(1)
-                        line.lineDepthAbs -= 1
-                        line.lineDepthRel -= parent.lineDepthRel
-                        # if lineNext is a Lx, then it must be turned in a Tx
-                        if line.lineNext.lineType[0]=='L'
-                            nextL = line.lineNext
-                            nextL.lineType='T'+nextL.lineType[1] 
-                            nextL.line$.prop('class',"#{nextL.lineType}-#{nextL.lineDepthAbs}")
-                    else 
-                        isTabAllowed=false
-                when 'Lh'
-                    isTabAllowed=true
-                    lineTypeTarget     = 'Th'
-                when 'Lu'
-                    isTabAllowed=true
-                    lineTypeTarget     = 'Tu'
-                when 'Lo'
-                    isTabAllowed=true
-                    lineTypeTarget     = 'To'
-            if isTabAllowed
-                line.line$.prop("class","#{lineTypeTarget}-#{line.lineDepthAbs}")
-                line.lineType = lineTypeTarget
-            if line.lineID == endDiv.id
-                break
-            else 
-                line = line.lineNext
 
+        l = sel.rangeCount
+        if l == 0
+            return
+        c = 0
+        while c < l
+            range              = sel.getRangeAt(c)
+            startDiv           = range.startContainer
+            endDiv             = range.endContainer
+            initialStartOffset = range.startOffset
+            initialEndOffset   = range.endOffset
+        
+            # 2- find first and last div corresponding to the 1rst and
+            #    last selected lines
+            if startDiv.nodeName != "DIV"
+                startDiv = $(startDiv).parents("div")[0]
+            if endDiv.nodeName != "DIV"
+                endDiv = $(endDiv).parents("div")[0]
+            endLineID = endDiv.id
+        
+            # 3- loop on each line between the firts and last line selected
+            line = @_lines[startDiv.id]
+            loop
+                switch line.lineType
+                    when 'Tu','Th','To'
+                        # find the closest parent to choose the new lineType.
+                        parent = line.linePrev
+                        while parent != null and parent.lineDepthAbs >= line.lineDepthAbs
+                            parent = parent.linePrev
+                        if parent != null
+                            isTabAllowed   = true
+                            lineTypeTarget = parent.lineType
+                            lineTypeTarget = "L" + lineTypeTarget.charAt(1)
+                            line.lineDepthAbs -= 1
+                            line.lineDepthRel -= parent.lineDepthRel
+                            # if lineNext is a Lx, then it must be turned in a Tx
+                            if line.lineNext.lineType[0]=='L'
+                                nextL = line.lineNext
+                                nextL.lineType='T'+nextL.lineType[1] 
+                                nextL.line$.prop('class',"#{nextL.lineType}-#{nextL.lineDepthAbs}")
+                        else 
+                            isTabAllowed = false
+                    when 'Lh'
+                        isTabAllowed=true
+                        lineTypeTarget     = 'Th'
+                    when 'Lu'
+                        isTabAllowed=true
+                        lineTypeTarget     = 'Tu'
+                    when 'Lo'
+                        isTabAllowed=true
+                        lineTypeTarget     = 'To'
+                if isTabAllowed
+                    line.line$.prop("class","#{lineTypeTarget}-#{line.lineDepthAbs}")
+                    line.lineType = lineTypeTarget
+                if line.lineID == endDiv.id
+                    break
+                else 
+                    line = line.lineNext
+            c++
 
     ### ------------------------------------------------------------------------
     # return keypress
@@ -975,8 +982,8 @@ class exports.CNEditor extends Backbone.View
         # 0- variables
         if startLine != undefined
             range = rangy.createRange()
-            @putStartOnEnd(range, startLine.line$[0].lastElementChild.previousElementSibling)
-            @putEndOnEnd(range, endLine.line$[0].lastElementChild.previousElementSibling)
+            @_putStartOnEnd(range, startLine.line$[0].lastElementChild.previousElementSibling)
+            @_putEndOnEnd(range, endLine.line$[0].lastElementChild.previousElementSibling)
         else
             @_findLines()
             range = this.currentSel.range
@@ -1177,7 +1184,8 @@ class exports.CNEditor extends Backbone.View
                 endLine = @_lines[ $(endContainer).parents("div")[0].id ]
             
             # 3- find startLine 
-            if startContainer.nodeName == 'DIV' # startContainer refers to a div of a line
+            if startContainer.nodeName == 'DIV'
+                # startContainer refers to a div of a line
                 startLine = @_lines[ startContainer.id ]
             else   # means the range starts inside a div (span, textNode...)
                 startLine = @_lines[ $(startContainer).parents("div")[0].id ]
@@ -1190,7 +1198,7 @@ class exports.CNEditor extends Backbone.View
                 endLine          : endLine
                 rangeIsStartLine : null
                 rangeIsEndLine   : null
-        # return [sel, range, endLine, startLine]
+        # return [sel,range,endLine,startLine]
 
 
     ### ------------------------------------------------------------------------
@@ -1208,7 +1216,7 @@ class exports.CNEditor extends Backbone.View
     #   startLine : the 1st line of the range
     #   endLine : the last line of the range
     #   rangeIsEndLine : true if the range ends at the end of the last line
-    #   rangeIsStartLine : turu if the range starts at the start of 1st line
+    #   rangeIsStartLine : true if the range starts at the start of 1st line
     ###
     _findLinesAndIsStartIsEnd : () ->
         if this.currentSel == null
@@ -1270,7 +1278,7 @@ class exports.CNEditor extends Backbone.View
                 endLine          : endLine
                 rangeIsStartLine : rangeIsStartLine
                 rangeIsEndLine   : rangeIsEndLine
-        # return [sel, range, endLine, rangeIsEndLine, startLine, rangeIsStartLine]
+        # return [sel,range,endLine,rangeIsEndLine,startLine,rangeIsStartLine]
 
 
     ###  -----------------------------------------------------------------------
@@ -1317,7 +1325,13 @@ class exports.CNEditor extends Backbone.View
                 @_lines[lineID_st] = lineNew
         @_highestId = lineID
 
-    moveLinesDown : () ->
+
+    # Functions to perform the motion of an entire block of lines
+    # TODO: bug: on 2 extreme lines
+    #            (right after the first line and right before the last line)
+    # TODO: improve insertion of the line swapped with the block
+    _moveLinesDown : () ->
+        #0- Set variables with informations on the selected lines
         @_findLines()
         sel = this.currentSel
         lineStart = sel.startLine
@@ -1326,7 +1340,8 @@ class exports.CNEditor extends Backbone.View
         lineNext  = lineEnd.lineNext
         
         if lineNext != null
-            # save lineNext
+            
+            # 1-save lineNext
             cloneLine =
                 line$        : lineNext.line$.clone()
                 lineID       : lineNext.lineID
@@ -1335,12 +1350,15 @@ class exports.CNEditor extends Backbone.View
                 lineDepthRel : lineNext.lineDepthRel
                 linePrev     : lineNext.linePrev
                 lineNext     : lineNext.lineNext
-            # Delete the upperline content
+                
+            # 2-Delete the lowerline content
             @_deleteMultiLinesSelections(lineEnd, lineNext)
-            # Restore the lower line
+            
+            # 3-Restore the lower line
             lineNext = cloneLine
             @_lines[lineNext.lineID] = lineNext
-            # Modify the linking
+            
+            # 4-Modify the linking
             lineNext.linePrev = linePrev
             lineStart.linePrev = lineNext
             if lineNext.lineNext != null
@@ -1349,16 +1367,20 @@ class exports.CNEditor extends Backbone.View
             lineNext.lineNext = lineStart
             if linePrev != null
                 linePrev.lineNext = lineNext
-            # Modify the DOM
+                
+            # 5-Modify the DOM
             lineStart.line$.before(lineNext.line$)
 
-            # Re-insert properly lineNext before the start of the moved block
+            # 6-Re-insert properly lineNext before the start of the moved block
+            # TODO: this part needs some corrections
             if lineStart.lineDepthAbs < lineNext.lineDeptAbs
                 lineNext.lineDepthRel = lineStart.lineDepthRel
                 lineNext.lineDepthAbs = lineStart.lineDepthAbs
                 lineNext.line$.attr('class', "#{lineNext.lineType}-#{lineNext.lineDepthAbs}")   
 
-    moveLinesUp : () ->
+
+    _moveLinesUp : () ->
+        #0- Set variables with informations on the selected lines
         @_findLines()
         sel = this.currentSel
         lineStart = sel.startLine
@@ -1367,7 +1389,7 @@ class exports.CNEditor extends Backbone.View
         lineNext  = lineEnd.lineNext
         
         if linePrev != null
-            # save linePrev
+            # 1-save linePrev
             cloneLine =
                 line$        : linePrev.line$.clone()
                 lineID       : linePrev.lineID
@@ -1376,12 +1398,15 @@ class exports.CNEditor extends Backbone.View
                 lineDepthRel : linePrev.lineDepthRel
                 linePrev     : linePrev.linePrev
                 lineNext     : linePrev.lineNext
-            # Delete the upperline content
+                
+            # 2-Delete the upperline content
             @_deleteMultiLinesSelections(linePrev.linePrev, linePrev)
-            # Restore the upper  line
+            
+            # 3-Restore the upper  line
             linePrev = cloneLine
             @_lines[linePrev.lineID] = linePrev
-            # Modify the linking
+            
+            # 4-Modify the linking
             linePrev.lineNext = lineNext
             lineEnd.lineNext = linePrev
             if linePrev.linePrev != null
@@ -1390,11 +1415,12 @@ class exports.CNEditor extends Backbone.View
             linePrev.linePrev = lineEnd
             if lineNext != null
                 lineNext.linePrev = linePrev
-            # Modify the DOM
+                
+            # 5-Modify the DOM
             lineEnd.line$.after(linePrev.line$)
            
-            # Re-insert properly linePrev after the end of the moved block
-            #if the block ends with a title
+            # 6-Re-insert properly linePrev after the end of the moved block
+            # TODO: this part probably needs some corrections
             if lineEnd.lineType[0] == 'T'
                 linePrev.lineType = lineEnd.lineType
                 linePrev.lineDepthRel = lineEnd.lineDepthRel
@@ -1404,22 +1430,228 @@ class exports.CNEditor extends Backbone.View
                 linePrev.lineDepthRel = lineEnd.lineDepthRel
                 linePrev.lineDepthAbs = lineEnd.lineDepthAbs
                 linePrev.line$.attr('class', "#{linePrev.lineType}-#{linePrev.lineDepthAbs}")
-            
-    initSummary : () ->
+
+
+    # Summary initialization
+    # TODO: avoid to update the summary too often
+    #       it would be best to make the update faster (rather than reading
+    #       every line)
+    _initSummary : () ->
         summary = @editorBody$.children("#nav")
         if summary.length == 0
             summary = $ document.createElement('div')
             summary.attr('id', 'nav')
             summary.prependTo @editorBody$
         return summary
-        
-    buildSummary : () ->
+
+    ###
+    # Summary upkeep
+    ###
+    _buildSummary : () ->
         summary = @initSummary()
         @editorBody$.children("#nav").children().remove()
         lines = @_lines
         for c of lines
             if (@editorBody$.children("#" + "#{lines[c].lineID}").length > 0 and lines[c].lineType == "Th")
                 lines[c].line$.clone().appendTo summary
+
+    ###
+    # Add html code to the history
+    ###
+    _addHistory : () ->
+        # 1-fetch current html code
+        allDivs = @editorBody$.children("div:not(#nav)")
+        content = ''
+        allDivs.each () ->
+            content += @html()
+        
+    ###
+    # Undo the previous action
+    ###
+    unDo : () ->
+        return
+
+    ###
+    # Redo a undo-ed action
+    ###
+    reDo : () ->
+        return
+
+    ###
+    # Reads a string that represents html code in our cozy format and turns it
+    # into a string in markdown format
+    ###
+    cozy2md : (text) ->
+        
+        # Writes the string into a jQuery object
+        htmlCode = $(document.createElement 'div').html text
+        
+        # The future converted line
+        markCode = ''
+
+        # current depth
+        currDepth = 1
+        
+        # converts a fragment of a line
+        converter = {
+            'A': (obj) ->
+                title = if obj.attr('title')? then obj.attr('title') else ""
+                href  = if obj.attr('href')? then obj.attr('href') else ""
+                return '[' + obj.html() + '](' + href + ' "' + title + '")'
+                    
+            'IMG': (obj) ->
+                title = if obj.attr('title')? then obj.attr('title') else ""
+                alt = if obj.attr('alt')? then obj.attr('alt') else ""
+                src = if obj.attr('src')? then obj.attr('src') else ""
+                return '![' + alt + '](' + src + ' "' + title + '")'
                 
+            'SPAN':  (obj) ->
+                return obj.text()
+            }
+
+        
+        # markup symboles
+        markup = {
+            'Th' : (blanks, depth) ->
+                # a title is a section rupture
+                currDepth = depth
+                dieses = ''
+                i = 0
+                while i < depth
+                    dieses += '#'
+                    i++
+                return "\n" + dieses + ' '
+            'Lh' : (blanks, depth) ->
+                return "\n"
+            'Tu' : (blanks, depth) ->
+                return "\n" + blanks + "+   "
+            'Lu' : (blanks, depth) ->
+                return "\n" + blanks + "    "
+            'To' : (blanks, depth) ->
+                return "\n" + blanks + "1.   "
+            'Lo' : (blanks, depth) ->
+                return "\n" + blanks + "    "
+            }
+
+        # adds structure depending of the line's class
+        classType = (className) ->
+            #console.log className
+            tab   = className.split "-"
+            type  = tab[0]               # type of class (Tu,Lu,Th,Lh,To,Lo)
+            depth = parseInt(tab[1], 10) # depth (1,2,3...)
+            blanks = ''
+            i = 1
+            while i < depth - currDepth
+                blanks += '    '
+                i++
+            return markup[type](blanks, depth)
+        
+        # iterates on direct children
+        children = htmlCode.children()
+        for i in [0..children.length-1]
+            
+            # fetches the i-th line of the text
+            lineCode = $ children.get i
+            
+            # indents and structures the line
+            if lineCode.attr('class')?
+                markCode += classType lineCode.attr 'class'
 
             
+            # completes the text depending of the line's content
+            l = lineCode.children().length
+            j = 0
+            space = ' '
+            while j < l
+                lineElt = lineCode.children().get j
+                if (j+2==l) then space='' # be sure not to insert spaces after BR
+                if lineElt.nodeType == 1 && converter[lineElt.nodeName]?
+                    markCode += converter[lineElt.nodeName]($ lineElt) + space
+                else
+                    markCode += $(lineElt).text() + space
+                j++
+                
+            # adds a new line at the end
+            markCode += "\n"
+        
+        return markCode
+
+    # Reads a string of html code given by showdown
+    # and turns it into our proper cozy html code.
+    md2cozy: (text) ->
+
+        conv = new Showdown.converter()
+        text = conv.makeHtml text
+    
+        # Writes the string into a jQuery object
+        htmlCode = $(document.createElement 'ul').html text
+
+        # final string
+        cozyCode = ''
+        
+        # current line
+        id = 0
+
+        # Returns the corresponding fragment of cozy Code
+        cozyTurn = (type, depth, p) ->
+            # p is a (jquery) object that looks like this :
+            # <p> some text <a>some link</a> again <img>some img</img> poof </p>
+            # OR like this:  <li> some text <a>some link</a> ...
+            # We are treating a line again, thus id must be increased
+            id++
+            code = ''
+            p.contents().each () ->
+                name = @nodeName
+                if name == "#text"
+                    code += "<span>#{$(@).text()}</span>"
+                else if @tagName?
+                    $(@).wrap('<div></div>')
+                    code += "#{$(@).parent().html()}"
+                    $(@).unwrap()
+            return "<div id=CNID_#{id} class=#{type}-#{depth}>" + code +
+                "<br></div>"
+                
+        # current depth
+        depth = 0
+        
+        # Read sections sequentially
+        readHtml = (obj) ->
+            tag = obj[0].tagName
+            if tag[0] == "H"       # c'est un titre (h1...h6)
+                depth = parseInt(tag[1],10)
+                cozyCode += cozyTurn("Th", depth, obj)
+            else if tag == "P"     # ligne de titre
+                cozyCode += cozyTurn("Lh", depth, obj)
+            else
+                recRead(obj, "u")
+                
+        # Reads recursively through the lists
+        recRead = (obj, status) ->
+            tag = obj[0].tagName
+            if tag == "UL"
+                depth++
+                obj.children().each () ->
+                    recRead($(@), "u")
+                depth--
+            else if tag == "OL"
+                depth++
+                obj.children().each () ->
+                    recRead($(@), "o")
+                depth--
+            else if tag == "LI" && obj.contents().get(0)?
+                # cas du <li>Un seul titre sans lignes en-dessous</li>
+                if obj.contents().get(0).nodeName == "#text"
+                    obj = obj.clone().wrap('<p></p>').parent()
+                for i in [0..obj.children().length-1]
+                    child = $ obj.children().get i
+                    if i == 0
+                        cozyCode += cozyTurn("T#{status}", depth, child)
+                    else
+                        recRead(child, status)
+            else if tag == "P"
+                cozyCode += cozyTurn("L#{status}", depth, obj)
+
+        htmlCode.children().each () ->
+            readHtml $ @
+        
+        return cozyCode

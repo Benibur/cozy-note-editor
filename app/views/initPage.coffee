@@ -1,16 +1,9 @@
 {beautify} = require 'views/beautify'
 CNEditor = require('views/editor').CNEditor
 
-# Modules de conversion Markdown <--> Cozy
-CNcozyToMarkdown = require('views/cozyToMarkdown').CNcozyToMarkdown
-CNmarkdownToCozy = require('views/markdownToCozy').CNmarkdownToCozy
-cozy2md = new CNcozyToMarkdown()
-md2cozy = new CNmarkdownToCozy()
-
 # Module de test automatique
 AutoTest = require('views/autoTest').AutoTest
 checker = new AutoTest()
-
 
 # attributes of the class
 editorBody$  = undefined # body of iframe
@@ -103,17 +96,17 @@ exports.initPage =  ()->
         #  > translate cozy code into markdown and markdown to cozy code
         #    Note: in the markdown code there should be two \n between each line
         $("#markdownBtn").on "click", () ->
-            $("#resultText").val(cozy2md.translate $("#resultText").val())
+            $("#resultText").val(editorCtrler.cozy2md $("#resultText").val())
         $("#cozyBtn").on "click", () ->
-            $("#resultText").val(md2cozy.translate $("#resultText").val())
+            $("#resultText").val(editorCtrler.md2cozy $("#resultText").val())
         $("#addClass").toggle(
             () ->
                 addClassToLines("sel")
             () ->
                 removeClassFromLines("sel")
             )
-        $("#summaryBtn").on "click", () ->
-            editorCtrler.buildSummary()
+        #$("#summaryBtn").on "click", () ->
+        #    editorCtrler.buildSummary()
 
         #### -------------------------------------------------------------------
         # Returns an object containing every selected line in the iframe
@@ -203,10 +196,10 @@ exports.initPage =  ()->
             $("#editorPropertiesDisplay").text("newPosition = true")
 
         # automatic summary
-        this.editorBody$.on 'mouseup', () =>
-            this.buildSummary()
-        this.editorBody$.on 'keyup', () =>
-            this.buildSummary()
+        # this.editorBody$.on 'mouseup', () =>
+        #     this.buildSummary()
+        # this.editorBody$.on 'keyup', () =>
+        #     this.buildSummary()
     # creation of the editor
     editor = new CNEditor( $('#editorIframe')[0], cb )
     return editor

@@ -2,15 +2,21 @@
 
 Simple, yet Towerfull : one day it will be !
 
-## Installer l'application
-    1. Cloner le dépôt Git, installer les dépendances
+
+## The main object CNEditor
+
+    * constructor(iframeTarget, callBack) : the editor is set within the specified iframe label.
+
+
+## Install editor's environment
+    1. Clone git repository and install dependancies
         + `git clone https://github.com/Benibur/cozy-note-editor.git`
         + `cd cozy-note-editor`
         + `npm install`
-    2. Pas sûr de ce que font ces commandes...
+    2. These commands may be necessary... ?
         + `git submodule init`
         + `git submodule update`
-    3. Installer brunch et lancer le build (dans le répertoire du projet)
+    3. Install brunch and build inside of the project directory
         + `sudo npm install brunch -g`
         + `brunch build`
 
