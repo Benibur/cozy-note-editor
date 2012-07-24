@@ -1329,6 +1329,7 @@ class exports.CNEditor extends Backbone.View
         # return [sel,range,endLine,rangeIsEndLine,startLine,rangeIsStartLine]
 
 
+
     ###  -----------------------------------------------------------------------
     # Parse a raw html inserted in the iframe in order to update the controler
     ###
@@ -1372,6 +1373,7 @@ class exports.CNEditor extends Backbone.View
                 linePrev = lineNew
                 @_lines[lineID_st] = lineNew
         @_highestId = lineID
+
 
 
     ### ------------------------------------------------------------------------
@@ -1434,6 +1436,7 @@ class exports.CNEditor extends Backbone.View
                 # lineNext.lineDepthRel = lineStart.lineDepthRel
                 # lineNext.lineDepthAbs = lineStart.lineDepthAbs
                 # lineNext.line$.attr('class', "#{lineNext.lineType}-#{lineNext.lineDepthAbs}")   
+
 
 
     _moveLinesUp : () ->
@@ -1500,6 +1503,7 @@ class exports.CNEditor extends Backbone.View
                 # linePrev.line$.attr('class', "#{linePrev.lineType}-#{linePrev.lineDepthAbs}")
 
 
+
     ### ------------------------------------------------------------------------
     #  HISTORY MANAGEMENT:
     # 1. reDo can only be called after some unDo calls
@@ -1509,6 +1513,7 @@ class exports.CNEditor extends Backbone.View
     _addHistory : () ->
         @_history.history.push @editorBody$.html()
         @_history.index = @_history.history.length-1
+        $(@editorIframe).trigger jQuery.Event("onHistoryChanged")
     ###
     # Undo the previous action
     ###
@@ -1554,10 +1559,13 @@ class exports.CNEditor extends Backbone.View
             if (@editorBody$.children("#" + "#{lines[c].lineID}").length > 0 and lines[c].lineType == "Th")
                 lines[c].line$.clone().appendTo summary
 
+
+
     ### ------------------------------------------------------------------------
     #  DECORATION FUNCTIONS (bold/italic/underlined/quote)
     #  TODO
     ###
+
     
     
     ### ------------------------------------------------------------------------
@@ -1657,6 +1665,7 @@ class exports.CNEditor extends Backbone.View
             markCode += "\n"
         
         return markCode
+
 
     # Reads a string of html code given by showdown
     # and turns it into our proper cozy html code.

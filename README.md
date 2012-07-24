@@ -6,8 +6,13 @@ Simple, yet Towerfull : one day it will be !
 ## The main object CNEditor
 
     * constructor(iframeTarget, callBack) : the editor is set within the specified iframe label.
-    * getEditorContent()
-    * setEditorContent(mdContent)
+    * _note_ : an event called "onHistoryChanged" is triggered on the iframe nesting the editor whenever a content's modification occurs and is significant enough. The editor's content should be saved when it happens.
+    * getEditorContent() : as expected, return the editor content
+    * setEditorContent(mdContent) : same here... change the editor content
+    * unDo() : ctrl-z
+    * reDo() : ctrl-y
+    * tab()  : tab
+    * and a lot more...
 
 ## Install editor's environment
     1. Clone git repository and install dependancies
