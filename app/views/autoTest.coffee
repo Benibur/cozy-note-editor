@@ -12,6 +12,7 @@ class exports.AutoTest extends Backbone.View
     #    <> two successive SPAN can't have the same class ----------- (OK)
     #    <> empty SPAN are really empty (<span></span>) ------------- (huh?)
     #    <> a note must  have at least one line --------------------- (todo)
+    # BUG? un Tu-6 qui suit un Th-1 n'est pas détecté
     ###
     checkLines : (CNEditor) ->
         
