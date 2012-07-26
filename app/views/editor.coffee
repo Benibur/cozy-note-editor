@@ -1,3 +1,7 @@
+## TODO: méthode pour récupérer le js de l'éditeur nu
+## TODO: fire an event qd click sur un bouton.
+## Todo: .titre1                                .titre1
+#            .texte indenté         devient     .texte indenté
 
 ### ------------------------------------------------------------------------
 # CLASS FOR THE COZY NOTE EDITOR
@@ -46,6 +50,7 @@ class exports.CNEditor extends Backbone.View
             @editorBody$  = editorBody$
             @editorIframe = iframe$[0]
             @_lines       = {}
+            @newPosition  = true
             @_highestId   = 0
             @_deepest     = 1
             @_firstLine   = null
@@ -85,7 +90,6 @@ class exports.CNEditor extends Backbone.View
             else
                 @replaceCSS("stylesheets/app-deep-4.css")
         
-
     ### ------------------------------------------------------------------------
     # Initialize the editor content from a html string
     ###
@@ -94,14 +98,24 @@ class exports.CNEditor extends Backbone.View
         @_readHtml()
         #@_buildSummary()
 
+    ### ------------------------------------------------------------------------
+    # Clear editor content
     ###
+    deleteContent : () ->
+        @editorBody$.html '<div id="CNID_1" class="Tu-1"><span></span><br></div>'
+
+        @_readHtml()
+        #@_buildSummary()
+    
+    
+    ### ------------------------------------------------------------------------
     # Returns a markdown string representing the editor content
     ###
     getEditorContent : () ->
         cozyContent = @editorBody$.html()
         return @_cozy2md cozyContent
         
-    ###
+    ### ------------------------------------------------------------------------
     # Sets the editor content from a markdown string
     ###
     setEditorContent : (mdContent) ->
@@ -283,7 +297,7 @@ class exports.CNEditor extends Backbone.View
                     for i in [0..num-1]
                         range = sel.getRangeAt(i)
                         @_normalize(range)
-
+                        
         # 4- the current selection is initialized on each keypress
         this.currentSel = null
   

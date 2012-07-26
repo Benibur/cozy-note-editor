@@ -35,12 +35,12 @@ exports.initPage =  ()->
         #edCtrl = editorFactory.create( editorIframe$ )
 
         ### initialisation of the page
-        this.replaceContent( require('./templates/content-full') )
-        this.replaceContent( require('./templates/content-empty') )
-        this.replaceContent( require('./templates/content-full-marker') )
-        this.replaceContent( require('./templates/content-shortlines-marker') )
+        # this.replaceContent( require('./templates/content-full') )
+        # this.replaceContent( require('./templates/content-empty') )
+        # this.replaceContent( require('./templates/content-full-marker') )
+        # this.replaceContent( require('./templates/content-shortlines-marker') )
         ###
-        this.replaceContent( require('./templates/content-shortlines-all') )
+        # this.replaceContent( require('./templates/content-shortlines-all') )
         
         # buttons init, beautify actions
         editorCtrler = this

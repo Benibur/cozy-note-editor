@@ -18,6 +18,9 @@ exports.initPage =  ()->
     $("body").html require('./templates/editor')
     editorIframe$ = $("iframe")
 
+    $("iframe").on "onHistoryChanged", () ->
+        console.log "history updated"
+    
     # callback to execute after editor's initialization
     # the contexte (this) inside the function is the editor
     cb = () ->
@@ -35,13 +38,16 @@ exports.initPage =  ()->
         #edCtrl = editorFactory.create( editorIframe$ )
 
         ### initialisation of the page
-        this.replaceContent( require('./templates/content-empty') )
-        this.replaceContent( require('./templates/content-full') )
-        this.replaceContent( require('./templates/content-full-marker') )
-        this.replaceContent( require('./templates/content-full-relative-indent') )
-        this.replaceContent( require('./templates/content-shortlines-marker') )
+        # this.replaceContent( require('./templates/content-empty') )
+        # this.replaceContent( require('./templates/content-full') )
+        # this.replaceContent( require('./templates/content-full-marker') )
+        # this.replaceContent( require('./templates/content-full-relative-indent') )
+        # this.replaceContent( require('./templates/content-shortlines-marker') )
         ###
-        this.replaceContent( require('./templates/content-shortlines-all') )
+        # this.replaceContent( require('./templates/content-shortlines-all') )
+        # this.replaceContent( require('./templates/content-shortlines-all-hacked') )
+        this.deleteContent()
+
         
         # buttons init, beautify actions
         editorCtrler = this
@@ -87,7 +93,8 @@ exports.initPage =  ()->
             editorCtrler.markerList()
         $("#titleBtn").on "click", () ->
             editorCtrler.titleList()
-
+        $("#clearBtn").on "click", () ->
+            editorCtrler.deleteContent()
 
         #### -------------------------------------------------------------------
         # Special buttons (to be removed later)
