@@ -53,12 +53,19 @@ class exports.CNEditor extends Backbone.View
             @_deepest     = 1
             @_firstLine   = null
             @_history     =
-                index  : 0
-                history: [null]
+                index        : 0
+                history      : [null]
+                historySelect: [null]
             @_lastKey     = null
             # 3- initialize event listeners
             editorBody$.prop( '__editorCtl', this)
             editorBody$.on 'keypress' , @_keyPressListener
+            editorBody$.on 'keyup', () ->
+                $(iframe$[0]).trigger jQuery.Event("onKeyUp")
+            # editorBody$.on 'keydown', () ->
+                # $(@editorIframe).trigger jQuery.Event("onKeyDown")
+            # editorBody$.on 'keypress', () ->
+                # $(@editorIframe).trigger jQuery.Event("onKeyPress")
             # 4- return a ref to the editor's controler
             callBack.call(this)
             return this
@@ -1523,8 +1530,16 @@ class exports.CNEditor extends Backbone.View
     # Add html code to the history
     ###
     _addHistory : () ->
+        console.log @_history
+        # add the html content to history
         @_history.history.push @editorBody$.html()
+        # add the selection to history
+        sel = rangy.getIframeSelection(@editorIframe)
+        range = sel.getRangeAt(0)
+        @_history.historySelect.push range
+        # update the index
         @_history.index = @_history.history.length-1
+        # fire an event indicating history has changed
         $(@editorIframe).trigger jQuery.Event("onHistoryChanged")
     ###
     # Undo the previous action
@@ -1532,7 +1547,13 @@ class exports.CNEditor extends Backbone.View
     unDo : () ->
         # if there is an action to undo
         if @_history.index > 0
+            # restore html
             @editorBody$.html @_history.history[@_history.index]
+            # restore selection
+            sel = rangy.getIframeSelection(@editorIframe)
+            
+            sel.setSingleRange @_history.historySelect[@_history.index]
+            # update the index
             @_history.index -= 1
     ###
     # Redo a undo-ed action
@@ -1540,10 +1561,15 @@ class exports.CNEditor extends Backbone.View
     reDo : () ->
         # if there is an action to redo
         if @_history.index < (@_history.history.length-2)
+            # update the index
             @_history.index += 1
+            # restore html
             @editorBody$.html @_history.history[@_history.index+1]
-
+            # restore selection
+            sel = rangy.getIframeSelection(@editorIframe)
             
+            sel.setSingleRange @_history.historySelect[@_history.index]
+                        
 
     ### ------------------------------------------------------------------------
     # SUMMARY MANAGEMENT
@@ -1658,7 +1684,7 @@ class exports.CNEditor extends Backbone.View
             
             # indent and structure the line
             if lineCode.attr('class')?
-                console.log classType lineCode.attr 'class'
+                # console.log classType lineCode.attr 'class'
                 markCode += classType lineCode.attr 'class'
 
             # completes the text depending of the line's content
